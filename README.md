@@ -1,1 +1,1 @@
-# My project's README git add README.md
+All rights reserved Tamas Norbert Varga 2017
