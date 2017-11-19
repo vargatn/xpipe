@@ -27,8 +27,6 @@ blah
 Ancillary utilities
 =====================
 
-blah
-
 Observed to absolute magnitude conversion
 ----------------------------------------------------------
 

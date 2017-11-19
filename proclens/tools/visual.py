@@ -16,7 +16,7 @@ def contprep(data, clevels=(0.68, 0.95), sample=5000, weights=None, **kwargs):
     data : array with shape (N, 2)
         input data
     clevels : list
-        probabilit values for contours
+        probability values for contours
     sample : int
         number of samples to draw from data
     weights : None or np.array
