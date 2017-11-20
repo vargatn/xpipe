@@ -102,7 +102,13 @@
 <li class="toctree-l1"><a class="reference internal" href="#ancillary-utilities">Ancillary utilities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#observed-to-absolute-magnitude-conversion">Observed to absolute magnitude conversion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fits-to-pandas-conversion">FITS to pandas conversion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#nice-corner-plot">Nice corner plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-selection">parameter selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#list-partitioning">list partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#safe-divide">safe divide</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#visualization">Visualization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#corner-plot">corner plot</a></li>
 </ul>
 </li>
 </ul>
@@ -360,7 +366,7 @@ then assemble this to a dict with other relevant info</p>
 <p>FITS tables sometimes have multidimensional columns, which are not supported for DataFrames
 Pandas DataFrames however provide many nice features, such as SQL speed database matchings.</p>
 <p>The approach is to flatten out multidimensional column [[COL]] into [COL_1, COL_2, …, COL_N]</p>
-<p class="rubric">Example</p>
+<p class="rubric">Examples</p>
 <p>Just pass the loaded FITS table:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitsio</span> <span class="k">as</span> <span class="nn">fio</span>
 <span class="kn">import</span> <span class="nn">proclens.io.catalogs</span> <span class="k">as</span> <span class="nn">catalogs</span>
@@ -384,8 +390,168 @@ Pandas DataFrames however provide many nice features, such as SQL speed database
 </dd></dl>
 
 </div>
-<div class="section" id="nice-corner-plot">
-<h2>Nice corner plot<a class="headerlink" href="#nice-corner-plot" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="parameter-selection">
+<h2>parameter selection<a class="headerlink" href="#parameter-selection" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.tools.selector.selector">
+<code class="descclassname">proclens.tools.selector.</code><code class="descname">selector</code><span class="sig-paren">(</span><em>pps</em>, <em>limits</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/selector.html#selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.selector.selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies selection to array based on the passed parameter limits</p>
+<p>Selection is defined like <img class="math" src="_images/math/d9bb85c8c1f5039a029ee099c6a46fda55d4b180.png" alt="x\in[x_0;\;x_1)"/></p>
+<p class="rubric">Examples</p>
+<p>First make some mock data:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">nrows</span> <span class="o">=</span> <span class="mi">100000</span>
+<span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">ra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">360.</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">nrows</span><span class="p">)</span>
+<span class="n">dec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=-</span><span class="mf">60.</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">10.</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">nrows</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">nrows</span><span class="p">)</span>
+<span class="n">lamb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">nrows</span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">lamb</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+</pre></div>
+</div>
+<p>then define binning edges:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ra_edges</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">,</span> <span class="mf">300.</span><span class="p">)</span>
+<span class="n">dec_edges</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">60.</span><span class="p">,</span> <span class="o">-</span><span class="mf">30.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">)</span>
+<span class="n">z_edges</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+<span class="n">lamb_edges</span> <span class="o">=</span> <span class="p">(</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">30.</span><span class="p">,</span> <span class="mf">45.</span><span class="p">,</span> <span class="mf">60.</span><span class="p">)</span>
+
+<span class="n">edges</span> <span class="o">=</span> <span class="p">(</span><span class="n">ra_edges</span><span class="p">,</span> <span class="n">dec_edges</span><span class="p">,</span> <span class="n">z_edges</span><span class="p">,</span> <span class="n">lamb_edges</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This selection divides the data into 24 bins in 4-D space, which we
+can obtain perform as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sinds</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">plpairs</span> <span class="o">=</span> <span class="n">sl</span><span class="o">.</span><span class="n">selector</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s inspect the output, <code class="code docutils literal"><span class="pre">sinds</span></code> contains the boolean indexing arrays to
+select rows by, while <code class="code docutils literal"><span class="pre">bounds</span></code> shows the corresponding parameter boundaries,
+for example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bounds</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span>
+<span class="go">((0, (100.0, 300.0)), (1, (-60.0, -30.0)), (2, (0.2, 0.4)), (3, (30.0, 45.0)))</span>
+</pre></div>
+</div>
+<p>where the first number indicates the column of the data file it corresponds to, and the
+tuple contains the parameter boundaries for that column. Indeed we find:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">[</span><span class="n">sinds</span><span class="p">[</span><span class="mi">13</span><span class="p">],</span> <span class="p">:]</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([ 100.03881951,  -59.96803764,    0.20010631,   30.02361767])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">[</span><span class="n">sinds</span><span class="p">[</span><span class="mi">13</span><span class="p">],</span> <span class="p">:]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([ 299.68649402,  -30.00117535,    0.39994843,   44.99060231])</span>
+</pre></div>
+</div>
+<p>which are the boundaries we were expecting</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pps</strong> (<em>np.array N-D</em>) – numpy array with N rows, containing the parameters to split the sample by</li>
+<li><strong>limits</strong> (<em>list of lists</em>) – list of parameter limits, each element contains limits for a columna of pps</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of boolean indices (one for each selection),
+list of param limits corresponding to each selection
+parameter limits expanded from sequence to list of tuples</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list, list, list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="list-partitioning">
+<h2>list partitioning<a class="headerlink" href="#list-partitioning" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.tools.selector.partition">
+<code class="descclassname">proclens.tools.selector.</code><code class="descname">partition</code><span class="sig-paren">(</span><em>lst</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/selector.html#partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.selector.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Divides a list into N roughly equal chunks</p>
+<p class="rubric">Examples</p>
+<p>Define some test list, and look at the obtained chunks with different <code class="code docutils literal"><span class="pre">n</span></code> values:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span>
+<span class="go">array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,</span>
+<span class="go">17, 18, 19])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sl</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">[array([0, 1, 2, 3]),</span>
+<span class="go"> array([4, 5, 6, 7]),</span>
+<span class="go"> array([ 8,  9, 10, 11]),</span>
+<span class="go"> array([12, 13, 14, 15]),</span>
+<span class="go"> array([16, 17, 18, 19])]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sl</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="go">[array([0, 1, 2]),</span>
+<span class="go"> array([3, 4, 5, 6]),</span>
+<span class="go"> array([7, 8, 9]),</span>
+<span class="go"> array([10, 11, 12]),</span>
+<span class="go"> array([13, 14, 15, 16]),</span>
+<span class="go"> array([17, 18, 19])]</span>
+</pre></div>
+</div>
+<p>As we can see, even when <code class="code docutils literal"><span class="pre">n</span></code> is not a divisor of <code class="code docutils literal"><span class="pre">len(lst)</span></code>, it returns
+roughly balanced chunks</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lst</strong> (<em>list</em>) – list to split up</li>
+<li><strong>n</strong> (<em>int</em>) – chunks to make</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of chunks</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of lists</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="safe-divide">
+<h2>safe divide<a class="headerlink" href="#safe-divide" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.tools.selector.safedivide">
+<code class="descclassname">proclens.tools.selector.</code><code class="descname">safedivide</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>eps=1e-08</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/selector.html#safedivide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.selector.safedivide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates x / y for arrays, setting result to zero if x ~ 0 OR y ~ 0</p>
+<p>Defined such that</p>
+<blockquote>
+<div><img class="math" src="_images/math/f89f07b3646e952c5b49a8d789f61c1c2491ebb0.png" alt="5 / 5 \rightarrow 1"/></div></blockquote>
+<p>but</p>
+<blockquote>
+<div><img class="math" src="_images/math/40433a485236c5129b82df3fb25b0ef617f83649.png" alt="5 / 0 \rightarrow 0"/> and <img class="math" src="_images/math/afc93ef992ba88a5e4f07243e9cd3e7629053fae.png" alt="0 / 5 \rightarrow 0"/> and <img class="math" src="_images/math/cd02b624cb949df13c17962b983c73b451e8d521.png" alt="0 / 0 \rightarrow 0"/></div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>np.array</em>)</li>
+<li><strong>y</strong> (<em>np.array</em>)</li>
+<li><strong>eps</strong> (<em>float</em>) – threshold for setting element to zero</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">x / y where (xabs &gt; eps) and (yabs &gt; eps), 0 elsewhere</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="visualization">
+<h1>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="corner-plot">
+<h2>corner plot<a class="headerlink" href="#corner-plot" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="proclens.tools.visual.corner">
 <code class="descclassname">proclens.tools.visual.</code><code class="descname">corner</code><span class="sig-paren">(</span><em>par_names</em>, <em>pars</em>, <em>par_edges</em>, <em>figsize=(8</em>, <em>8)</em>, <em>color='black'</em>, <em>fig=None</em>, <em>axarr=None</em>, <em>mode='hist'</em>, <em>cmap='gray_r'</em>, <em>normed=True</em>, <em>fontsize=12</em>, <em>tick_list=None</em>, <em>clevels=(0.68</em>, <em>0.95)</em>, <em>weights=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/visual.html#corner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.visual.corner" title="Permalink to this definition">¶</a></dt>

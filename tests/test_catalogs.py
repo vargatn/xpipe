@@ -4,7 +4,6 @@ PyTest file for tools.catalogs
 
 import pytest
 import numpy as np
-import pandas as pd
 import proclens.tools.catalogs as catalogs
 
 

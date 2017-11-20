@@ -15,8 +15,8 @@ def to_pandas(recarr):
 
     The approach is to flatten out multidimensional column [[COL]] into [COL_1, COL_2, ..., COL_N]
 
-    Example
-    -------
+    Examples
+    --------
 
     Just pass the loaded FITS table::
 

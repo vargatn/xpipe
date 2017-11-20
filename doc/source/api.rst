@@ -40,8 +40,28 @@ FITS to pandas conversion
 .. autofunction:: proclens.tools.catalogs.to_pandas
 
 
-Nice corner plot
-----------------------
+parameter selection
+--------------------
+
+.. autofunction:: proclens.tools.selector.selector
+
+
+list partitioning
+-----------------
+
+.. autofunction:: proclens.tools.selector.partition
+
+
+safe divide
+-----------
+
+.. autofunction:: proclens.tools.selector.safedivide
+
+Visualization
+=============
+
+corner plot
+-----------
 
 .. autofunction:: proclens.tools.visual.corner
 
