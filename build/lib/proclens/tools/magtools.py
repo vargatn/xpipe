@@ -1,6 +1,4 @@
-"""
-Apparent to Absolute magnitude conversion
-"""
+
 
 import numpy as np
 import astropy.cosmology
@@ -44,7 +42,7 @@ class AbsMagConverter(object):
                                               # is on when specifying the template
             }
 
-            aconv = AbsMagConverter(cosmo=astropy.cosmology.FlatLambdaCDM(H0=70, Om0=0.3))
+            aconv = AbsMagConverter(cosmo=astropy.FlatLambdaCDM(H0=70, Om0=0.3))
             aconv.add_response(resp)
             aconv.add_template(templ, norm=True)
 

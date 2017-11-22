@@ -1,0 +1,6 @@
+numpy
+scipy
+pandas
+astropy
+fitsio
+kmeans_radec

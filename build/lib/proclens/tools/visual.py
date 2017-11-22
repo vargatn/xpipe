@@ -205,7 +205,7 @@ def kde_smoother_2d(pararr, xlim=None, ylim=None, num=100, pad=0.1):
 
 def corner(par_names, pars, par_edges, figsize=(8, 8), color='black', fig=None,
            axarr=None, mode="hist", cmap="gray_r", normed=True, fontsize=12,
-           tick_list=None, clevels=(0.68, 0.95), grid=True, weights=None, **kwargs):
+           tick_list=None, clevels=(0.68, 0.95), weights=None, **kwargs):
     """
     Creates *NICE* corner plot (check if pars have the righ orientation, perhaps use pars.T)
 

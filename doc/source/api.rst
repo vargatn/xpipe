@@ -1,27 +1,43 @@
 
-The proclens API reference
-==========================
-
 .. toctree::
    :maxdepth: 2
    :hidden:
 
-Some text goes here
-
-
-
-
-
 Python wrapper for xshear
-----------------------------
+============================
 
-blah
+Create xhsear-style lens catalog
+--------------------------------
+
+.. autofunction:: proclens.xhandle.ioshear.makecat
+
+Read (RA, DEC) positions for lenses
+-----------------------------------
+
+.. autofunction:: proclens.xhandle.ioshear.read_lens_pos
 
 
-Lensing profile manipulation
------------------------------
+Processing results from xshear
+===================================
 
-blah
+
+
+
+Read xshear output
+------------------
+
+.. autofunction:: proclens.xhandle.ioshear.read_single_bin
+
+
+.. autofunction:: proclens.xhandle.ioshear.read_multiple_bin
+
+
+.. autofunction:: proclens.xhandle.ioshear.xread
+
+
+.. autofunction:: proclens.xhandle.ioshear.xpatches
+
+
 
 
 Ancillary utilities

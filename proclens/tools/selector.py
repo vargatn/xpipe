@@ -1,4 +1,6 @@
-
+"""
+Parameter selection in N-Dimensions
+"""
 
 import numpy as np
 import itertools
@@ -16,13 +18,13 @@ def partition(lst, n):
         >>> lst
         array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
         17, 18, 19])
-        >>> sl.partition(lst, n=5)
+        >>> partition(lst, n=5)
         [array([0, 1, 2, 3]),
          array([4, 5, 6, 7]),
          array([ 8,  9, 10, 11]),
          array([12, 13, 14, 15]),
          array([16, 17, 18, 19])]
-        >>> sl.partition(lst, n=6)
+        >>> partition(lst, n=6)
         [array([0, 1, 2]),
          array([3, 4, 5, 6]),
          array([7, 8, 9]),

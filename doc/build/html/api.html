@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>The proclens API reference &mdash; proclens 0.1 documentation</title>
+  <title>Python wrapper for xshear &mdash; proclens 0.1 documentation</title>
   
 
   
@@ -94,9 +94,13 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">F.A.Q</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">The proclens API reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#python-wrapper-for-xshear">Python wrapper for xshear</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#lensing-profile-manipulation">Lensing profile manipulation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python wrapper for xshear</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#create-xhsear-style-lens-catalog">Create xhsear-style lens catalog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#read-ra-dec-positions-for-lenses">Read (RA, DEC) positions for lenses</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#processing-results-from-xshear">Processing results from xshear</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#read-xshear-output">Read xshear output</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#ancillary-utilities">Ancillary utilities</a><ul>
@@ -155,7 +159,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>The proclens API reference</li>
+      <li>Python wrapper for xshear</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -174,18 +178,181 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="the-proclens-api-reference">
-<h1>The proclens API reference<a class="headerlink" href="#the-proclens-api-reference" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
+  <div class="toctree-wrapper compound">
 </div>
-<p>Some text goes here</p>
 <div class="section" id="python-wrapper-for-xshear">
-<h2>Python wrapper for xshear<a class="headerlink" href="#python-wrapper-for-xshear" title="Permalink to this headline">¶</a></h2>
-<p>blah</p>
+<h1>Python wrapper for xshear<a class="headerlink" href="#python-wrapper-for-xshear" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="create-xhsear-style-lens-catalog">
+<h2>Create xhsear-style lens catalog<a class="headerlink" href="#create-xhsear-style-lens-catalog" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.xhandle.ioshear.makecat">
+<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">makecat</code><span class="sig-paren">(</span><em>fname</em>, <em>mid</em>, <em>ra</em>, <em>dec</em>, <em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#makecat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.makecat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write an xshear style lens catalog to file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fname</strong> (<em>str</em>) – full path to file</li>
+<li><strong>mid</strong> (<em>np.array – int</em>) – ID of object</li>
+<li><strong>ra</strong> (<em>np.array</em>) – RA</li>
+<li><strong>dec</strong> (<em>np.array</em>) – DEC</li>
+<li><strong>z</strong> (<em>np.array</em>) – redshift</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
-<div class="section" id="lensing-profile-manipulation">
-<h2>Lensing profile manipulation<a class="headerlink" href="#lensing-profile-manipulation" title="Permalink to this headline">¶</a></h2>
-<p>blah</p>
+<div class="section" id="read-ra-dec-positions-for-lenses">
+<h2>Read (RA, DEC) positions for lenses<a class="headerlink" href="#read-ra-dec-positions-for-lenses" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.xhandle.ioshear.read_lens_pos">
+<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">read_lens_pos</code><span class="sig-paren">(</span><em>fnames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#read_lens_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.read_lens_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads postions based on the list of filenames passed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str</em>) – full paths to output files</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">ra, dec of lenses</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="processing-results-from-xshear">
+<h1>Processing results from xshear<a class="headerlink" href="#processing-results-from-xshear" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="read-xshear-output">
+<h2>Read xshear output<a class="headerlink" href="#read-xshear-output" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.xhandle.ioshear.read_single_bin">
+<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">read_single_bin</code><span class="sig-paren">(</span><em>fname</em>, <em>metaname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#read_single_bin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.read_single_bin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads and interprets xshear output from a single file</p>
+<p><code class="code docutils literal"><span class="pre">info</span></code> and <code class="code docutils literal"><span class="pre">data</span></code> are passed on from <strong>xread</strong>,
+while <code class="code docutils literal"><span class="pre">sheared_data</span></code> is just a list of <code class="code docutils literal"><span class="pre">data</span></code> tables corresponding to
+metacalibration sheared results.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> (<em>str</em>) – full path to output file</li>
+<li><strong>metaname</strong> (<em>str</em>) – full base path to sheared output file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code>, <code class="code docutils literal"><span class="pre">sheared_data</span></code></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray, np.ndarray, list of np.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="proclens.xhandle.ioshear.read_multiple_bin">
+<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">read_multiple_bin</code><span class="sig-paren">(</span><em>fnames</em>, <em>metanames=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#read_multiple_bin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.read_multiple_bin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads and interprets xshear output from many smaller files</p>
+<p><code class="code docutils literal"><span class="pre">info</span></code> and <code class="code docutils literal"><span class="pre">data</span></code> are passed on from <strong>xread</strong>,
+while <code class="code docutils literal"><span class="pre">sheared_data</span></code> is just a list of <code class="code docutils literal"><span class="pre">data</span></code> tables corresponding to
+metacalibration sheared results.</p>
+<p><code class="code docutils literal"><span class="pre">chunk_ids</span></code> assigned to each row to indicate which chunk it originally came from</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> (<em>str</em>) – full path to output file</li>
+<li><strong>metaname</strong> (<em>str</em>) – full base path to sheared output file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code>, <code class="code docutils literal"><span class="pre">sheared_data</span></code>, <code class="code docutils literal"><span class="pre">chunk_ids</span></code></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray, np.ndarray, list of np.ndarray, np.array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="proclens.xhandle.ioshear.xread">
+<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">xread</code><span class="sig-paren">(</span><em>xdata</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#xread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.xread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reader for xshear output if style is set as <cite>both</cite></p>
+<p>Each row corresponds to the lensing profile of a single lens, average profiles require additional stacking</p>
+<p>The output data is divided into two tables:</p>
+<blockquote>
+<div><p><code class="code docutils literal"><span class="pre">info</span></code> contains values relevant for the lens in general. It has a shape <code class="code docutils literal"><span class="pre">(N_lens,</span> <span class="pre">3)</span></code>.
+the columns are:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">index</span><span class="p">:</span>      <span class="n">index</span> <span class="kn">from</span> <span class="nn">lens</span> <span class="n">catalog</span>
+<span class="n">weight_tot</span><span class="p">:</span> <span class="nb">sum</span> <span class="n">of</span> <span class="nb">all</span> <span class="n">weights</span> <span class="k">for</span> <span class="nb">all</span> <span class="n">source</span> <span class="n">pairs</span> <span class="ow">in</span> <span class="nb">all</span> <span class="n">radial</span> <span class="n">bins</span>
+<span class="n">totpairs</span><span class="p">:</span>   <span class="n">total</span> <span class="n">pairs</span> <span class="n">used</span>
+</pre></div>
+</div>
+<p><code class="code docutils literal"><span class="pre">data</span></code> contains values for individual radial bins. It has a shape <code class="code docutils literal"><span class="pre">(12,</span> <span class="pre">N_lens,</span> <span class="pre">N_rbin)</span></code>,
+the columns are:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">npair_i</span><span class="p">:</span>        <span class="n">number</span> <span class="n">of</span> <span class="n">pairs</span> <span class="ow">in</span> <span class="n">radial</span> <span class="nb">bin</span> <span class="n">i</span>
+<span class="n">rsum_i</span><span class="p">:</span>         <span class="nb">sum</span> <span class="n">of</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">sigma_crit_inv</span> <span class="o">*</span> <span class="n">r</span>
+<span class="n">wsum_i</span><span class="p">:</span>         <span class="nb">sum</span> <span class="n">of</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">sigma_crit_inv</span>
+<span class="n">ssum_i</span><span class="p">:</span>         <span class="nb">sum</span> <span class="n">of</span> <span class="n">weights</span>
+<span class="n">dsum_i</span><span class="p">:</span>         <span class="nb">sum</span> <span class="n">of</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">g_t</span>
+<span class="n">osum_i</span><span class="p">:</span>         <span class="nb">sum</span> <span class="n">of</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">g_x</span>
+<span class="n">dsensum_w_i</span><span class="p">:</span>    <span class="nb">sum</span> <span class="n">of</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">sigma_crit_inv</span> <span class="o">*</span> <span class="n">gsens_t</span>
+<span class="n">osensum_w_i</span><span class="p">:</span>    <span class="nb">sum</span> <span class="n">of</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">sigma_crit_inv</span> <span class="o">*</span> <span class="n">gsens_x</span>
+<span class="n">dsensum_s_i</span><span class="p">:</span>    <span class="nb">sum</span> <span class="n">of</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">gsens_t</span>
+<span class="n">osensum_s_i</span><span class="p">:</span>    <span class="nb">sum</span> <span class="n">of</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">gsens_x</span>
+<span class="n">mean_e1</span><span class="p">:</span>        <span class="nb">sum</span> <span class="n">of</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">g_1</span>
+<span class="n">mean_e2</span><span class="p">:</span>        <span class="nb">sum</span> <span class="n">of</span> <span class="n">weights</span> <span class="o">*</span> <span class="n">g_2</span>
+</pre></div>
+</div>
+<p>In each case, _i means radial bin i</p>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>xdata</strong> (<em>np.array</em>) – raw xshear output loaded to np array</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code>, column description dictionary</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray, np.ndarray, <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="proclens.xhandle.ioshear.xpatches">
+<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">xpatches</code><span class="sig-paren">(</span><em>raw_chunks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#xpatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.xpatches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes many smaller xshear output files via <strong>xread</strong></p>
+<p>Outputs a concatenated array of the many smaller files, along with a
+<code class="code docutils literal"><span class="pre">chunk_ids</span></code> assigned to each row to indicate which chunk it originally came from</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>raw_chunks</strong> (<em>list</em>) – list of raw xshear outputs loaded to np array</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code>, chunk_ids</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray, np.ndarray, np.array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="ancillary-utilities">
@@ -220,7 +387,7 @@
                                   <span class="c1"># is on when specifying the template</span>
 <span class="p">}</span>
 
-<span class="n">aconv</span> <span class="o">=</span> <span class="n">AbsMagConverter</span><span class="p">(</span><span class="n">cosmo</span><span class="o">=</span><span class="n">astropy</span><span class="o">.</span><span class="n">FlatLambdaCDM</span><span class="p">(</span><span class="n">H0</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">Om0</span><span class="o">=</span><span class="mf">0.3</span><span class="p">))</span>
+<span class="n">aconv</span> <span class="o">=</span> <span class="n">AbsMagConverter</span><span class="p">(</span><span class="n">cosmo</span><span class="o">=</span><span class="n">astropy</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">FlatLambdaCDM</span><span class="p">(</span><span class="n">H0</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">Om0</span><span class="o">=</span><span class="mf">0.3</span><span class="p">))</span>
 <span class="n">aconv</span><span class="o">.</span><span class="n">add_response</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
 <span class="n">aconv</span><span class="o">.</span><span class="n">add_template</span><span class="p">(</span><span class="n">templ</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -475,13 +642,13 @@ parameter limits expanded from sequence to list of tuples</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span>
 <span class="go">array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,</span>
 <span class="go">17, 18, 19])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sl</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">partition</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 <span class="go">[array([0, 1, 2, 3]),</span>
 <span class="go"> array([4, 5, 6, 7]),</span>
 <span class="go"> array([ 8,  9, 10, 11]),</span>
 <span class="go"> array([12, 13, 14, 15]),</span>
 <span class="go"> array([16, 17, 18, 19])]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sl</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">partition</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
 <span class="go">[array([0, 1, 2]),</span>
 <span class="go"> array([3, 4, 5, 6]),</span>
 <span class="go"> array([7, 8, 9]),</span>
@@ -554,7 +721,7 @@ roughly balanced chunks</p>
 <h2>corner plot<a class="headerlink" href="#corner-plot" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="proclens.tools.visual.corner">
-<code class="descclassname">proclens.tools.visual.</code><code class="descname">corner</code><span class="sig-paren">(</span><em>par_names</em>, <em>pars</em>, <em>par_edges</em>, <em>figsize=(8</em>, <em>8)</em>, <em>color='black'</em>, <em>fig=None</em>, <em>axarr=None</em>, <em>mode='hist'</em>, <em>cmap='gray_r'</em>, <em>normed=True</em>, <em>fontsize=12</em>, <em>tick_list=None</em>, <em>clevels=(0.68</em>, <em>0.95)</em>, <em>weights=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/visual.html#corner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.visual.corner" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">proclens.tools.visual.</code><code class="descname">corner</code><span class="sig-paren">(</span><em>par_names</em>, <em>pars</em>, <em>par_edges</em>, <em>figsize=(8</em>, <em>8)</em>, <em>color='black'</em>, <em>fig=None</em>, <em>axarr=None</em>, <em>mode='hist'</em>, <em>cmap='gray_r'</em>, <em>normed=True</em>, <em>fontsize=12</em>, <em>tick_list=None</em>, <em>clevels=(0.68</em>, <em>0.95)</em>, <em>grid=True</em>, <em>weights=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/visual.html#corner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.visual.corner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates <em>NICE</em> corner plot (check if pars have the righ orientation, perhaps use pars.T)</p>
 <p class="rubric">Example</p>
 <p>Simple 2D gaussian with marginals and joint distribution:</p>
