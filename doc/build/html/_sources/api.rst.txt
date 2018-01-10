@@ -21,16 +21,19 @@ Processing results from xshear
 ===================================
 
 
-
-
-Read xshear output
-------------------
+Read xshear output from single file
+-----------------------------------
 
 .. autofunction:: proclens.xhandle.ioshear.read_single_bin
 
+Read xshear output from multiple files
+--------------------------------------
 
 .. autofunction:: proclens.xhandle.ioshear.read_multiple_bin
 
+
+Base xshear readers
+--------------------------------------
 
 .. autofunction:: proclens.xhandle.ioshear.xread
 
@@ -38,17 +41,52 @@ Read xshear output
 .. autofunction:: proclens.xhandle.ioshear.xpatches
 
 
+Logarithmic bin properties
+--------------------------
+
+.. autofunction:: proclens.xhandle.shearops.redges
+
+
+Jackknife label assignment
+--------------------------
+
+.. autofunction:: proclens.xhandle.shearops.assign_jk_labels
+
+
+Stacked Profile Container
+-------------------------
+
+.. autoclass:: proclens.xhandle.shearops.StackedProfileContainer
+
+    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.prof_maker
+
+    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.composite
+
+    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.multiply
+
+    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.drop_data
+
+    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.to_sub_dict
+
+    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.from_sub_dict
+
+Jackknife Covariance estimate from multiple lensing profiles
+------------------------------------------------------------
+
+.. autofunction:: proclens.xhandle.shearops.stacked_pcov
+
 
 
 Ancillary utilities
 =====================
 
+
 Observed to absolute magnitude conversion
 ----------------------------------------------------------
 
 .. autoclass:: proclens.tools.magtools.AbsMagConverter
-    :members:
 
+.. au
 
 FITS to pandas conversion
 --------------------------

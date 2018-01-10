@@ -100,7 +100,13 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#processing-results-from-xshear">Processing results from xshear</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#read-xshear-output">Read xshear output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#read-xshear-output-from-single-file">Read xshear output from single file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#read-xshear-output-from-multiple-files">Read xshear output from multiple files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#base-xshear-readers">Base xshear readers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logarithmic-bin-properties">Logarithmic bin properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#jackknife-label-assignment">Jackknife label assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stacked-profile-container">Stacked Profile Container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#jackknife-covariance-estimate-from-multiple-lensing-profiles">Jackknife Covariance estimate from multiple lensing profiles</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#ancillary-utilities">Ancillary utilities</a><ul>
@@ -230,8 +236,8 @@
 </div>
 <div class="section" id="processing-results-from-xshear">
 <h1>Processing results from xshear<a class="headerlink" href="#processing-results-from-xshear" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="read-xshear-output">
-<h2>Read xshear output<a class="headerlink" href="#read-xshear-output" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="read-xshear-output-from-single-file">
+<h2>Read xshear output from single file<a class="headerlink" href="#read-xshear-output-from-single-file" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="proclens.xhandle.ioshear.read_single_bin">
 <code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">read_single_bin</code><span class="sig-paren">(</span><em>fname</em>, <em>metaname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#read_single_bin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.read_single_bin" title="Permalink to this definition">¶</a></dt>
@@ -259,6 +265,9 @@ metacalibration sheared results.</p>
 </table>
 </dd></dl>
 
+</div>
+<div class="section" id="read-xshear-output-from-multiple-files">
+<h2>Read xshear output from multiple files<a class="headerlink" href="#read-xshear-output-from-multiple-files" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="proclens.xhandle.ioshear.read_multiple_bin">
 <code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">read_multiple_bin</code><span class="sig-paren">(</span><em>fnames</em>, <em>metanames=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#read_multiple_bin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.read_multiple_bin" title="Permalink to this definition">¶</a></dt>
@@ -287,6 +296,9 @@ metacalibration sheared results.</p>
 </table>
 </dd></dl>
 
+</div>
+<div class="section" id="base-xshear-readers">
+<h2>Base xshear readers<a class="headerlink" href="#base-xshear-readers" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="proclens.xhandle.ioshear.xread">
 <code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">xread</code><span class="sig-paren">(</span><em>xdata</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#xread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.xread" title="Permalink to this definition">¶</a></dt>
@@ -345,9 +357,269 @@ the columns are:</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>raw_chunks</strong> (<em>list</em>) – list of raw xshear outputs loaded to np array</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code>, chunk_ids</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code>, <code class="code docutils literal"><span class="pre">chunk_ids</span></code></td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray, np.ndarray, np.array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="logarithmic-bin-properties">
+<h2>Logarithmic bin properties<a class="headerlink" href="#logarithmic-bin-properties" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.xhandle.shearops.redges">
+<code class="descclassname">proclens.xhandle.shearops.</code><code class="descname">redges</code><span class="sig-paren">(</span><em>rmin</em>, <em>rmax</em>, <em>nbin</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#redges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.redges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates nominal edges and centers for logarithmic radial bins(base10 logarithm)</p>
+<p>Edges and areas are exact, “center” values are estimated as CIRCUMFERENCE weighted
+mean radius</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rmin</strong> (<em>float</em>) – inner edge</li>
+<li><strong>rmax</strong> (<em>float</em>) – outer edge</li>
+<li><strong>nbin</strong> (<em>int</em>) – number of bins</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">centers, edges, areas</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.array, np.array, np.array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="jackknife-label-assignment">
+<h2>Jackknife label assignment<a class="headerlink" href="#jackknife-label-assignment" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.xhandle.shearops.assign_jk_labels">
+<code class="descclassname">proclens.xhandle.shearops.</code><code class="descname">assign_jk_labels</code><span class="sig-paren">(</span><em>pos</em>, <em>centers</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#assign_jk_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.assign_jk_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assigns JackKnife labels to 2D points on the sky via spherical k-means</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pos</strong> (<em>np.ndarray</em>) – positions of points in (RA, DEC)</li>
+<li><strong>centers</strong> (<em>int or np.ndarray</em>) – Number of JK centers to use, or the (RA, DEC) coordinates of the centers</li>
+<li><strong>verbose</strong> (<em>bool</em>) – verbose flag to pass to <strong>kmeans_radec</strong></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">JK-labels, JK-centers</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.array, np.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="stacked-profile-container">
+<h2>Stacked Profile Container<a class="headerlink" href="#stacked-profile-container" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="proclens.xhandle.shearops.StackedProfileContainer">
+<em class="property">class </em><code class="descclassname">proclens.xhandle.shearops.</code><code class="descname">StackedProfileContainer</code><span class="sig-paren">(</span><em>info</em>, <em>data</em>, <em>labels</em>, <em>ncen</em>, <em>lcname=None</em>, <em>metadata=None</em>, <em>metatags=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object Oriented interface for stacked shear and <img class="math" src="_images/math/9397aece1d243efa28d3c70fa88edd48f9591b8a.png" alt="\Delta\Sigma"/> calculated via <strong>xshear</strong></p>
+<p><strong>Features</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li>Jackknife based covariance estimation</li>
+<li>Calculate <em>shear</em>, <em>DeltaSigma</em>, and other averaged quantities</li>
+<li>Simple arithmetic with shear profiles: <code class="code docutils literal"><span class="pre">+,</span> <span class="pre">-,</span> <span class="pre">*,</span> <span class="pre">/</span></code></li>
+<li>Integration with <em>Metacalibration</em> style selection responses</li>
+</ul>
+</div></blockquote>
+<p><strong>Overview</strong></p>
+<p>The lensing profile is calculated in two stages:</p>
+<blockquote>
+<div><ul class="simple">
+<li>First, for each Jackknife-region defined by the <code class="code docutils literal"><span class="pre">labels</span></code>
+(that is for all-except-one region) the lensing profile is calculated, and stored in
+<code class="code docutils literal"><span class="pre">self.*_sub</span></code> (These are the JK-subprofiles).</li>
+<li>Using these JK-subprofiles, the mean lensing profile and the corresponding covariance
+is calculated via blockwise omitt-one Jackknife resampling.</li>
+</ul>
+</div></blockquote>
+<p>In practice both of these steps are performed when calling <strong>self.prof_maker()</strong>, and the results are
+stored in the below varaiables. The default quantity calculated is the <strong>DeltaSigma</strong>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">rr</span><span class="p">:</span>        <span class="n">radial</span> <span class="n">centers</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">:</span>       <span class="n">E</span><span class="o">-</span><span class="n">mode</span> <span class="n">lensing</span> <span class="n">signal</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">dst_err</span><span class="p">:</span>   <span class="n">error</span> <span class="k">for</span> <span class="n">E</span><span class="o">-</span><span class="n">mode</span> <span class="n">lensing</span> <span class="n">signal</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">dst_cov</span><span class="p">:</span>   <span class="n">covariance</span> <span class="k">for</span> <span class="n">E</span><span class="o">-</span><span class="n">mode</span> <span class="n">lensing</span> <span class="n">signal</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">:</span>       <span class="n">B</span><span class="o">-</span><span class="n">mode</span> <span class="n">lensing</span> <span class="n">signal</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">dst_err</span><span class="p">:</span>   <span class="n">error</span> <span class="k">for</span> <span class="n">B</span><span class="o">-</span><span class="n">mode</span> <span class="n">lensing</span> <span class="n">signal</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">dst_cov</span><span class="p">:</span>   <span class="n">covariance</span> <span class="k">for</span> <span class="n">B</span><span class="o">-</span><span class="n">mode</span>  <span class="n">lensing</span> <span class="n">signal</span>
+</pre></div>
+</div>
+<p>A benefit of this two-step method, is that it allows for the quick calculation of errors on the
+<strong>differences</strong>, <strong>ratios</strong> and other transformations of shear profiles.</p>
+<p>In particular, the <strong>self.composite</strong> function allows four basic operations <code class="code docutils literal"><span class="pre">+,</span> <span class="pre">-,</span> <span class="pre">*,</span> <span class="pre">/</span></code>
+between shear profiles, while the <strong>self.multiply</strong> function allows <code class="code docutils literal"><span class="pre">\*,</span> <span class="pre">/</span></code>
+with integers or 1-D arrays (in which case each element is a value for a lens)</p>
+<blockquote>
+<div><p>E.g to calculate <img class="math" src="_images/math/5c97037ab92df40960474e23a12931fbed9b2ad0.png" alt="\Delta\Sigma_3 = \Delta\Sigma_2 - \Delta\Sigma_1"/>,
+we only need to compute the differences of JK-subprofiles and
+then re-compute the JK-mean, and JK-covariance.</p>
+<p>In practice the above operation is achieved by:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># the operation is performed in-place, hence the deepcopy</span>
+<span class="n">prof3</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">prof2</span><span class="p">)</span>
+<span class="n">prof3</span><span class="o">.</span><span class="n">composite</span><span class="p">(</span><span class="n">prof1</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Changing the physical quantity computed by <strong>self.prof_maker()</strong> is possibly by modifying the
+columns used by the stacking algorithm. The default values used for <strong>DeltaSigma</strong> are:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># default values for stacked DeltaSigma</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">dst_nom</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">dsx_nom</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">dst_denom</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">dsx_denom</span> <span class="o">=</span> <span class="mi">7</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">e1_nom</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">e2_nom</span> <span class="o">=</span> <span class="mi">11</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">meta_denom</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">meta_prefac</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>To calculate <strong>shear</strong> one would need to change the above to:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">dst_denom</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">dsx_denom</span> <span class="o">=</span> <span class="mi">9</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">meta_denom</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">meta_prefac</span> <span class="o">=</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Further information on the column positions are found in the <strong>xread</strong> documentation…</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>info</strong> (<em>np.ndarray</em>) – <code class="code docutils literal"><span class="pre">info</span></code> table from <strong>xread</strong></li>
+<li><strong>data</strong> (<em>np.ndarray</em>) – <code class="code docutils literal"><span class="pre">data</span></code> table from <strong>xread</strong></li>
+<li><strong>labels</strong> (<em>np.array</em>) – JK-region labels</li>
+<li><strong>ncen</strong> (<em>int</em>) – number of JK regions in total</li>
+<li><strong>lcname</strong> (<em>str</em>) – tag string</li>
+<li><strong>metadata</strong> (<em>list of np.ndarray</em>) – sheared versions of <code class="code docutils literal"><span class="pre">data</span></code></li>
+<li><strong>metatags</strong> (<em>list of str</em>) – sheared tags</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="proclens.xhandle.shearops.StackedProfileContainer.prof_maker">
+<code class="descname">prof_maker</code><span class="sig-paren">(</span><em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.prof_maker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.prof_maker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Jackknife estimate of on stacked profile and on the corresponding covariance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>weights</strong> (<em>np.array</em>) – weight for each entry in the lens catalog</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="proclens.xhandle.shearops.StackedProfileContainer.composite">
+<code class="descname">composite</code><span class="sig-paren">(</span><em>other</em>, <em>operation='-'</em>, <em>keep_rr=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.composite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.composite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the JK estimate on the operation applied to the two profiles</p>
+<p><strong>Possible Operations:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li>“-“: self - other</li>
+<li>“+”: self + other</li>
+<li>“*”: self * other</li>
+<li>“/”: self / other</li>
+</ul>
+</div></blockquote>
+<p>The results is updated to self. Use deepcopy to obtain
+copies of the object for storing the previous state.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>other</strong> (<em>StackedProfileContainer</em>) – an other profile…</li>
+<li><strong>operation</strong> (<em>str</em>) – string specifying what to do…</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="proclens.xhandle.shearops.StackedProfileContainer.multiply">
+<code class="descname">multiply</code><span class="sig-paren">(</span><em>val</em>, <em>keep_rr=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.multiply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.multiply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the JK estimate on profile times the specified “val”,</p>
+<p>Operation performed in-place.
+Use deepcopy to obtain copies of the object for storing the previous state.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>val</strong> (<em>float or np.array</em>) – value to multiply by</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="proclens.xhandle.shearops.StackedProfileContainer.drop_data">
+<code class="descname">drop_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.drop_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.drop_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>resets the <code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code> and <code class="code docutils literal"><span class="pre">labels</span></code> containers to <code class="code docutils literal"><span class="pre">None</span></code></p>
+<p>This reduces the size of the object in memory, but cannot re-stack the lenses anymore.
+Leaves the profile, JK-subprofiles and ancillary quantities unaffected</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="proclens.xhandle.shearops.StackedProfileContainer.to_sub_dict">
+<code class="descname">to_sub_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.to_sub_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.to_sub_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the calculated profile and ancillary information to a dictionary</p>
+<p>The resulting dict does not contain the base data, only the profile, the JK-subprofiles and
+ancillary quantities</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="proclens.xhandle.shearops.StackedProfileContainer.from_sub_dict">
+<em class="property">classmethod </em><code class="descname">from_sub_dict</code><span class="sig-paren">(</span><em>sub_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.from_sub_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.from_sub_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconstructs the object from a dictionary</p>
+<p>The resulting object does not contain the base data, only the profile, JK-subprofiles and
+ancillary quantities</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="jackknife-covariance-estimate-from-multiple-lensing-profiles">
+<h2>Jackknife Covariance estimate from multiple lensing profiles<a class="headerlink" href="#jackknife-covariance-estimate-from-multiple-lensing-profiles" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.xhandle.shearops.stacked_pcov">
+<code class="descclassname">proclens.xhandle.shearops.</code><code class="descname">stacked_pcov</code><span class="sig-paren">(</span><em>plist</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#stacked_pcov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.stacked_pcov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Covariance between a list of profiles</p>
+<p>Only elements where both profile has at least 1 sources are considered, the rest is filled with placeholder
+values (-9999.0 by default).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>plist</strong> (<em>list of StackedProfileContainer objects</em>) – profiles across whiche the covarainces are to be calcualted</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">cov (E-mode), cov (B-mode)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.array, np.array</td>
 </tr>
 </tbody>
 </table>
@@ -410,117 +682,6 @@ the columns are:</p>
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="proclens.tools.magtools.AbsMagConverter.add_response">
-<code class="descname">add_response</code><span class="sig-paren">(</span><em>rdict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/magtools.html#AbsMagConverter.add_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.magtools.AbsMagConverter.add_response" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads response curves for different bands</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="proclens.tools.magtools.AbsMagConverter.add_template">
-<code class="descname">add_template</code><span class="sig-paren">(</span><em>tdict</em>, <em>norm=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/magtools.html#AbsMagConverter.add_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.magtools.AbsMagConverter.add_template" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads SED template</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="proclens.tools.magtools.AbsMagConverter.build_tables">
-<code class="descname">build_tables</code><span class="sig-paren">(</span><em>zarr</em>, <em>z2=0.0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/magtools.html#AbsMagConverter.build_tables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.magtools.AbsMagConverter.build_tables" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a reference table for all the bands</p>
-<p>Loop throught all bands available and build a table for each
-then assemble this to a dict with other relevant info</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>zarr</strong> (<em>np.array</em>) – z values to use</li>
-<li><strong>z2</strong> (<em>float</em>) – observer redshift</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="proclens.tools.magtools.AbsMagConverter.convert">
-<code class="descname">convert</code><span class="sig-paren">(</span><em>mag</em>, <em>z</em>, <em>band</em>, <em>z2=0.0</em>, <em>num=100</em>, <em>z_0='auto'</em>, <em>z_1='auto'</em>, <em>use_tables=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/magtools.html#AbsMagConverter.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.magtools.AbsMagConverter.convert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts apparent magnitudes to absolute</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>mag</strong> (<em>np.array</em>) – observed magnitudes</li>
-<li><strong>z</strong> (<em>np.array</em>) – redsift of objects</li>
-<li><strong>band</strong> (<em>str</em>) – name of band</li>
-<li><strong>z2</strong> (<em>float</em>) – redshift of observed</li>
-<li><strong>use_tables</strong> (<em>bool</em>) – try to use pre calculated table for the band</li>
-<li><strong>num</strong> (<em>int</em>) – number of points in reference tables (for auto z array)</li>
-<li><strong>z_0</strong> (<em>float</em>) – start of redshift table</li>
-<li><strong>z_1</strong> (<em>float</em>) – end of redshift table</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">absolute magnitudes</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.array</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="proclens.tools.magtools.AbsMagConverter.dist_modulus">
-<code class="descname">dist_modulus</code><span class="sig-paren">(</span><em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/magtools.html#AbsMagConverter.dist_modulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.magtools.AbsMagConverter.dist_modulus" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates distance modulus for redshift z</p>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="proclens.tools.magtools.AbsMagConverter.from_table">
-<em class="property">classmethod </em><code class="descname">from_table</code><span class="sig-paren">(</span><em>table</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/magtools.html#AbsMagConverter.from_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.magtools.AbsMagConverter.from_table" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads class instance using a pre-calculated table for each band</p>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="proclens.tools.magtools.AbsMagConverter.from_template">
-<em class="property">classmethod </em><code class="descname">from_template</code><span class="sig-paren">(</span><em>template</em>, <em>response</em>, <em>cosmo='default'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/magtools.html#AbsMagConverter.from_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.magtools.AbsMagConverter.from_template" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads class instance using a particular template and response</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="proclens.tools.magtools.AbsMagConverter.kcorrect">
-<code class="descname">kcorrect</code><span class="sig-paren">(</span><em>z</em>, <em>band</em>, <em>z2=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/magtools.html#AbsMagConverter.kcorrect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.magtools.AbsMagConverter.kcorrect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates K-correction from band –&gt; band</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>z</strong> (<em>float or np.array</em>) – redshifts</li>
-<li><strong>band</strong> (<em>str</em>) – One of the available bands</li>
-<li><strong>z2</strong> (<em>float</em>) – observer’s redshift</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">k-korrection</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a> or np.array</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="proclens.tools.magtools.AbsMagConverter.save_tables">
-<code class="descname">save_tables</code><span class="sig-paren">(</span><em>tname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/magtools.html#AbsMagConverter.save_tables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.magtools.AbsMagConverter.save_tables" title="Permalink to this definition">¶</a></dt>
-<dd><p>saves table dict to pickle</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>

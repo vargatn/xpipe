@@ -220,6 +220,9 @@
     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
         <span class="n">pos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">pos</span></div>
 
 
@@ -336,7 +339,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    np.ndarray, np.ndarray, np.array</span>
-<span class="sd">        :code:`info`, :code:`data`, chunk_ids</span>
+<span class="sd">        :code:`info`, :code:`data`, :code:`chunk_ids`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">infos</span> <span class="o">=</span> <span class="p">[]</span>

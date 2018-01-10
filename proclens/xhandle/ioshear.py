@@ -56,6 +56,9 @@ def read_lens_pos(fnames):
     for fname in fnames:
         tmp = np.loadtxt(fname)
         pos.append(tmp[:, 1:3])
+
+    pos = np.vstack(pos)
+
     return pos
 
 
