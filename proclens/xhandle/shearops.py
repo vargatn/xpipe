@@ -403,6 +403,9 @@ class StackedProfileContainer(object):
             ww = self.w[ind, np.newaxis]
             wsum = np.sum(self.w[ind])
 
+            # TODO update redshift columns
+            # TODO log responses
+
             Rs = np.zeros(len(cind))
             if self.ismeta:
                 val1parr = (np.sum(self.metadata[0][self.e1_nom, ind][:, cind] * ww, axis=0) /

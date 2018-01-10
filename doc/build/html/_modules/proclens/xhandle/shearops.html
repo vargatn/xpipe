@@ -1,0 +1,948 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>proclens.xhandle.shearops &mdash; proclens 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="proclens 0.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> proclens
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">F.A.Q</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">Python wrapper for xshear</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html#processing-results-from-xshear">Processing results from xshear</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html#ancillary-utilities">Ancillary utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html#visualization">Visualization</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">proclens</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>proclens.xhandle.shearops</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for proclens.xhandle.shearops</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">kmeans_radec</span> <span class="k">as</span> <span class="nn">krd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="n">BADVAL</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9999.0</span>
+
+
+<span class="k">def</span> <span class="nf">_get_nbin</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;obtains number of radial bins from **xread** output&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+
+
+<div class="viewcode-block" id="redges"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.redges">[docs]</a><span class="k">def</span> <span class="nf">redges</span><span class="p">(</span><span class="n">rmin</span><span class="p">,</span> <span class="n">rmax</span><span class="p">,</span> <span class="n">nbin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates nominal edges and centers for logarithmic radial bins(base10 logarithm)</span>
+
+<span class="sd">    Edges and areas are exact, &quot;center&quot; values are estimated as CIRCUMFERENCE weighted</span>
+<span class="sd">    mean radius</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rmin : float</span>
+<span class="sd">        inner edge</span>
+<span class="sd">    rmax : float</span>
+<span class="sd">        outer edge</span>
+<span class="sd">    nbin : int</span>
+<span class="sd">        number of bins</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array, np.array, np.array</span>
+<span class="sd">        centers, edges, areas</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">rmin</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">rmax</span><span class="p">),</span> <span class="n">nbin</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">cens</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mf">3.</span> <span class="o">-</span> <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">**</span> <span class="mf">3.</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.</span> <span class="o">/</span> <span class="mf">3.</span> <span class="o">/</span>
+                     <span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mf">2.</span> <span class="o">-</span> <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">**</span> <span class="mf">2.</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])])</span>
+
+    <span class="n">areas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mf">2.</span> <span class="o">-</span> <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">**</span> <span class="mf">2.</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])])</span>
+
+    <span class="k">return</span> <span class="n">cens</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">areas</span></div>
+
+
+<div class="viewcode-block" id="assign_jk_labels"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.assign_jk_labels">[docs]</a><span class="k">def</span> <span class="nf">assign_jk_labels</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Assigns JackKnife labels to 2D points on the sky via spherical k-means</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pos : np.ndarray</span>
+<span class="sd">        positions of points in (RA, DEC)</span>
+<span class="sd">    centers : int or np.ndarray</span>
+<span class="sd">        Number of JK centers to use, or the (RA, DEC) coordinates of the centers</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        verbose flag to pass to **kmeans_radec**</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array, np.ndarray</span>
+<span class="sd">        JK-labels, JK-centers</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">iterable</span><span class="p">(</span><span class="n">centers</span><span class="p">):</span>  <span class="c1"># if centers is a number</span>
+        <span class="n">ncen</span> <span class="o">=</span> <span class="n">centers</span>
+        <span class="n">nsample</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">km</span> <span class="o">=</span> <span class="n">krd</span><span class="o">.</span><span class="n">kmeans_sample</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">ncen</span><span class="o">=</span><span class="n">ncen</span><span class="p">,</span>
+                                    <span class="n">nsample</span><span class="o">=</span><span class="n">nsample</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">km</span><span class="o">.</span><span class="n">converged</span><span class="p">:</span>
+            <span class="n">km</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># if centers is an array of RA, DEC pairs</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">centers</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>  <span class="c1"># shape should be (:, 2)</span>
+        <span class="n">km</span> <span class="o">=</span> <span class="n">krd</span><span class="o">.</span><span class="n">KMeans</span><span class="p">(</span><span class="n">centers</span><span class="p">)</span>
+
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">find_nearest</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">labels</span><span class="p">,</span> <span class="n">km</span><span class="o">.</span><span class="n">centers</span></div>
+
+
+
+<div class="viewcode-block" id="StackedProfileContainer"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.StackedProfileContainer">[docs]</a><span class="k">class</span> <span class="nc">StackedProfileContainer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">ncen</span><span class="p">,</span> <span class="n">lcname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metatags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Object Oriented interface for stacked shear and :math:`\\Delta\\Sigma` calculated via **xshear**</span>
+
+<span class="sd">        **Features**</span>
+
+<span class="sd">            * Jackknife based covariance estimation</span>
+
+<span class="sd">            * Calculate *shear*, *DeltaSigma*, and other averaged quantities</span>
+
+<span class="sd">            * Simple arithmetic with shear profiles: :code:`+, -, *, /`</span>
+
+<span class="sd">            * Integration with *Metacalibration* style selection responses</span>
+
+
+<span class="sd">        **Overview**</span>
+
+<span class="sd">        The lensing profile is calculated in two stages:</span>
+
+<span class="sd">            * First, for each Jackknife-region defined by the :code:`labels`</span>
+<span class="sd">              (that is for all-except-one region) the lensing profile is calculated, and stored in</span>
+<span class="sd">              :code:`self.*_sub` (These are the JK-subprofiles).</span>
+
+<span class="sd">            * Using these JK-subprofiles, the mean lensing profile and the corresponding covariance</span>
+<span class="sd">              is calculated via blockwise omitt-one Jackknife resampling.</span>
+
+<span class="sd">        In practice both of these steps are performed when calling **self.prof_maker()**, and the results are</span>
+<span class="sd">        stored in the below varaiables. The default quantity calculated is the **DeltaSigma**::</span>
+
+<span class="sd">            self.rr:        radial centers</span>
+<span class="sd">            self.dst:       E-mode lensing signal</span>
+<span class="sd">            self.dst_err:   error for E-mode lensing signal</span>
+<span class="sd">            self.dst_cov:   covariance for E-mode lensing signal</span>
+<span class="sd">            self.dst:       B-mode lensing signal</span>
+<span class="sd">            self.dst_err:   error for B-mode lensing signal</span>
+<span class="sd">            self.dst_cov:   covariance for B-mode  lensing signal</span>
+
+<span class="sd">        A benefit of this two-step method, is that it allows for the quick calculation of errors on the</span>
+<span class="sd">        **differences**, **ratios** and other transformations of shear profiles.</span>
+
+<span class="sd">        In particular, the **self.composite** function allows four basic operations :code:`+, -, *, /`</span>
+<span class="sd">        between shear profiles, while the **self.multiply** function allows :code:`\*, /`</span>
+<span class="sd">        with integers or 1-D arrays (in which case each element is a value for a lens)</span>
+
+<span class="sd">            E.g to calculate :math:`\\Delta\\Sigma_3 = \\Delta\\Sigma_2 - \\Delta\\Sigma_1`,</span>
+<span class="sd">            we only need to compute the differences of JK-subprofiles and</span>
+<span class="sd">            then re-compute the JK-mean, and JK-covariance.</span>
+
+<span class="sd">            In practice the above operation is achieved by::</span>
+
+<span class="sd">                # the operation is performed in-place, hence the deepcopy</span>
+<span class="sd">                prof3 = copy.deepcopy(prof2)</span>
+<span class="sd">                prof3.composite(prof1, operation=&quot;-&quot;)</span>
+
+<span class="sd">        Changing the physical quantity computed by **self.prof_maker()** is possibly by modifying the</span>
+<span class="sd">        columns used by the stacking algorithm. The default values used for **DeltaSigma** are::</span>
+
+<span class="sd">            # default values for stacked DeltaSigma</span>
+<span class="sd">            self.dst_nom = 4</span>
+<span class="sd">            self.dsx_nom = 5</span>
+<span class="sd">            self.dst_denom = 6</span>
+<span class="sd">            self.dsx_denom = 7</span>
+
+<span class="sd">            self.e1_nom = 10</span>
+<span class="sd">            self.e2_nom = 11</span>
+<span class="sd">            self.meta_denom = 3</span>
+<span class="sd">            self.meta_prefac = 2</span>
+
+<span class="sd">        To calculate **shear** one would need to change the above to::</span>
+
+<span class="sd">            self.dst_denom = 8</span>
+<span class="sd">            self.dsx_denom = 9</span>
+
+<span class="sd">            self.meta_denom = 3</span>
+<span class="sd">            self.meta_prefac = 3</span>
+
+<span class="sd">        Further information on the column positions are found in the **xread** documentation...</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        info : np.ndarray</span>
+<span class="sd">            :code:`info` table from **xread**</span>
+<span class="sd">        data : np.ndarray</span>
+<span class="sd">            :code:`data` table from **xread**</span>
+<span class="sd">        labels : np.array</span>
+<span class="sd">            JK-region labels</span>
+<span class="sd">        ncen : int</span>
+<span class="sd">            number of JK regions in total</span>
+<span class="sd">        lcname : str</span>
+<span class="sd">            tag string</span>
+<span class="sd">        metadata : list of np.ndarray</span>
+<span class="sd">            sheared versions of :code:`data`</span>
+<span class="sd">        metatags : list of str</span>
+<span class="sd">            sheared tags</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># indices to be used in the shear stacking</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_nom</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx_nom</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_denom</span> <span class="o">=</span> <span class="mi">6</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx_denom</span> <span class="o">=</span> <span class="mi">7</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">e1_nom</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e2_nom</span> <span class="o">=</span> <span class="mi">11</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta_denom</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta_prefac</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">snum_ind</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="c1"># input params saved</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lcname</span> <span class="o">=</span> <span class="n">lcname</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nbin</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nbin</span> <span class="o">=</span> <span class="n">_get_nbin</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+
+        <span class="c1"># Data needed for metacalibration corrections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metatags</span> <span class="o">=</span> <span class="n">metatags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ismeta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">metatags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncen</span> <span class="o">=</span> <span class="n">ncen</span>  <span class="c1"># number of centers</span>
+
+        <span class="c1"># containers for stacking parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># stacking weights</span>
+
+        <span class="c1"># containers for the Jackknife sampling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subcounts</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indexes</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">non_indexes</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasval</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wdata</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># containers for the resulting profile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span> <span class="o">*</span> <span class="n">BADVAL</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+
+        <span class="c1"># containers for the source number profile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snum0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snum_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snum_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">neff</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of entries with sources in any bin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasprofile</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasdata</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="StackedProfileContainer.from_sub_dict"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.StackedProfileContainer.from_sub_dict">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_sub_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sub_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reconstructs the object from a dictionary</span>
+
+<span class="sd">        The resulting object does not contain the base data, only the profile, JK-subprofiles and</span>
+<span class="sd">        ancillary quantities</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">spc</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;ncen&quot;</span><span class="p">],</span> <span class="n">lcname</span><span class="o">=</span><span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;lcname&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">sub_dict</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">spc</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">sub_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">spc</span><span class="o">.</span><span class="n">hasdata</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">spc</span></div>
+
+<div class="viewcode-block" id="StackedProfileContainer.to_sub_dict"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.StackedProfileContainer.to_sub_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_sub_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts the calculated profile and ancillary information to a dictionary</span>
+
+<span class="sd">        The resulting dict does not contain the base data, only the profile, the JK-subprofiles and</span>
+<span class="sd">        ancillary quantities</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">infodict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;lcname&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">lcname</span><span class="p">,</span>
+            <span class="s2">&quot;nbin&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span>
+            <span class="s2">&quot;num&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span><span class="p">,</span>
+            <span class="s2">&quot;ismeta&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ismeta</span><span class="p">,</span>
+            <span class="s2">&quot;ncen&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncen</span><span class="p">,</span>
+            <span class="s2">&quot;sub_labels&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span><span class="p">,</span>
+            <span class="s2">&quot;subcounts&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">subcounts</span><span class="p">,</span>
+            <span class="s2">&quot;indexes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexes</span><span class="p">,</span>
+            <span class="s2">&quot;non_indexes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">non_indexes</span><span class="p">,</span>
+            <span class="s2">&quot;hasval&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasval</span><span class="p">,</span>
+            <span class="s2">&quot;wdata&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">wdata</span><span class="p">,</span>
+            <span class="s2">&quot;dsx_sub&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">,</span>
+            <span class="s2">&quot;dst_sub&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">,</span>
+            <span class="s2">&quot;snum_sub&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">,</span>
+            <span class="s2">&quot;rr&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rr</span><span class="p">,</span>
+            <span class="s2">&quot;dst0&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst0</span><span class="p">,</span>
+            <span class="s2">&quot;dsx0&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsx0</span><span class="p">,</span>
+            <span class="s2">&quot;dst&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">,</span>
+            <span class="s2">&quot;dsx&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsx</span><span class="p">,</span>
+            <span class="s2">&quot;dst_cov&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_cov</span><span class="p">,</span>
+            <span class="s2">&quot;dst_err&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_err</span><span class="p">,</span>
+            <span class="s2">&quot;dsx_cov&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsx_cov</span><span class="p">,</span>
+            <span class="s2">&quot;dsx_err&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsx_err</span><span class="p">,</span>
+            <span class="s2">&quot;snum&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span>
+            <span class="s2">&quot;snum0&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum0</span><span class="p">,</span>
+            <span class="s2">&quot;snum_err&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum_err</span><span class="p">,</span>
+            <span class="s2">&quot;snum_cov&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum_cov</span><span class="p">,</span>
+            <span class="s2">&quot;neff&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">neff</span><span class="p">,</span>
+            <span class="s2">&quot;hasprofile&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasprofile</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">infodict</span></div>
+
+<div class="viewcode-block" id="StackedProfileContainer.drop_data"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.StackedProfileContainer.drop_data">[docs]</a>    <span class="k">def</span> <span class="nf">drop_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        resets the :code:`info`, :code:`data` and :code:`labels` containers to :code:`None`</span>
+
+<span class="sd">        This reduces the size of the object in memory, but cannot re-stack the lenses anymore.</span>
+<span class="sd">        Leaves the profile, JK-subprofiles and ancillary quantities unaffected</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasdata</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="k">def</span> <span class="nf">_reset_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keep_rr</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resets the profile container, while keeping the base data and JK-subprofiles&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_rr</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasprofile</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_setup_subpatches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Quick setup for JK-subpatches&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># indexes of clusters for subsample i</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">!=</span> <span class="n">ind</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span><span class="p">]</span>
+
+        <span class="c1"># indexes of clusters not in subsample i</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">non_indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">==</span> <span class="n">ind</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncen</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncen</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncen</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_rr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;calculating radial values for data points&quot;&quot;&quot;</span>
+        <span class="n">nzind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rr</span><span class="p">[</span><span class="n">nzind</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">nzind</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> \
+                         <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:,</span> <span class="n">nzind</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_neff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;calculates effective number of entries (lenses)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+
+
+    <span class="k">def</span> <span class="nf">_get_single_subcounts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">subcounts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                              <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexes</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">subcounts</span>
+
+    <span class="k">def</span> <span class="nf">_get_subcounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tmp_subcounts</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># processing main data</span>
+        <span class="n">subcount</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_single_subcounts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">tmp_subcounts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subcount</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ismeta</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metatags</span><span class="p">):</span>
+                <span class="n">subcount</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_single_subcounts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">tmp_subcounts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subcount</span><span class="p">)</span>
+        <span class="n">tmp_subcounts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="n">tmp_subcounts</span><span class="p">)</span>
+        <span class="n">subcounts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">tmp_subcounts</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">subcounts</span>
+
+    <span class="k">def</span> <span class="nf">_subprofiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates subprofiles for each patch&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">subcounts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subcounts</span><span class="p">()</span>
+        <span class="n">hasval</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subcounts</span><span class="p">]</span>
+
+        <span class="c1"># calculating jackknife subprofiles</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lab</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span><span class="p">):</span>
+            <span class="c1"># print i, lab</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">cind</span> <span class="o">=</span> <span class="n">hasval</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="n">ww</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+            <span class="n">wsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
+
+            <span class="n">Rs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cind</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ismeta</span><span class="p">:</span>
+                <span class="n">val1parr</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">e1_nom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_denom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+                <span class="n">val1marr</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">e1_nom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_denom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+                <span class="n">R11</span> <span class="o">=</span> <span class="p">(</span><span class="n">val1parr</span> <span class="o">-</span> <span class="n">val1marr</span><span class="p">)</span> <span class="o">/</span> <span class="mf">0.02</span>
+
+                <span class="n">val2parr</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">e2_nom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_denom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+                <span class="n">val2marr</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">e2_nom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_denom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+                <span class="n">R22</span> <span class="o">=</span> <span class="p">(</span><span class="n">val2parr</span> <span class="o">-</span> <span class="n">val2marr</span><span class="p">)</span> <span class="o">/</span> <span class="mf">0.02</span>
+                <span class="n">Rs</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">R11</span> <span class="o">+</span> <span class="n">R22</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_prefac</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">dsum_jack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dst_nom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">dsum_w_jack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dst_denom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">cind</span><span class="p">,</span> <span class="n">lab</span><span class="p">]</span> <span class="o">=</span> <span class="n">dsum_jack</span> <span class="o">/</span> <span class="p">(</span><span class="n">dsum_w_jack</span> <span class="o">+</span> <span class="n">Rs</span><span class="p">)</span>
+
+            <span class="n">osum_jack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dsx_nom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">osum_w_jack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dsx_denom</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">cind</span><span class="p">,</span> <span class="n">lab</span><span class="p">]</span> <span class="o">=</span> <span class="n">osum_jack</span> <span class="o">/</span> <span class="p">(</span><span class="n">osum_w_jack</span> <span class="o">+</span> <span class="n">Rs</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">cind</span><span class="p">,</span> <span class="n">lab</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">snum_ind</span><span class="p">,</span> <span class="n">ind</span><span class="p">][:,</span> <span class="n">cind</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">wsum</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[:,</span> <span class="n">lab</span><span class="p">]</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[:,</span> <span class="n">lab</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_profcalc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;JK estimate on the mean profile&quot;&quot;&quot;</span>
+
+        <span class="n">tmp_rr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rr</span><span class="p">))</span> <span class="o">*</span> <span class="n">BADVAL</span>
+
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">):</span>
+            <span class="c1"># checking for radial bins with 1 pair count (to avoid NaNs)</span>
+            <span class="n">subind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subcounts</span><span class="p">[:,</span> <span class="n">r</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">njk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">subind</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">njk</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">])</span> <span class="o">/</span> <span class="n">njk</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dsx</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">])</span> <span class="o">/</span> <span class="n">njk</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">])</span> <span class="o">/</span> <span class="n">njk</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rr</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_rr</span><span class="p">[</span><span class="n">r</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_covcalc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;JK estimate on the covariance matrix&quot;&quot;&quot;</span>
+        <span class="c1"># calculating the covariance</span>
+        <span class="k">for</span> <span class="n">r1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">r2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">):</span>
+                <span class="c1"># getting patches where there are multiple elements in both indices</span>
+                <span class="n">subind1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">subcounts</span><span class="p">[:,</span> <span class="n">r1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="n">subind2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">subcounts</span><span class="p">[:,</span> <span class="n">r2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="c1"># overlapping indices</span>
+                <span class="n">subind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">subind1</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">subind2</span><span class="p">)))</span>
+                <span class="n">njk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">subind</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">njk</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dst_cov</span><span class="p">[</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r1</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">[</span><span class="n">r1</span><span class="p">])</span> <span class="o">*</span>
+                                                  <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r2</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">dst</span><span class="p">[</span><span class="n">r2</span><span class="p">]))</span> <span class="o">*</span> \
+                                           <span class="p">(</span><span class="n">njk</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">njk</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dsx_cov</span><span class="p">[</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r1</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">dsx</span><span class="p">[</span><span class="n">r1</span><span class="p">])</span> <span class="o">*</span>
+                                                  <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r2</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">dsx</span><span class="p">[</span><span class="n">r2</span><span class="p">]))</span> <span class="o">*</span> \
+                                           <span class="p">(</span><span class="n">njk</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">njk</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">snum_cov</span><span class="p">[</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">r1</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">[</span><span class="n">r1</span><span class="p">])</span> <span class="o">*</span>
+                                                  <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">r2</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">[</span><span class="n">r2</span><span class="p">]))</span> <span class="o">*</span> \
+                                           <span class="p">(</span><span class="n">njk</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">njk</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst_cov</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dsx_cov</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snum_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snum_cov</span><span class="p">))</span>
+
+<div class="viewcode-block" id="StackedProfileContainer.prof_maker"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.StackedProfileContainer.prof_maker">[docs]</a>    <span class="k">def</span> <span class="nf">prof_maker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the Jackknife estimate of on stacked profile and on the corresponding covariance</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        weights : np.array</span>
+<span class="sd">            weight for each entry in the lens catalog</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># adding weights</span>
+        <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num</span><span class="p">)</span>
+
+        <span class="c1"># print weights.shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">weights</span>
+
+        <span class="c1"># preparing the JK patches</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_subpatches</span><span class="p">()</span>
+
+        <span class="c1"># getting radius values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_rr</span><span class="p">()</span>
+
+        <span class="c1"># calculating the profiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subprofiles</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_profcalc</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_covcalc</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">neff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_neff</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasprofile</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">_composite_subprofiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Applies the binary operation to the profile objects&quot;&quot;&quot;</span>
+
+        <span class="n">tmp_dst_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncen</span><span class="p">))</span>
+        <span class="n">tmp_dsx_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncen</span><span class="p">))</span>
+        <span class="n">tmp_snum_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncen</span><span class="p">))</span>
+
+        <span class="n">tmp_sub_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">sub_labels</span><span class="p">))))</span>
+        <span class="n">tmp_subcounts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_sub_labels</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">))</span>
+        <span class="c1"># print(self.subcounts)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_sub_labels</span><span class="p">)):</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">tmp_sub_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">ind1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span> <span class="o">==</span> <span class="n">ind</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">ind2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">sub_labels</span> <span class="o">==</span> <span class="n">ind</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">):</span>
+                <span class="n">tmp_subcounts</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subcounts</span><span class="p">[</span><span class="n">ind1</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">other</span><span class="o">.</span><span class="n">subcounts</span><span class="p">[</span><span class="n">ind2</span><span class="p">,</span> <span class="n">j</span><span class="p">]))</span>
+
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbin</span><span class="p">):</span>
+            <span class="n">subind</span> <span class="o">=</span> <span class="n">tmp_sub_labels</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">tmp_subcounts</span><span class="p">[:,</span> <span class="n">r</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">tmp_subcounts</span><span class="p">[:,</span> <span class="n">r</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rr</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="n">njk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">subind</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">njk</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+                    <span class="n">tmp_dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+                    <span class="n">tmp_dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+                    <span class="n">tmp_snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;+&quot;</span><span class="p">:</span>
+                    <span class="n">tmp_dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">+</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+                    <span class="n">tmp_dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">+</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+                    <span class="n">tmp_snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">+</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+                    <span class="n">tmp_dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">*</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+                    <span class="n">tmp_dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">*</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+                    <span class="n">tmp_snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">*</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+                    <span class="n">tmp_dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">/</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+                    <span class="n">tmp_dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">/</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+                    <span class="n">tmp_snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">/</span> \
+                                             <span class="n">other</span><span class="o">.</span><span class="n">snum_sub</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Operation not supported, use (&#39;+&#39;, &#39;-&#39;, &#39;*&#39;, &#39;/&#39;)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># assigning updated containers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sub_labels</span> <span class="o">=</span> <span class="n">tmp_sub_labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subcounts</span> <span class="o">=</span> <span class="n">tmp_subcounts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span> <span class="o">=</span> <span class="n">tmp_dst_sub</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dsx_sub</span> <span class="o">=</span> <span class="n">tmp_dsx_sub</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snum_sub</span> <span class="o">=</span> <span class="n">tmp_snum_sub</span>
+
+
+<div class="viewcode-block" id="StackedProfileContainer.multiply"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.StackedProfileContainer.multiply">[docs]</a>    <span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">keep_rr</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the JK estimate on profile times the specified &quot;val&quot;,</span>
+
+<span class="sd">        Operation performed in-place.</span>
+<span class="sd">        Use deepcopy to obtain copies of the object for storing the previous state.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        val : float or np.array</span>
+<span class="sd">            value to multiply by</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># clears the profile container</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_profile</span><span class="p">(</span><span class="n">keep_rr</span><span class="o">=</span><span class="n">keep_rr</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_rr</span><span class="p">:</span>
+            <span class="c1"># getting radius values</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rr</span><span class="p">()</span>
+
+        <span class="c1"># performs the multiplication</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span> <span class="o">*=</span> <span class="n">val</span>
+
+        <span class="c1"># re calculates profiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_profcalc</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_covcalc</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasprofile</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="StackedProfileContainer.composite"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.StackedProfileContainer.composite">[docs]</a>    <span class="k">def</span> <span class="nf">composite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">keep_rr</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the JK estimate on the operation applied to the two profiles</span>
+
+<span class="sd">        **Possible Operations:**</span>
+
+<span class="sd">            * &quot;-&quot;: self - other</span>
+
+<span class="sd">            * &quot;+&quot;: self + other</span>
+
+<span class="sd">            * &quot;*&quot;: self * other</span>
+
+<span class="sd">            * &quot;/&quot;: self / other</span>
+
+<span class="sd">        The results is updated to self. Use deepcopy to obtain</span>
+<span class="sd">        copies of the object for storing the previous state.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : StackedProfileContainer</span>
+<span class="sd">            an other profile...</span>
+<span class="sd">        operation : str</span>
+<span class="sd">            string specifying what to do...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># making sure that there is a profile in both containers</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasprofile</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">hasprofile</span>
+
+        <span class="c1"># making sure that the two profiles use the same centers</span>
+        <span class="c1"># err_msg = &#39;JK centers do not agree within 1e-5&#39;</span>
+        <span class="c1"># np.testing.assert_allclose(self.centers, other.centers,</span>
+        <span class="c1">#                            rtol=1e-5, err_msg=err_msg)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_sub</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">dst_sub</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># clears the profile container</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_profile</span><span class="p">(</span><span class="n">keep_rr</span><span class="o">=</span><span class="n">keep_rr</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_rr</span><span class="p">:</span>
+            <span class="c1"># getting radius values</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rr</span><span class="p">()</span>
+
+        <span class="c1"># updates subprofiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_composite_subprofiles</span><span class="p">(</span><span class="n">other</span><span class="o">=</span><span class="n">other</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">operation</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_profcalc</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_covcalc</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hasprofile</span> <span class="o">=</span> <span class="kc">True</span></div></div>
+
+
+<div class="viewcode-block" id="stacked_pcov"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.stacked_pcov">[docs]</a><span class="k">def</span> <span class="nf">stacked_pcov</span><span class="p">(</span><span class="n">plist</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the Covariance between a list of profiles</span>
+
+<span class="sd">    Only elements where both profile has at least 1 sources are considered, the rest is filled with placeholder</span>
+<span class="sd">    values (-9999.0 by default).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    plist: list of StackedProfileContainer objects</span>
+<span class="sd">        profiles across whiche the covarainces are to be calcualted</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array, np.array</span>
+<span class="sd">        cov (E-mode), cov (B-mode)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># checking that input is of correct format</span>
+    <span class="c1"># assert np.iterable(plist)</span>
+    <span class="c1"># assert isinstance(plist[0], StackedProfileContainer)</span>
+
+    <span class="c1"># data vectors for covariance</span>
+    <span class="n">dtvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">pc</span><span class="o">.</span><span class="n">dst</span> <span class="k">for</span> <span class="n">pc</span> <span class="ow">in</span> <span class="n">plist</span><span class="p">])</span>
+    <span class="n">dxvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">pc</span><span class="o">.</span><span class="n">dsx</span> <span class="k">for</span> <span class="n">pc</span> <span class="ow">in</span> <span class="n">plist</span><span class="p">])</span>
+
+    <span class="c1"># lengths of bins</span>
+    <span class="n">dlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dtvec</span><span class="p">)</span>
+    <span class="n">rlen</span> <span class="o">=</span> <span class="n">plist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">nbin</span>
+
+    <span class="c1"># container for the results</span>
+    <span class="n">supercov_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">dlen</span><span class="p">,</span> <span class="n">dlen</span><span class="p">))</span> <span class="o">*</span> <span class="n">BADVAL</span>
+    <span class="n">supercov_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">dlen</span><span class="p">,</span> <span class="n">dlen</span><span class="p">))</span> <span class="o">*</span> <span class="n">BADVAL</span>
+
+    <span class="c1"># building up the covariance matrix</span>
+    <span class="k">for</span> <span class="n">i1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dlen</span><span class="p">):</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">i1</span> <span class="o">//</span> <span class="n">rlen</span>  <span class="c1"># the p-th profile</span>
+        <span class="n">pc1</span> <span class="o">=</span> <span class="n">plist</span><span class="p">[</span><span class="n">p1</span><span class="p">]</span>
+        <span class="n">r1</span> <span class="o">=</span> <span class="n">i1</span> <span class="o">%</span> <span class="n">rlen</span>  <span class="c1"># the r-th radial bin within the p-th profile</span>
+        <span class="k">for</span> <span class="n">i2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dlen</span><span class="p">):</span>
+            <span class="n">p2</span> <span class="o">=</span> <span class="n">i2</span> <span class="o">//</span> <span class="n">rlen</span>
+            <span class="n">pc2</span> <span class="o">=</span> <span class="n">plist</span><span class="p">[</span><span class="n">p2</span><span class="p">]</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="n">i2</span> <span class="o">%</span> <span class="n">rlen</span>
+
+            <span class="c1"># calculating subpatches with data</span>
+            <span class="n">subind1</span> <span class="o">=</span> <span class="n">pc1</span><span class="o">.</span><span class="n">sub_labels</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">pc1</span><span class="o">.</span><span class="n">subcounts</span><span class="p">[:,</span> <span class="n">r1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">subind2</span> <span class="o">=</span> <span class="n">pc2</span><span class="o">.</span><span class="n">sub_labels</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">pc2</span><span class="o">.</span><span class="n">subcounts</span><span class="p">[:,</span> <span class="n">r2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">subind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">subind1</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">subind2</span><span class="p">)))</span>
+            <span class="n">njk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">subind</span><span class="p">)</span>  <span class="c1"># number of subpatches used</span>
+            <span class="k">if</span> <span class="n">njk</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+                <span class="n">part1_t</span> <span class="o">=</span> <span class="p">(</span><span class="n">pc1</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r1</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span> <span class="n">pc1</span><span class="o">.</span><span class="n">dst</span><span class="p">[</span><span class="n">r1</span><span class="p">])</span>
+                <span class="n">part2_t</span> <span class="o">=</span> <span class="p">(</span><span class="n">pc2</span><span class="o">.</span><span class="n">dst_sub</span><span class="p">[</span><span class="n">r2</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span> <span class="n">pc2</span><span class="o">.</span><span class="n">dst</span><span class="p">[</span><span class="n">r2</span><span class="p">])</span>
+
+                <span class="n">part1_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">pc1</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r1</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span> <span class="n">pc1</span><span class="o">.</span><span class="n">dsx</span><span class="p">[</span><span class="n">r1</span><span class="p">])</span>
+                <span class="n">part2_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">pc2</span><span class="o">.</span><span class="n">dsx_sub</span><span class="p">[</span><span class="n">r2</span><span class="p">,</span> <span class="n">subind</span><span class="p">]</span> <span class="o">-</span> <span class="n">pc2</span><span class="o">.</span><span class="n">dsx</span><span class="p">[</span><span class="n">r2</span><span class="p">])</span>
+
+                <span class="n">supercov_t</span><span class="p">[</span><span class="n">i1</span><span class="p">,</span> <span class="n">i2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">part1_t</span> <span class="o">*</span> <span class="n">part2_t</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">njk</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span> <span class="o">/</span> <span class="n">njk</span>
+                <span class="n">supercov_x</span><span class="p">[</span><span class="n">i1</span><span class="p">,</span> <span class="n">i2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">part1_x</span> <span class="o">*</span> <span class="n">part2_x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">njk</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span> <span class="o">/</span> <span class="n">njk</span>
+
+    <span class="k">return</span> <span class="n">supercov_t</span><span class="p">,</span> <span class="n">supercov_x</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Tamas Norbert Varga.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
