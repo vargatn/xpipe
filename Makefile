@@ -24,7 +24,7 @@ xshear:
 
 # writes absolute path of program direcory
 logpath:
-	echo project_path: $(CURDIR)/pipeline/ > $(HOME)/.proclens.yml
+	echo project_path: $(CURDIR)/ > $(HOME)/.proclens.yml
 
 
 # Clears submodules
