@@ -1,12 +1,12 @@
 README.md
 setup.py
 proclens/__init__.py
+proclens/paths.py
 proclens.egg-info/PKG-INFO
 proclens.egg-info/SOURCES.txt
 proclens.egg-info/dependency_links.txt
 proclens.egg-info/requires.txt
 proclens.egg-info/top_level.txt
-proclens/io/__init__.py
 proclens/tools/__init__.py
 proclens/tools/catalogs.py
 proclens/tools/magtools.py
@@ -14,4 +14,5 @@ proclens/tools/selector.py
 proclens/tools/visual.py
 proclens/xhandle/__init__.py
 proclens/xhandle/ioshear.py
+proclens/xhandle/shearops.py
 proclens/xhandle/xwrap.py
