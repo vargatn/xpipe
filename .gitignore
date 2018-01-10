@@ -2,3 +2,10 @@
 *.swp
 *.pyc
 *.cache
+*egg-info
+
+build
+dist
+files.txt
+settings/params*.yml
+settings/inputs.yml
