@@ -5,10 +5,10 @@
 local:
   # shear catalogs in xshear style
   shearcat:
-    default: None
+    default: default.dat
 
   # redmapper catalogs
   lenscat:
     default:
-      lens: None
-      rand: None
+      lens: default.dat
+      rand: default.dat

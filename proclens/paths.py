@@ -28,7 +28,9 @@ def read_yaml(cfg):
     return cfg
 
 def get_pdf_flist(params):
-    ppaths = np.sort(glob.glob(params['pdf_paths']))
+    ppaths = None
+    if params['pdf_paths'] is not None:
+        ppaths = np.sort(glob.glob(params['pdf_paths']))
     return ppaths
 
 ###################################################################
@@ -144,8 +146,7 @@ def _update_params(path):
     if path is not None:
         _path = locate_params(path)
 
-        global devmode, dirpaths, cens, edges, areas, fullpaths,\
-            fullurls, clust_prefix, rand_prefix, subtr_prefix, pdf_files
+        global devmode, dirpaths, fullpaths, fullurls, pdf_files
 
         use_custom_params(_path)
         devmode = assign_mode(params)
@@ -167,6 +168,24 @@ def _complete_params_path(fname):
     if head == "":
         opath = project_path + "settings/" + fname
     return opath
+
+
+def get_bin_settings(params, devmode):
+    """Returns appropriate bin edges and the number of random points to use"""
+    if devmode:
+        param_bins = params['param_bins_test']
+        nrandoms = params['nrandoms']['test']
+    else:
+        param_bins = params['param_bins_full']
+        nrandoms = params['nrandoms']['full']
+    # TODO finish this
+
+    # ledges = np.log10(param_bins['lambda_edges'])
+    # zedges = param_bins['z_edges']
+
+    # return ledges, zedges, nrandoms
+
+
 
 
 ###################################################################
@@ -195,6 +214,7 @@ has_custom_specified = "custom_params_file" in params.keys()
 while has_custom_specified and params["custom_params_file"] is not None:
     custom_param_path = _complete_params_path(params["custom_params_file"])
     _update_params(custom_param_path)
+
 
 
 

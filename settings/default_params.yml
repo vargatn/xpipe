@@ -23,7 +23,7 @@ custom_params_file: params.yml
 
 # if False: uses default project_path + /data
 custom_data_path: False
-pdf_paths: None
+pdf_paths: null
 
 ######################################################
 
