@@ -7,6 +7,8 @@ import yaml
 import glob
 import numpy as np
 
+# TODO replace print with logging
+
 default_inputs_suffix = 'settings/default_inputs.yml'
 inputs_suffix = 'settings/inputs.yml'
 
@@ -96,14 +98,17 @@ def get_local_filenames(pths, dirs):
     return fullpaths
 
 
-def get_fullpaths(params, project_path):
+def get_fullpaths(params, project_path, default_inputs=True):
 
     # reading default input file urls
     _default_inputs_file = project_path + default_inputs_suffix
     _inputs_dict = read_yaml(_default_inputs_file)
 
-    # reading input file urls
-    _inputs_file = project_path + inputs_suffix
+    # reading input file urls, try defaults first
+    if default_inputs:
+        _inputs_file = project_path + default_inputs_suffix
+    else:
+        _inputs_file = project_path + inputs_suffix
     _inputs_dict.update(read_yaml(_inputs_file))
 
     fullpaths = get_local_filenames(_inputs_dict['local'], dirpaths)
@@ -173,19 +178,16 @@ def _complete_params_path(fname):
 def get_bin_settings(params, devmode):
     """Returns appropriate bin edges and the number of random points to use"""
     if devmode:
-        param_bins = params['param_bins_test']
-        nrandoms = params['nrandoms']['test']
+        param_bins = params['param_bins_dev']
+        nrandoms = params['nrandoms']['dev']
     else:
         param_bins = params['param_bins_full']
         nrandoms = params['nrandoms']['full']
-    # TODO finish this
 
-    # ledges = np.log10(param_bins['lambda_edges'])
-    # zedges = param_bins['z_edges']
+    keys = np.sort(param_bins.keys())
+    params = [param_bins[key] for key in keys]
 
-    # return ledges, zedges, nrandoms
-
-
+    return params, nrandoms
 
 
 ###################################################################
@@ -199,21 +201,24 @@ user_project_file = '.proclens.yml'
 project_path = get_poject_path(user_project_file)
 
 # read parameter bins from config file
-print "adding default_params.yml"
+print "reading DEFAULTS from default_params.yml"
 
 default_param_path = project_path + 'settings/default_params.yml'
 params = read_yaml(default_param_path)
 
 devmode = assign_mode(params)
 dirpaths = get_dirpaths(params, project_path)
-fullpaths = get_fullpaths(params, project_path)
+fullpaths = get_fullpaths(params, project_path, default_inputs=True)
 pdf_files = get_pdf_flist(params)
 
 # READING custom params files
 has_custom_specified = "custom_params_file" in params.keys()
 while has_custom_specified and params["custom_params_file"] is not None:
     custom_param_path = _complete_params_path(params["custom_params_file"])
-    _update_params(custom_param_path)
+    if os.path.isfile(custom_param_path):
+        _update_params(custom_param_path)
+    else:
+        break
 
 
 

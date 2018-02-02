@@ -63,7 +63,7 @@ njk_max: 100
 # number of random points to use
 nrandoms:
   full: 50000
-  test: 1000
+  dev: 1000
 
 # random seed for choosing the random points
 seeds:
