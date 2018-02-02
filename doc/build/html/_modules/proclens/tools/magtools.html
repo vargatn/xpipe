@@ -163,7 +163,7 @@
             
   <h1>Source code for proclens.tools.magtools</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Apparent to Absolute magnitude conversion</span>
+<span class="sd">Apparent to Absolute magnitude conversion **WORK IN PROGRESS**</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -259,7 +259,7 @@
         <span class="c1"># reference table variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtab</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="AbsMagConverter.from_table"><a class="viewcode-back" href="../../../api.html#proclens.tools.magtools.AbsMagConverter.from_table">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_table</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Loads class instance using a pre-calculated table for each band&quot;&quot;&quot;</span>
         <span class="n">cosmo</span> <span class="o">=</span> <span class="n">astropy</span><span class="o">.</span><span class="n">cosmology</span><span class="o">.</span><span class="n">FlatLambdaCDM</span><span class="p">(</span><span class="o">**</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;cosmo pars&#39;</span><span class="p">])</span>
@@ -267,26 +267,26 @@
         <span class="n">amag</span><span class="o">.</span><span class="n">add_response</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">])</span>
         <span class="n">amag</span><span class="o">.</span><span class="n">add_template</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;template&#39;</span><span class="p">])</span>
         <span class="n">amag</span><span class="o">.</span><span class="n">dtab</span> <span class="o">=</span> <span class="n">table</span>
-        <span class="k">return</span> <span class="n">amag</span></div>
+        <span class="k">return</span> <span class="n">amag</span>
 
-<div class="viewcode-block" id="AbsMagConverter.from_template"><a class="viewcode-back" href="../../../api.html#proclens.tools.magtools.AbsMagConverter.from_template">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_template</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">cosmo</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Loads class instance using a particular template and response&quot;&quot;&quot;</span>
         <span class="n">amag</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">cosmo</span><span class="p">)</span>
         <span class="n">amag</span><span class="o">.</span><span class="n">add_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="n">amag</span><span class="o">.</span><span class="n">add_template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">amag</span></div>
+        <span class="k">return</span> <span class="n">amag</span>
 
-<div class="viewcode-block" id="AbsMagConverter.add_response"><a class="viewcode-back" href="../../../api.html#proclens.tools.magtools.AbsMagConverter.add_response">[docs]</a>    <span class="k">def</span> <span class="nf">add_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rdict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Loads response curves for different bands&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rdict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">rdict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">survey</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;survey&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rlamb</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;lambda&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rlamb_u</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;lambda unit&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="n">tmp</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="n">tmp</span>
 
-<div class="viewcode-block" id="AbsMagConverter.add_template"><a class="viewcode-back" href="../../../api.html#proclens.tools.magtools.AbsMagConverter.add_template">[docs]</a>    <span class="k">def</span> <span class="nf">add_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tdict</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tdict</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Loads SED template&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tdict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">tdict</span><span class="p">)</span>
@@ -297,11 +297,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sed_u</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="s1">&#39;sed unit&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">norm</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sed</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sed</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sed_u</span> <span class="o">=</span> <span class="s2">&quot;normalized by max&quot;</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sed_u</span> <span class="o">=</span> <span class="s2">&quot;normalized by max&quot;</span>
 
-<div class="viewcode-block" id="AbsMagConverter.dist_modulus"><a class="viewcode-back" href="../../../api.html#proclens.tools.magtools.AbsMagConverter.dist_modulus">[docs]</a>    <span class="k">def</span> <span class="nf">dist_modulus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">dist_modulus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculates distance modulus for redshift z&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">distmod</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">.</span><span class="n">value</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">distmod</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
 
     <span class="k">def</span> <span class="nf">_bandselect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;creates interpolating function for band&quot;&quot;&quot;</span>
@@ -310,7 +310,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">x1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rlamb</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fresp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rlamb</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AbsMagConverter.kcorrect"><a class="viewcode-back" href="../../../api.html#proclens.tools.magtools.AbsMagConverter.kcorrect">[docs]</a>    <span class="k">def</span> <span class="nf">kcorrect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">z2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">kcorrect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">z2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates K-correction from band --&gt; band</span>
 
@@ -338,7 +338,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">kval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_kint</span><span class="p">(</span><span class="n">zval</span><span class="p">,</span> <span class="n">z2</span><span class="p">)</span> <span class="k">for</span> <span class="n">zval</span> <span class="ow">in</span> <span class="n">z</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="n">kval</span></div>
+        <span class="k">return</span> <span class="n">kval</span>
 
     <span class="k">def</span> <span class="nf">_kint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculates k-correction for redshift z&quot;&quot;&quot;</span>
@@ -451,7 +451,7 @@
             <span class="n">z_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">z_0</span><span class="p">,</span> <span class="n">z_1</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AbsMagConverter.convert"><a class="viewcode-back" href="../../../api.html#proclens.tools.magtools.AbsMagConverter.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mag</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">z2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">z_0</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">z_1</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mag</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">z2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">z_0</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">z_1</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
                 <span class="n">use_tables</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts apparent magnitudes to absolute</span>
@@ -494,9 +494,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_ifunc</span><span class="p">()</span>
         <span class="n">korr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_querry</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">mag</span> <span class="o">-</span> <span class="n">korr</span></div>
+        <span class="k">return</span> <span class="n">mag</span> <span class="o">-</span> <span class="n">korr</span>
 
-<div class="viewcode-block" id="AbsMagConverter.build_tables"><a class="viewcode-back" href="../../../api.html#proclens.tools.magtools.AbsMagConverter.build_tables">[docs]</a>    <span class="k">def</span> <span class="nf">build_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zarr</span><span class="p">,</span> <span class="n">z2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">build_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zarr</span><span class="p">,</span> <span class="n">z2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a reference table for all the bands</span>
 
@@ -554,11 +554,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_conv_table</span><span class="p">(</span><span class="n">zarr</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">z2</span><span class="o">=</span><span class="n">z2</span><span class="p">)</span>
             <span class="n">tabdict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">band</span><span class="p">:</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctab</span><span class="p">)})</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">dtab</span> <span class="o">=</span> <span class="n">tabdict</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtab</span> <span class="o">=</span> <span class="n">tabdict</span>
 
-<div class="viewcode-block" id="AbsMagConverter.save_tables"><a class="viewcode-back" href="../../../api.html#proclens.tools.magtools.AbsMagConverter.save_tables">[docs]</a>    <span class="k">def</span> <span class="nf">save_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tname</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">save_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; saves table dict to pickle&quot;&quot;&quot;</span>
-        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtab</span><span class="p">),</span> <span class="nb">open</span><span class="p">(</span><span class="n">tname</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span></div></div>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtab</span><span class="p">),</span> <span class="nb">open</span><span class="p">(</span><span class="n">tname</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span></div>
 </pre></div>
 
            </div>

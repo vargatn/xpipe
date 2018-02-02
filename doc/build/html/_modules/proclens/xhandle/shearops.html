@@ -170,6 +170,8 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">math</span>
 
+<span class="kn">from</span> <span class="nn">.ioshear</span> <span class="k">import</span> <span class="n">read_single_bin</span><span class="p">,</span> <span class="n">read_multiple_bin</span><span class="p">,</span> <span class="n">sheared_tags</span>
+
 <span class="n">BADVAL</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9999.0</span>
 
 
@@ -417,8 +419,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">hasprofile</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hasdata</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="StackedProfileContainer.from_sub_dict"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.StackedProfileContainer.from_sub_dict">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_sub_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sub_dict</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="StackedProfileContainer.from_sub_dict"><a class="viewcode-back" href="../../../api.html#proclens.xhandle.shearops.StackedProfileContainer.from_sub_dict">[docs]</a>    <span class="k">def</span> <span class="nf">from_sub_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sub_dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reconstructs the object from a dictionary</span>
 
@@ -564,6 +566,9 @@
 
             <span class="n">ww</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
             <span class="n">wsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
+
+            <span class="c1"># TODO update redshift columns</span>
+            <span class="c1"># TODO log responses</span>
 
             <span class="n">Rs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cind</span><span class="p">))</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ismeta</span><span class="p">:</span>
@@ -881,6 +886,39 @@
                 <span class="n">supercov_x</span><span class="p">[</span><span class="n">i1</span><span class="p">,</span> <span class="n">i2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">part1_x</span> <span class="o">*</span> <span class="n">part2_x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">njk</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span> <span class="o">/</span> <span class="n">njk</span>
 
     <span class="k">return</span> <span class="n">supercov_t</span><span class="p">,</span> <span class="n">supercov_x</span></div>
+
+
+<span class="k">def</span> <span class="nf">process_profile</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">metanames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ncens</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts StackedProfileContainer from xshear output</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fnames : list of str</span>
+<span class="sd">        filenames to be read (without metatags)</span>
+
+<span class="sd">    # TODO finish this</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">metanames</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">metanames</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">fnames</span> <span class="o">=</span> <span class="n">fnames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">cinfo</span><span class="p">,</span> <span class="n">cdata</span><span class="p">,</span> <span class="n">sheared_data</span> <span class="o">=</span> <span class="n">read_single_bin</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">metaname</span><span class="o">=</span><span class="n">metanames</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cinfo</span><span class="p">,</span> <span class="n">cdata</span><span class="p">,</span> <span class="n">sheared_data</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">read_multiple_bin</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">metanames</span><span class="o">=</span><span class="n">metanames</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ncens</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ncens</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span>
+
+    <span class="n">prof</span> <span class="o">=</span> <span class="n">StackedProfileContainer</span><span class="p">(</span><span class="n">cinfo</span><span class="p">,</span> <span class="n">cdata</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">ncens</span><span class="p">,</span>
+                                   <span class="n">metadata</span><span class="o">=</span><span class="n">sheared_data</span><span class="p">,</span>
+                                   <span class="n">metatags</span><span class="o">=</span><span class="n">sheared_tags</span><span class="p">)</span>
+    <span class="n">prof</span><span class="o">.</span><span class="n">prof_maker</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">prof</span>
 </pre></div>
 
            </div>

@@ -95,6 +95,8 @@
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">F.A.Q</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python wrapper for xshear</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#select-lenses-by-field">Select lenses by field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#load-catalogs">Load catalogs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-xhsear-style-lens-catalog">Create xhsear-style lens catalog</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#read-ra-dec-positions-for-lenses">Read (RA, DEC) positions for lenses</a></li>
 </ul>
@@ -188,6 +190,112 @@
 </div>
 <div class="section" id="python-wrapper-for-xshear">
 <h1>Python wrapper for xshear<a class="headerlink" href="#python-wrapper-for-xshear" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="select-lenses-by-field">
+<h2>Select lenses by field<a class="headerlink" href="#select-lenses-by-field" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.xhandle.parbins.field_cut">
+<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">field_cut</code><span class="sig-paren">(</span><em>ra</em>, <em>dec</em>, <em>borders</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#field_cut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.field_cut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies RA, DEC cut based on DES field boundaries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ra</strong> (<em>np.array</em>) &#8211; right ascension</li>
+<li><strong>dec</strong> (<em>np.array</em>) &#8211; declination</li>
+<li><strong>borders</strong> (<em>dict</em>) &#8211; dictionary with rectangular boundaries of the selected area</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Define borders like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">spt</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;dec_top&quot;</span> <span class="p">:</span> <span class="o">-</span><span class="mf">30.</span><span class="p">,</span>
+    <span class="s2">&quot;dec_bottom&quot;</span> <span class="p">:</span> <span class="o">-</span><span class="mf">60.</span><span class="p">,</span>
+    <span class="s2">&quot;ra_left&quot;</span> <span class="p">:</span> <span class="mf">0.</span><span class="p">,</span>
+    <span class="s2">&quot;ra_right&quot;</span> <span class="p">:</span> <span class="mf">360.</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bool array indexing the objects within the selected area</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">np.array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="load-catalogs">
+<h2>Load catalogs<a class="headerlink" href="#load-catalogs" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.xhandle.parbins.load_lenscat">
+<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">load_lenscat</code><span class="sig-paren">(</span><em>fields</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#load_lenscat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.load_lenscat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads lens catalog from fits file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fields</strong> (<em>list of dicts</em>) &#8211; list of boundaries for <a class="reference internal" href="#proclens.xhandle.parbins.field_cut" title="proclens.xhandle.parbins.field_cut"><code class="xref py py-meth docutils literal"><span class="pre">proclens.xhandle.parbins.field_cut()</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">lens catalog data in format,
+bool array for selection,
+raw data table before selection</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a>, np.array, record-array</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The format of the output data table:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span> <span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
+    <span class="s2">&quot;ra&quot;</span> <span class="p">:</span> <span class="n">ra</span><span class="p">,</span>
+    <span class="s2">&quot;dec&quot;</span> <span class="p">:</span> <span class="n">dec</span><span class="p">,</span>
+    <span class="s2">&quot;qlist&quot;</span> <span class="p">:</span> <span class="n">qlist</span><span class="p">,</span> <span class="c1"># np.array of quantities with shape (n_lens, n_quantity)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="proclens.xhandle.parbins.load_randcat">
+<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">load_randcat</code><span class="sig-paren">(</span><em>fields</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#load_randcat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.load_randcat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads random point catalog from fits file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fields</strong> (<em>list of dicts</em>) &#8211; list of boundaries for <a class="reference internal" href="#proclens.xhandle.parbins.field_cut" title="proclens.xhandle.parbins.field_cut"><code class="xref py py-meth docutils literal"><span class="pre">proclens.xhandle.parbins.field_cut()</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">lens catalog data in format,
+bool array for selection,
+raw data table before selection</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a>, np.array, record-array</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The format of the output data table:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span> <span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
+    <span class="s2">&quot;ra&quot;</span> <span class="p">:</span> <span class="n">ra</span><span class="p">,</span>
+    <span class="s2">&quot;dec&quot;</span> <span class="p">:</span> <span class="n">dec</span><span class="p">,</span>
+    <span class="s2">&quot;qlist&quot;</span> <span class="p">:</span> <span class="n">qlist</span><span class="p">,</span> <span class="c1"># np.array of quantities with shape (n_lens, n_quantity)</span>
+    <span class="s2">&quot;w&quot;</span> <span class="p">:</span> <span class="n">w</span><span class="p">,</span> <span class="c1"># weight of random points</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
 <div class="section" id="create-xhsear-style-lens-catalog">
 <h2>Create xhsear-style lens catalog<a class="headerlink" href="#create-xhsear-style-lens-catalog" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -199,11 +307,11 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>fname</strong> (<em>str</em>) – full path to file</li>
-<li><strong>mid</strong> (<em>np.array – int</em>) – ID of object</li>
-<li><strong>ra</strong> (<em>np.array</em>) – RA</li>
-<li><strong>dec</strong> (<em>np.array</em>) – DEC</li>
-<li><strong>z</strong> (<em>np.array</em>) – redshift</li>
+<li><strong>fname</strong> (<em>str</em>) &#8211; full path to file</li>
+<li><strong>mid</strong> (<em>np.array &#8211; int</em>) &#8211; ID of object</li>
+<li><strong>ra</strong> (<em>np.array</em>) &#8211; RA</li>
+<li><strong>dec</strong> (<em>np.array</em>) &#8211; DEC</li>
+<li><strong>z</strong> (<em>np.array</em>) &#8211; redshift</li>
 </ul>
 </td>
 </tr>
@@ -222,7 +330,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str</em>) – full paths to output files</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str</em>) &#8211; full paths to output files</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">ra, dec of lenses</td>
 </tr>
@@ -250,8 +358,8 @@ metacalibration sheared results.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>fname</strong> (<em>str</em>) – full path to output file</li>
-<li><strong>metaname</strong> (<em>str</em>) – full base path to sheared output file</li>
+<li><strong>fname</strong> (<em>str</em>) &#8211; full path to output file</li>
+<li><strong>metaname</strong> (<em>str</em>) &#8211; full base path to sheared output file</li>
 </ul>
 </td>
 </tr>
@@ -281,8 +389,8 @@ metacalibration sheared results.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>fname</strong> (<em>str</em>) – full path to output file</li>
-<li><strong>metaname</strong> (<em>str</em>) – full base path to sheared output file</li>
+<li><strong>fname</strong> (<em>str</em>) &#8211; full path to output file</li>
+<li><strong>metaname</strong> (<em>str</em>) &#8211; full base path to sheared output file</li>
 </ul>
 </td>
 </tr>
@@ -335,7 +443,7 @@ the columns are:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>xdata</strong> (<em>np.array</em>) – raw xshear output loaded to np array</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>xdata</strong> (<em>np.array</em>) &#8211; raw xshear output loaded to np array</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code>, column description dictionary</td>
 </tr>
@@ -355,7 +463,7 @@ the columns are:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>raw_chunks</strong> (<em>list</em>) – list of raw xshear outputs loaded to np array</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>raw_chunks</strong> (<em>list</em>) &#8211; list of raw xshear outputs loaded to np array</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code>, <code class="code docutils literal"><span class="pre">chunk_ids</span></code></td>
 </tr>
@@ -372,16 +480,16 @@ the columns are:</p>
 <dt id="proclens.xhandle.shearops.redges">
 <code class="descclassname">proclens.xhandle.shearops.</code><code class="descname">redges</code><span class="sig-paren">(</span><em>rmin</em>, <em>rmax</em>, <em>nbin</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#redges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.redges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates nominal edges and centers for logarithmic radial bins(base10 logarithm)</p>
-<p>Edges and areas are exact, “center” values are estimated as CIRCUMFERENCE weighted
+<p>Edges and areas are exact, &#8220;center&#8221; values are estimated as CIRCUMFERENCE weighted
 mean radius</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>rmin</strong> (<em>float</em>) – inner edge</li>
-<li><strong>rmax</strong> (<em>float</em>) – outer edge</li>
-<li><strong>nbin</strong> (<em>int</em>) – number of bins</li>
+<li><strong>rmin</strong> (<em>float</em>) &#8211; inner edge</li>
+<li><strong>rmax</strong> (<em>float</em>) &#8211; outer edge</li>
+<li><strong>nbin</strong> (<em>int</em>) &#8211; number of bins</li>
 </ul>
 </td>
 </tr>
@@ -407,9 +515,9 @@ mean radius</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>pos</strong> (<em>np.ndarray</em>) – positions of points in (RA, DEC)</li>
-<li><strong>centers</strong> (<em>int or np.ndarray</em>) – Number of JK centers to use, or the (RA, DEC) coordinates of the centers</li>
-<li><strong>verbose</strong> (<em>bool</em>) – verbose flag to pass to <strong>kmeans_radec</strong></li>
+<li><strong>pos</strong> (<em>np.ndarray</em>) &#8211; positions of points in (RA, DEC)</li>
+<li><strong>centers</strong> (<em>int or np.ndarray</em>) &#8211; Number of JK centers to use, or the (RA, DEC) coordinates of the centers</li>
+<li><strong>verbose</strong> (<em>bool</em>) &#8211; verbose flag to pass to <strong>kmeans_radec</strong></li>
 </ul>
 </td>
 </tr>
@@ -499,19 +607,19 @@ columns used by the stacking algorithm. The default values used for <strong>Delt
 <span class="bp">self</span><span class="o">.</span><span class="n">meta_prefac</span> <span class="o">=</span> <span class="mi">3</span>
 </pre></div>
 </div>
-<p>Further information on the column positions are found in the <strong>xread</strong> documentation…</p>
+<p>Further information on the column positions are found in the <strong>xread</strong> documentation...</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>info</strong> (<em>np.ndarray</em>) – <code class="code docutils literal"><span class="pre">info</span></code> table from <strong>xread</strong></li>
-<li><strong>data</strong> (<em>np.ndarray</em>) – <code class="code docutils literal"><span class="pre">data</span></code> table from <strong>xread</strong></li>
-<li><strong>labels</strong> (<em>np.array</em>) – JK-region labels</li>
-<li><strong>ncen</strong> (<em>int</em>) – number of JK regions in total</li>
-<li><strong>lcname</strong> (<em>str</em>) – tag string</li>
-<li><strong>metadata</strong> (<em>list of np.ndarray</em>) – sheared versions of <code class="code docutils literal"><span class="pre">data</span></code></li>
-<li><strong>metatags</strong> (<em>list of str</em>) – sheared tags</li>
+<li><strong>info</strong> (<em>np.ndarray</em>) &#8211; <code class="code docutils literal"><span class="pre">info</span></code> table from <strong>xread</strong></li>
+<li><strong>data</strong> (<em>np.ndarray</em>) &#8211; <code class="code docutils literal"><span class="pre">data</span></code> table from <strong>xread</strong></li>
+<li><strong>labels</strong> (<em>np.array</em>) &#8211; JK-region labels</li>
+<li><strong>ncen</strong> (<em>int</em>) &#8211; number of JK regions in total</li>
+<li><strong>lcname</strong> (<em>str</em>) &#8211; tag string</li>
+<li><strong>metadata</strong> (<em>list of np.ndarray</em>) &#8211; sheared versions of <code class="code docutils literal"><span class="pre">data</span></code></li>
+<li><strong>metatags</strong> (<em>list of str</em>) &#8211; sheared tags</li>
 </ul>
 </td>
 </tr>
@@ -525,7 +633,7 @@ columns used by the stacking algorithm. The default values used for <strong>Delt
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>weights</strong> (<em>np.array</em>) – weight for each entry in the lens catalog</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>weights</strong> (<em>np.array</em>) &#8211; weight for each entry in the lens catalog</td>
 </tr>
 </tbody>
 </table>
@@ -538,10 +646,10 @@ columns used by the stacking algorithm. The default values used for <strong>Delt
 <p><strong>Possible Operations:</strong></p>
 <blockquote>
 <div><ul class="simple">
-<li>“-“: self - other</li>
-<li>“+”: self + other</li>
-<li>“*”: self * other</li>
-<li>“/”: self / other</li>
+<li>&#8220;-&#8221;: self - other</li>
+<li>&#8220;+&#8221;: self + other</li>
+<li>&#8220;*&#8221;: self * other</li>
+<li>&#8220;/&#8221;: self / other</li>
 </ul>
 </div></blockquote>
 <p>The results is updated to self. Use deepcopy to obtain
@@ -551,8 +659,8 @@ copies of the object for storing the previous state.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>other</strong> (<em>StackedProfileContainer</em>) – an other profile…</li>
-<li><strong>operation</strong> (<em>str</em>) – string specifying what to do…</li>
+<li><strong>other</strong> (<em>StackedProfileContainer</em>) &#8211; an other profile...</li>
+<li><strong>operation</strong> (<em>str</em>) &#8211; string specifying what to do...</li>
 </ul>
 </td>
 </tr>
@@ -563,14 +671,14 @@ copies of the object for storing the previous state.</p>
 <dl class="method">
 <dt id="proclens.xhandle.shearops.StackedProfileContainer.multiply">
 <code class="descname">multiply</code><span class="sig-paren">(</span><em>val</em>, <em>keep_rr=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.multiply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.multiply" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the JK estimate on profile times the specified “val”,</p>
+<dd><p>Calculate the JK estimate on profile times the specified &#8220;val&#8221;,</p>
 <p>Operation performed in-place.
 Use deepcopy to obtain copies of the object for storing the previous state.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>val</strong> (<em>float or np.array</em>) – value to multiply by</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>val</strong> (<em>float or np.array</em>) &#8211; value to multiply by</td>
 </tr>
 </tbody>
 </table>
@@ -615,7 +723,7 @@ values (-9999.0 by default).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>plist</strong> (<em>list of StackedProfileContainer objects</em>) – profiles across whiche the covarainces are to be calcualted</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>plist</strong> (<em>list of StackedProfileContainer objects</em>) &#8211; profiles across whiche the covarainces are to be calcualted</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">cov (E-mode), cov (B-mode)</td>
 </tr>
@@ -678,7 +786,7 @@ values (-9999.0 by default).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cosmo</strong> (<em>astropy.cosmology.FlatLambdaCDM</em>) – cosmology to use, default: H0=70, Om0=0.3</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cosmo</strong> (<em>astropy.cosmology.FlatLambdaCDM</em>) &#8211; cosmology to use, default: H0=70, Om0=0.3</td>
 </tr>
 </tbody>
 </table>
@@ -693,7 +801,7 @@ values (-9999.0 by default).</p>
 <dd><p>Converts potentially nested record array (such as a FITS Table) into Pandas DataFrame</p>
 <p>FITS tables sometimes have multidimensional columns, which are not supported for DataFrames
 Pandas DataFrames however provide many nice features, such as SQL speed database matchings.</p>
-<p>The approach is to flatten out multidimensional column [[COL]] into [COL_1, COL_2, …, COL_N]</p>
+<p>The approach is to flatten out multidimensional column [[COL]] into [COL_1, COL_2, ..., COL_N]</p>
 <p class="rubric">Examples</p>
 <p>Just pass the loaded FITS table:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitsio</span> <span class="k">as</span> <span class="nn">fio</span>
@@ -707,7 +815,7 @@ Pandas DataFrames however provide many nice features, such as SQL speed database
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recarr</strong> (<em>numpy.array</em>) – array to be converted to DataFrame</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recarr</strong> (<em>numpy.array</em>) &#8211; array to be converted to DataFrame</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">array as DataFrame</td>
 </tr>
@@ -752,7 +860,7 @@ can obtain perform as:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sinds</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">plpairs</span> <span class="o">=</span> <span class="n">sl</span><span class="o">.</span><span class="n">selector</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Let’s inspect the output, <code class="code docutils literal"><span class="pre">sinds</span></code> contains the boolean indexing arrays to
+<p>Let&#8217;s inspect the output, <code class="code docutils literal"><span class="pre">sinds</span></code> contains the boolean indexing arrays to
 select rows by, while <code class="code docutils literal"><span class="pre">bounds</span></code> shows the corresponding parameter boundaries,
 for example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bounds</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span>
@@ -773,8 +881,8 @@ tuple contains the parameter boundaries for that column. Indeed we find:</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>pps</strong> (<em>np.array N-D</em>) – numpy array with N rows, containing the parameters to split the sample by</li>
-<li><strong>limits</strong> (<em>list of lists</em>) – list of parameter limits, each element contains limits for a columna of pps</li>
+<li><strong>pps</strong> (<em>np.array N-D</em>) &#8211; numpy array with N rows, containing the parameters to split the sample by</li>
+<li><strong>limits</strong> (<em>list of lists</em>) &#8211; list of parameter limits, each element contains limits for a columna of pps</li>
 </ul>
 </td>
 </tr>
@@ -825,8 +933,8 @@ roughly balanced chunks</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>lst</strong> (<em>list</em>) – list to split up</li>
-<li><strong>n</strong> (<em>int</em>) – chunks to make</li>
+<li><strong>lst</strong> (<em>list</em>) &#8211; list to split up</li>
+<li><strong>n</strong> (<em>int</em>) &#8211; chunks to make</li>
 </ul>
 </td>
 </tr>
@@ -860,7 +968,7 @@ roughly balanced chunks</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>x</strong> (<em>np.array</em>)</li>
 <li><strong>y</strong> (<em>np.array</em>)</li>
-<li><strong>eps</strong> (<em>float</em>) – threshold for setting element to zero</li>
+<li><strong>eps</strong> (<em>float</em>) &#8211; threshold for setting element to zero</li>
 </ul>
 </td>
 </tr>
@@ -906,19 +1014,19 @@ roughly balanced chunks</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>par_names</strong> (<em>list of strings</em>) – names of parameters as they should appear on figure</li>
-<li><strong>pars</strong> (<em>np.ndarray</em>) – the DATA to show, (might have to transpose it!</li>
-<li><strong>par_edges</strong> (<em>list of tuples</em>) – parameter limits</li>
-<li><strong>figsize</strong> (<em>tuple</em>) – size of matplotlib figure</li>
-<li><strong>color</strong> (<em>str</em>) – primary color to use</li>
-<li><strong>fig</strong> (<em>mpl.figure</em>) – figure</li>
-<li><strong>axarr</strong> (<em>list of mpl.axes</em>) – axarr</li>
-<li><strong>mode</strong> (<em>str</em>) – hist or contour</li>
-<li><strong>cmap</strong> (<em>str</em>) – matplotlib color map to use for histogram</li>
-<li><strong>normed</strong> (<em>bool</em>) – normalize histograms across subplots</li>
-<li><strong>fontsize</strong> (<em>int</em>) – fontsize</li>
-<li><strong>tick_list</strong> (<em>list of np.arrays</em>) – list of tick positions for each axis</li>
-<li><strong>clevels</strong> (<em>list</em>) – contour levels as contained probability</li>
+<li><strong>par_names</strong> (<em>list of strings</em>) &#8211; names of parameters as they should appear on figure</li>
+<li><strong>pars</strong> (<em>np.ndarray</em>) &#8211; the DATA to show, (might have to transpose it!</li>
+<li><strong>par_edges</strong> (<em>list of tuples</em>) &#8211; parameter limits</li>
+<li><strong>figsize</strong> (<em>tuple</em>) &#8211; size of matplotlib figure</li>
+<li><strong>color</strong> (<em>str</em>) &#8211; primary color to use</li>
+<li><strong>fig</strong> (<em>mpl.figure</em>) &#8211; figure</li>
+<li><strong>axarr</strong> (<em>list of mpl.axes</em>) &#8211; axarr</li>
+<li><strong>mode</strong> (<em>str</em>) &#8211; hist or contour</li>
+<li><strong>cmap</strong> (<em>str</em>) &#8211; matplotlib color map to use for histogram</li>
+<li><strong>normed</strong> (<em>bool</em>) &#8211; normalize histograms across subplots</li>
+<li><strong>fontsize</strong> (<em>int</em>) &#8211; fontsize</li>
+<li><strong>tick_list</strong> (<em>list of np.arrays</em>) &#8211; list of tick positions for each axis</li>
+<li><strong>clevels</strong> (<em>list</em>) &#8211; contour levels as contained probability</li>
 <li><strong>weights</strong> (<em>weights for each entry in pars</em>)</li>
 </ul>
 </td>

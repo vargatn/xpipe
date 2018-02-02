@@ -4,9 +4,9 @@ Divides the redMaPPer cluster and randoms catalog into bins in richness and reds
 
 import argparse
 import pickle
-
 import proclens.paths as paths
-# import proclens.parbins as parbins
+import proclens.xhandle.parbins as parbins
+
 
 parser = argparse.ArgumentParser(description='Creates parameter bins for xshear calculations')
 parser.add_argument('--params', type=str)
@@ -16,5 +16,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
     paths.update_params(args.params)
 
-    ledges, zedges, nrandoms = paths.get_bin_settings(paths.params, devmode=paths.devmode)
+    param_bins, nrandoms = paths.get_bin_settings(paths.params, devmode=paths.devmode)
+    logfile = paths.dirpaths['xin'] + '/' + paths.params['tag'] + 'params.p'
+    pickle.dump(paths.params, open(logfile, 'wb'))
+
+
+    lpars = parbins.prepare_lenses(param_bins)
+
 

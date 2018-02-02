@@ -104,12 +104,11 @@ def get_fullpaths(params, project_path, default_inputs=True):
     _default_inputs_file = project_path + default_inputs_suffix
     _inputs_dict = read_yaml(_default_inputs_file)
 
-    # reading input file urls, try defaults first
-    if default_inputs:
-        _inputs_file = project_path + default_inputs_suffix
-    else:
+    try:
         _inputs_file = project_path + inputs_suffix
-    _inputs_dict.update(read_yaml(_inputs_file))
+        _inputs_dict.update(read_yaml(_inputs_file))
+    except:
+        pass
 
     fullpaths = get_local_filenames(_inputs_dict['local'], dirpaths)
 
@@ -185,9 +184,9 @@ def get_bin_settings(params, devmode):
         nrandoms = params['nrandoms']['full']
 
     keys = np.sort(param_bins.keys())
-    params = [param_bins[key] for key in keys]
+    param_bins = [param_bins[key] for key in keys]
 
-    return params, nrandoms
+    return param_bins, nrandoms
 
 
 ###################################################################

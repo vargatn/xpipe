@@ -3,8 +3,22 @@
    :maxdepth: 2
    :hidden:
 
+
 Python wrapper for xshear
 ============================
+
+Select lenses by field
+----------------------
+
+.. autofunction:: proclens.xhandle.parbins.field_cut
+
+Load catalogs
+------------------
+
+.. autofunction:: proclens.xhandle.parbins.load_lenscat
+
+.. autofunction:: proclens.xhandle.parbins.load_randcat
+
 
 Create xhsear-style lens catalog
 --------------------------------
