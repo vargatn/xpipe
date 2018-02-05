@@ -17,8 +17,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     paths.update_params(args.params)
 
-    param_bins, nrandoms = paths.get_bin_settings(paths.params, devmode=paths.devmode)
-
     lenses = parbins.prepare_lenses()
     randoms = parbins.prepare_random()
 

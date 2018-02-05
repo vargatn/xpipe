@@ -462,7 +462,103 @@ If <code class="code docutils literal"><span class="pre">None</span></code> then
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>TODO this</p>
+<p>Using default parameters specified in <code class="xref py py-data docutils literal"><span class="pre">paths.params</span></code>.</p>
+<p>load catalogs:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">lenses</span> <span class="o">=</span> <span class="n">parbins</span><span class="o">.</span><span class="n">prepare_lenses</span><span class="p">()</span>
+<span class="n">randoms</span> <span class="o">=</span> <span class="n">parbins</span><span class="o">.</span><span class="n">prepare_random</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>initiate object:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">xio</span> <span class="o">=</span> <span class="n">parbins</span><span class="o">.</span><span class="n">XIO</span><span class="p">(</span><span class="n">lenses</span><span class="p">,</span> <span class="n">randoms</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>create project directory:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">xio</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>loop over all parameter bins:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">xio</span><span class="o">.</span><span class="n">loop_bins</span><span class="p">(</span><span class="n">norands</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">norands</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>write logfile, for future reference:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">logfile</span> <span class="o">=</span> <span class="n">xio</span><span class="o">.</span><span class="n">dpath</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">paths</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;tag&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_params.p&#39;</span>
+<span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">paths</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="proclens.xhandle.parbins.XIO.loop_bins">
+<code class="descname">loop_bins</code><span class="sig-paren">(</span><em>norands=False</em>, <em>match=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.loop_bins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.loop_bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loops over (lambda, z) parameter bins and save xshear input files</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>norands</strong> (<em>bool</em>) &#8211; Flag to skip random points, default <code class="code docutils literal"><span class="pre">False</span></code>, (that is to include randoms)</li>
+<li><strong>match</strong> (<em>bool</em>) &#8211; Flag to match the random point distribution by their paramters to
+the lens distribution. The alternative is to just apply the parameter cut without
+further matching.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="proclens.xhandle.parbins.XIO.mkdir">
+<code class="descname">mkdir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.mkdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.mkdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates project directory</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="proclens.xhandle.parbins.XIO.randsel">
+<code class="descname">randsel</code><span class="sig-paren">(</span><em>match=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.randsel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.randsel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selects random points to use (weighted draw with replacement)</p>
+<p>If <code class="code docutils literal"><span class="pre">self.nrandoms</span> <span class="pre">==</span> <span class="pre">-1</span></code> then all random points are used, and no random draw is made.
+In this case the weights are not applied properly, so be careful!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>match</strong> (<em>bool</em>) &#8211; Flag to match the random point distribution by their paramters to
+the lens distribution. The alternative is to just apply the parameter cut without
+further matching.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="proclens.xhandle.parbins.XIO.save_clust">
+<code class="descname">save_clust</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.save_clust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.save_clust" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes lenses to file in xshear style</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="proclens.xhandle.parbins.XIO.save_clust_jk">
+<code class="descname">save_clust_jk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.save_clust_jk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.save_clust_jk" title="Permalink to this definition">¶</a></dt>
+<dd><p>writes cluster lens file for each JK patch in xshear style</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="proclens.xhandle.parbins.XIO.save_rands">
+<code class="descname">save_rands</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.save_rands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.save_rands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes random points to file in xshear style</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="proclens.xhandle.parbins.XIO.save_rands_jk">
+<code class="descname">save_rands_jk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.save_rands_jk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.save_rands_jk" title="Permalink to this definition">¶</a></dt>
+<dd><p>writes random points to file for each JK patch in xshear style</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="proclens.xhandle.parbins.XIO.setbin">
+<code class="descname">setbin</code><span class="sig-paren">(</span><em>bound</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.setbin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.setbin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assigns index and filenames for param bin based on <code class="code docutils literal"><span class="pre">bounds</span></code></p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -1227,15 +1323,16 @@ of the two datasets</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><em>np.array</em> &#8211; new weights for the input catalog</li>
-<li><strong>*TODO</strong> (<em>TO BE TESTED*</em>)</li>
-</ul>
-</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">new weights for the input catalog</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.array</p>
 </td>
 </tr>
 </tbody>
 </table>
+<p class="rubric">Notes</p>
+<p><em>TODO: TO BE TESTED</em></p>
 </dd></dl>
 
 </div>

@@ -29,7 +29,7 @@ Create xshear-style input files
 --------------------------------
 
 .. autoclass:: proclens.xhandle.parbins.XIO
-
+    :members:
 
 
 Create xhsear-style lens catalog
@@ -117,7 +117,6 @@ Observed to absolute magnitude conversion
 
 .. autoclass:: proclens.tools.magtools.AbsMagConverter
 
-.. au
 
 FITS to pandas conversion
 --------------------------

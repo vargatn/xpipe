@@ -419,7 +419,29 @@ class XIO(object):
         Examples
         --------
 
-        TODO this
+        Using default parameters specified in :py:data:`paths.params`.
+
+        load catalogs::
+
+            lenses = parbins.prepare_lenses()
+            randoms = parbins.prepare_random()
+
+        initiate object::
+
+            xio = parbins.XIO(lenses, randoms)
+
+        create project directory::
+
+            xio.mkdir()
+
+        loop over all parameter bins::
+
+            xio.loop_bins(norands=args.norands)
+
+        write logfile, for future reference::
+
+            logfile = xio.dpath + '/' + paths.params['tag'] + '_params.p'
+            pickle.dump(paths.params, open(logfile, 'wb'))
 
         """
 
