@@ -336,6 +336,63 @@
 
     <span class="n">sinds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sinds</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">sinds</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">plpairs</span></div>
+
+
+<div class="viewcode-block" id="matchdd"><a class="viewcode-back" href="../../../api.html#proclens.tools.selector.matchdd">[docs]</a><span class="k">def</span> <span class="nf">matchdd</span><span class="p">(</span><span class="n">pars</span><span class="p">,</span> <span class="n">refpars</span><span class="p">,</span> <span class="n">win</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Matches two D-dimensional distributions by reweighting individual objects</span>
+
+<span class="sd">    New weights are assigned by comparing the normalized, weighted histograms</span>
+<span class="sd">    of the two datasets</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pars : np.ndarray</span>
+<span class="sd">        data table to be reweighted, shape (N1, D)</span>
+<span class="sd">    refpars : np.ndarray</span>
+<span class="sd">        reference data table, shape (N2, D)</span>
+<span class="sd">    win : np.array</span>
+<span class="sd">        weights for the data table</span>
+<span class="sd">    wref : np.array</span>
+<span class="sd">        weights for the reference table</span>
+<span class="sd">    bins : int or tuple</span>
+<span class="sd">        number of bins, or tuple of bin edges</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.array</span>
+<span class="sd">        new weights for the input catalog</span>
+
+<span class="sd">    *TODO: TO BE TESTED*</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">win</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">win</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pars</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">wref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">wref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">refpars</span><span class="p">))</span>
+
+    <span class="n">refcounts</span><span class="p">,</span> <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogramdd</span><span class="p">(</span><span class="n">refpars</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">wref</span><span class="p">,</span> <span class="n">normed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogramdd</span><span class="p">(</span><span class="n">pars</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bin_edges</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">win</span><span class="p">,</span> <span class="n">normed</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">wratio</span> <span class="o">=</span> <span class="n">safedivide</span><span class="p">(</span><span class="n">refcounts</span><span class="p">,</span> <span class="n">counts</span><span class="p">)</span>
+
+    <span class="n">_digits</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">icol</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">pars</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">_digits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">pars</span><span class="p">[:,</span> <span class="n">icol</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">icol</span><span class="p">]))</span>
+    <span class="n">digits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">_digits</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="n">ww</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pars</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dig</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">digits</span><span class="p">):</span>
+        <span class="c1"># checking that point is within bounds for each digitize...</span>
+        <span class="n">checkval</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">icol</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">pars</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">dig</span><span class="p">[</span><span class="n">icol</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">dig</span><span class="p">[</span><span class="n">icol</span><span class="p">]</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">icol</span><span class="p">]):</span>
+                <span class="n">checkval</span> <span class="o">*=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">checkval</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dig</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">ww</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">wratio</span><span class="p">[</span><span class="n">val</span><span class="p">]</span> <span class="o">*</span> <span class="n">win</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">ww</span></div>
 </pre></div>
 
            </div>

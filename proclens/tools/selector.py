@@ -172,3 +172,62 @@ def selector(pps, limits):
 
     sinds = np.array(sinds)
     return sinds, bounds, plpairs
+
+
+def matchdd(pars, refpars, win=None, wref=None, bins=30):
+    """
+    Matches two D-dimensional distributions by reweighting individual objects
+
+    New weights are assigned by comparing the normalized, weighted histograms
+    of the two datasets
+
+    Parameters
+    ----------
+    pars : np.ndarray
+        data table to be reweighted, shape (N1, D)
+    refpars : np.ndarray
+        reference data table, shape (N2, D)
+    win : np.array
+        weights for the data table
+    wref : np.array
+        weights for the reference table
+    bins : int or tuple
+        number of bins, or tuple of bin edges
+
+    Returns
+    -------
+    np.array
+        new weights for the input catalog
+
+    Notes
+    ------
+    *TODO: TO BE TESTED*
+
+    """
+    if win is None:
+        win = np.ones(len(pars))
+    if wref is None:
+        wref = np.ones(len(refpars))
+
+    refcounts, bin_edges = np.histogramdd(refpars, bins=bins, weights=wref, normed=True)
+    counts = np.histogramdd(pars, bins=bin_edges, weights=win, normed=True)[0]
+    wratio = safedivide(refcounts, counts)
+
+    _digits = []
+    for icol in np.arange(pars.shape[1]):
+        _digits.append(np.digitize(pars[:, icol], bins=bin_edges[icol]))
+    digits = np.vstack(_digits).T
+
+    ww = np.zeros(len(pars))
+    for i, dig in enumerate(digits):
+        # checking that point is within bounds for each digitize...
+        checkval = True
+        for icol in np.arange(pars.shape[1]):
+            if dig[icol] == 0 or dig[icol] == len(bin_edges[icol]):
+                checkval *= False
+
+        if checkval:
+            val = tuple(np.array(dig) - 1)
+            ww[i] = wratio[val] * win[i]
+
+    return ww

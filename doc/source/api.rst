@@ -142,6 +142,12 @@ safe divide
 
 .. autofunction:: proclens.tools.selector.safedivide
 
+
+distribution matching
+---------------------
+
+.. autofunction:: proclens.tools.selector.matchdd
+
 Visualization
 =============
 

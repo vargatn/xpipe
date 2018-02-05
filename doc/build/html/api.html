@@ -118,6 +118,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#parameter-selection">parameter selection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#list-partitioning">list partitioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#safe-divide">safe divide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#distribution-matching">distribution matching</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#visualization">Visualization</a><ul>
@@ -1198,6 +1199,39 @@ roughly balanced chunks</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="distribution-matching">
+<h2>distribution matching<a class="headerlink" href="#distribution-matching" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="proclens.tools.selector.matchdd">
+<code class="descclassname">proclens.tools.selector.</code><code class="descname">matchdd</code><span class="sig-paren">(</span><em>pars</em>, <em>refpars</em>, <em>win=None</em>, <em>wref=None</em>, <em>bins=30</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/selector.html#matchdd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.selector.matchdd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matches two D-dimensional distributions by reweighting individual objects</p>
+<p>New weights are assigned by comparing the normalized, weighted histograms
+of the two datasets</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pars</strong> (<em>np.ndarray</em>) &#8211; data table to be reweighted, shape (N1, D)</li>
+<li><strong>refpars</strong> (<em>np.ndarray</em>) &#8211; reference data table, shape (N2, D)</li>
+<li><strong>win</strong> (<em>np.array</em>) &#8211; weights for the data table</li>
+<li><strong>wref</strong> (<em>np.array</em>) &#8211; weights for the reference table</li>
+<li><strong>bins</strong> (<em>int or tuple</em>) &#8211; number of bins, or tuple of bin edges</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>np.array</em> &#8211; new weights for the input catalog</li>
+<li><strong>*TODO</strong> (<em>TO BE TESTED*</em>)</li>
+</ul>
+</p>
 </td>
 </tr>
 </tbody>

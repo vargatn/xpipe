@@ -3,11 +3,12 @@
 """
 import kmeans_radec as krd
 import numpy as np
-from astropy.io import fits
+import fitsio as fio
 import os
 
 from .. import paths
-from ..tools.selector import selector
+from ..tools.selector import selector, matchdd
+from ..tools.catalogs import to_pandas
 from .ioshear import makecat
 
 
@@ -127,7 +128,7 @@ def load_lenscat(params=None, fullpaths=None):
                           " which results in inconsistent behaviour. "
                           "If using custom input, define all arguments!")
 
-    lenscat = fits.open(fullpaths[params["cat_to_use"]]["lens"])[1].data
+    lenscat = fio.read(fullpaths[params["cat_to_use"]]["lens"])
     lenskey = params['lenskey']
 
     ids = lenscat[lenskey['id']]
@@ -148,11 +149,11 @@ def load_lenscat(params=None, fullpaths=None):
         qlist[:, ival] = lenscat[lenskey[colname]]
 
     data = {
-        "id" : ids,
-        "ra" : ra,
-        "dec" : dec,
-        "z": z,
-        "qlist" : qlist
+        "id" : ids[select],
+        "ra" : ra[select],
+        "dec" : dec[select],
+        "z": z[select],
+        "qlist" : qlist[select]
     }
 
     return data, lenscat[select]
@@ -208,14 +209,14 @@ def load_randcat(params=None, fullpaths=None):
                           " which results in inconsistent behaviour. "
                           "If using custom input, define all arguments!")
 
-    randcat = fits.open(fullpaths[params["cat_to_use"]]["rand"])[1].data
+    randcat = fio.read(fullpaths[params["cat_to_use"]]["rand"])
     randkey = params['randkey']
 
     w = randcat[randkey['w']]
     ra = randcat[randkey['ra']]
     dec = randcat[randkey['dec']]
     z = randcat[randkey["z"]]
-    ids = len(randcat)
+    ids = np.arange(len(randcat))
 
     select = np.zeros(len(ra), dtype=bool)
     fields = get_fields_auto()
@@ -230,12 +231,12 @@ def load_randcat(params=None, fullpaths=None):
         qlist[:, ival] = randcat[randkey[colname]]
 
     data = {
-        "id" : ids,
-        "w" : w,
-        "ra" : ra,
-        "dec" : dec,
-        "z" : z,
-        "qlist" : qlist
+        "id" : ids[select],
+        "w" : w[select],
+        "ra" : ra[select],
+        "dec" : dec[select],
+        "z" : z[select],
+        "qlist" : qlist[select]
     }
 
     return data, randcat[select]
@@ -458,7 +459,7 @@ class XIO(object):
         self.rng = np.random.RandomState()
         self.rng.seed(seed=self.params["seeds"]['random_seed'])
 
-    def _setbin(self, bound):
+    def setbin(self, bound):
         """Assigns index and filenames for param bin based on :code:`bounds`"""
         self.bin_tag = "_qbin"
         for bb in bound:
@@ -488,7 +489,7 @@ class XIO(object):
         print 'saved ' + self.flist[self.ind]
 
     def save_clust_jk(self):
-        """writes cluster lens file for JK patch in xshear style"""
+        """writes cluster lens file for each JK patch in xshear style"""
         sind = self.lenses["sinds"][self.ind]
         ra = self.lenses["ra"][sind]
         dec = self.lenses["dec"][sind]
@@ -502,9 +503,78 @@ class XIO(object):
             jkinds, jkninds, labels = assign_jk_labels(ra, dec, self._bin_jk_centers)
             self._save_jk_cens()
         else:
+            print "here"
             jkinds, jkninds, labels = extract_jk_labels(self.lenses["jk"][sind])
 
-    def loop_bins(self, norands=False):
+        # write data table of selected clusters along with the assigned Jackknife IDs
+        ftab = to_pandas(self.lenses["fullcat"][sind])
+        ftab["JK_ID"] = labels
+        fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), ftab.to_records(), clobber=True)
+
+        for label, jkind in enumerate(jkinds):
+            fname = self.dpath + "/" +  self.flist[self.ind].replace('.dat', '_patch' + str(label) + '.dat')
+            self.flist_jk.append(fname)
+            makecat(fname, self.lenses["id"][sind][jkind], self.lenses["ra"][sind][jkind],
+                    self.lenses["dec"][sind][jkind], self.lenses["z"][sind][jkind])
+
+    def randsel(self, match=True):
+        """
+        Selects random points to use (weighted draw with replacement)
+
+        If :code:`self.nrandoms == -1` then all random points are used, and no random draw is made.
+        In this case the weights are not applied properly, so be careful!
+
+        Parameters
+        ----------
+        match : bool
+            Flag to match the random point distribution by their paramters to
+            the lens distribution. The alternative is to just apply the parameter cut without
+            further matching.
+        """
+
+        rind = self.randoms['sinds'][self.ind]
+        pars = self.randoms["qlist"][rind]
+
+        sind = self.lenses['sinds'][self.ind]
+        refpars = self.lenses["qlist"][sind]
+
+        rw = self.randoms['w'][rind]
+        if match:
+            rw = matchdd(pars, refpars, win=rw)
+        prw = rw / rw.sum()
+
+        nr = rind.sum()
+        if self.nrandoms == -1:
+            self.idraw = np.arange(rind.sum())
+        else:
+            self.idraw = self.rng.choice(np.arange(nr), size=self.nrandoms, p=prw, replace=True)
+
+    def save_rands(self):
+        """Writes random points to file in xshear style"""
+        rind = self.randoms['sinds'][self.ind]
+        makecat(self.dpath + "/" + self.rlist[self.ind],
+                        self.randoms['id'][rind][self.idraw], self.randoms['ra'][rind][self.idraw],
+                        self.randoms['dec'][rind][self.idraw], self.randoms['z'][rind][self.idraw])
+        print 'saved ' + self.rlist[self.ind]
+
+    def save_rands_jk(self):
+        """writes random points to file for each JK patch in xshear style"""
+        rind = self.randoms['sinds'][self.ind]
+        ra = self.randoms['ra'][rind][self.idraw]
+        dec = self.randoms['dec'][rind][self.idraw]
+
+        if self.centers is not None:
+            jkinds, jkninds, labels = assign_jk_labels(ra, dec, self._bin_jk_centers)
+        else:
+            jkinds, jkninds, labels = extract_jk_labels(self.randoms["jk"][rind][self.idraw])
+
+        for label, jkind in enumerate(jkinds):
+            fname = self.dpath + "/" + self.rlist[self.ind].replace('.dat', '_patch' + str(label) + '.dat')
+            self.rlist_jk.append(fname)
+            makecat(fname, self.randoms["id"][rind][jkind], self.randoms["ra"][rind][jkind],
+                    self.randoms["dec"][rind][jkind], self.randoms["z"][rind][jkind])
+
+    def loop_bins(self, norands=False, match=True):
         """
         Loops over (\lambda, z) parameter bins and save xshear input files
 
@@ -512,25 +582,24 @@ class XIO(object):
         ----------
         norands : bool
             Flag to skip random points, default :code:`False`, (that is to include randoms)
+        match : bool
+            Flag to match the random point distribution by their paramters to
+            the lens distribution. The alternative is to just apply the parameter cut without
+            further matching.
         """
 
-        # create project directory
-        self.mkdir()
-
+        # loop over parameter bins
         for ind, bound in enumerate(self.lenses["bounds"]):
             self.ind = ind
-            self._setbin(bound)
+            self.setbin(bound)
 
-            # self.save_clust()
+            self.save_clust()
             self.save_clust_jk()
 
-
-            break
-    #
-    #             if not norands:
-    #                 self._randsel()
-    #                 self.save_rands(self.rpars)
-    #                 self.save_rands_jk(self.rpars)
+            if not norands:
+                self.randsel(match=match)
+                self.save_rands()
+                self.save_rands_jk()
 
 
 def assign_kmeans_labels(pos, centers, verbose=False):
