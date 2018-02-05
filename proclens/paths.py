@@ -182,7 +182,6 @@ def get_bin_settings(params, devmode):
     else:
         param_bins = params['param_bins_full']
         nrandoms = params['nrandoms']['full']
-
     keys = np.sort(param_bins.keys())
     param_bins = [param_bins[key] for key in keys]
 
@@ -220,6 +219,9 @@ while has_custom_specified and params["custom_params_file"] is not None:
         break
 
 
+# TODO add effective re-initialization of params for API mode
 
 
+def set_params(**kwargs):
+    global devmode, dirpaths, fullpaths, fullurls, pdf_files
 

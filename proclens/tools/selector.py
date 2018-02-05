@@ -158,7 +158,7 @@ def selector(pps, limits):
     for pp, limit in zip(parinds, limits):
         plpair = []
         for i, lim in enumerate(limit[:-1]):
-            plpair.append((pp, (limit[i], limit[i + 1])))
+            plpair.append((pp, (limit[i], limit[i + 1]), i))
         plpairs.append(plpair)
 
     sinds = []
@@ -166,7 +166,7 @@ def selector(pps, limits):
     for pval in itertools.product(*plpairs):
         sval = np.ones(len(pps), dtype=bool)
         bounds.append(pval)
-        for (pind, limit) in pval:
+        for (pind, limit, tmp) in pval:
             sval *= (limit[0] <= pps[:, pind]) * (pps[:, pind] < limit[1])
         sinds.append(sval)
 

@@ -12,12 +12,24 @@ Select lenses by field
 
 .. autofunction:: proclens.xhandle.parbins.field_cut
 
+.. autofunction:: proclens.xhandle.parbins.get_fields_auto
+
 Load catalogs
 ------------------
 
 .. autofunction:: proclens.xhandle.parbins.load_lenscat
 
 .. autofunction:: proclens.xhandle.parbins.load_randcat
+
+.. autofunction:: proclens.xhandle.parbins.prepare_lenses
+
+.. autofunction:: proclens.xhandle.parbins.prepare_random
+
+Create xshear-style input files
+--------------------------------
+
+.. autoclass:: proclens.xhandle.parbins.XIO
+
 
 
 Create xhsear-style lens catalog
@@ -64,7 +76,11 @@ Logarithmic bin properties
 Jackknife label assignment
 --------------------------
 
-.. autofunction:: proclens.xhandle.shearops.assign_jk_labels
+.. autofunction:: proclens.xhandle.parbins.assign_kmeans_labels
+
+.. autofunction:: proclens.xhandle.parbins.assign_jk_labels
+
+.. autofunction:: proclens.xhandle.parbins.extract_jk_labels
 
 
 Stacked Profile Container

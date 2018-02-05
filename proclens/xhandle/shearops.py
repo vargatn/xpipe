@@ -2,9 +2,9 @@
 
 """
 
-import kmeans_radec as krd
-import numpy as np
 import math
+
+import numpy as np
 
 from .ioshear import read_single_bin, read_multiple_bin, sheared_tags
 
@@ -48,42 +48,6 @@ def redges(rmin, rmax, nbin):
                       for i, val in enumerate(edges[:-1])])
 
     return cens, edges, areas
-
-
-def assign_jk_labels(pos, centers, verbose=False):
-    """
-    Assigns JackKnife labels to 2D points on the sky via spherical k-means
-
-    Parameters
-    ----------
-    pos : np.ndarray
-        positions of points in (RA, DEC)
-    centers : int or np.ndarray
-        Number of JK centers to use, or the (RA, DEC) coordinates of the centers
-    verbose : bool
-        verbose flag to pass to **kmeans_radec**
-
-    Returns
-    -------
-    np.array, np.ndarray
-        JK-labels, JK-centers
-    """
-
-    if not np.iterable(centers):  # if centers is a number
-        ncen = centers
-        nsample = pos.shape[0] // 2
-        km = krd.kmeans_sample(pos, ncen=ncen,
-                                    nsample=nsample, verbose=verbose)
-        if not km.converged:
-            km.run(pos, maxiter=100)
-
-    else:  # if centers is an array of RA, DEC pairs
-        assert len(centers.shape) == 2  # shape should be (:, 2)
-        km = krd.KMeans(centers)
-
-    labels = km.find_nearest(pos).astype(int)
-    return labels, km.centers
-
 
 
 class StackedProfileContainer(object):

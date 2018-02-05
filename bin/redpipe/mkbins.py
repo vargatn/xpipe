@@ -17,10 +17,10 @@ if __name__ == '__main__':
     paths.update_params(args.params)
 
     param_bins, nrandoms = paths.get_bin_settings(paths.params, devmode=paths.devmode)
-    logfile = paths.dirpaths['xin'] + '/' + paths.params['tag'] + 'params.p'
+    logfile = paths.dirpaths['xin'] + '/' + paths.params['tag'] + '_params.p'
     pickle.dump(paths.params, open(logfile, 'wb'))
 
 
-    lpars = parbins.prepare_lenses(param_bins)
+    # lpars = parbins.prepare_lenses(param_bins)
 
 

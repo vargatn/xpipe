@@ -34,8 +34,8 @@ pdf_paths: null
 # which is expected to run much faster for dev
 mode: full
 
-# prefix for all files (with trailing "_")
-tag: default_
+# prefix for all files (with NO trailing "_")
+tag: default
 
 # reduced, lensfit, metacal
 shear_style: reduced
@@ -98,8 +98,8 @@ pairlog:
 
 
 ######################################################
-
 # aliases for catolog parameters
+
 lenskey:
   mid: MEM_MATCH_ID
   ra: RA
@@ -113,6 +113,12 @@ randkey:
   ra: RA
   dec: DEC
   w: WEIGHT
+
+######################################################
+# file prefixes and suffixes
+
+lens_prefix: y1clust
+rand_prefix: y1rand
 
 ######################################################
 # DES fields with rectangular boundary in radec

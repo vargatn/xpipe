@@ -97,6 +97,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python wrapper for xshear</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#select-lenses-by-field">Select lenses by field</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#load-catalogs">Load catalogs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-xshear-style-input-files">Create xshear-style input files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-xhsear-style-lens-catalog">Create xhsear-style lens catalog</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#read-ra-dec-positions-for-lenses">Read (RA, DEC) positions for lenses</a></li>
 </ul>
@@ -231,68 +232,236 @@
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="proclens.xhandle.parbins.get_fields_auto">
+<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">get_fields_auto</code><span class="sig-paren">(</span><em>params=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#get_fields_auto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.get_fields_auto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts field boundaries from project <code class="code docutils literal"><span class="pre">params</span></code> dictionary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> (<em>dict</em>) &#8211; Pipeline settings in a dictionary format. If <code class="code docutils literal"><span class="pre">None</span></code> then the default
+<code class="xref py py-data docutils literal"><span class="pre">paths.params</span></code> will be used</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">fields to be used with boundaries</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="load-catalogs">
 <h2>Load catalogs<a class="headerlink" href="#load-catalogs" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="proclens.xhandle.parbins.load_lenscat">
-<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">load_lenscat</code><span class="sig-paren">(</span><em>fields</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#load_lenscat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.load_lenscat" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">load_lenscat</code><span class="sig-paren">(</span><em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#load_lenscat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.load_lenscat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads lens catalog from fits file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fields</strong> (<em>list of dicts</em>) &#8211; list of boundaries for <a class="reference internal" href="#proclens.xhandle.parbins.field_cut" title="proclens.xhandle.parbins.field_cut"><code class="xref py py-meth docutils literal"><span class="pre">proclens.xhandle.parbins.field_cut()</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>params</strong> (<em>dict</em>) &#8211; Pipeline settings in a dictionary format.
+If <code class="code docutils literal"><span class="pre">None</span></code> then the default <code class="xref py py-data docutils literal"><span class="pre">paths.params</span></code> will be used</li>
+<li><strong>fullpaths</strong> (<em>dict</em>) &#8211; Pipeline file paths in a dictionary format.
+If <code class="code docutils literal"><span class="pre">None</span></code> then the default <code class="xref py py-data docutils literal"><span class="pre">paths.fullpaths</span></code> will be used</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">lens catalog data in format,
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">lens catalog data in format,
 bool array for selection,
-raw data table before selection</td>
+raw data table before selection</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a>, np.array, record-array</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a>, np.array, record-array</p>
+</td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>The format of the output data table:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;id&quot;</span> <span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
-    <span class="s2">&quot;ra&quot;</span> <span class="p">:</span> <span class="n">ra</span><span class="p">,</span>
-    <span class="s2">&quot;dec&quot;</span> <span class="p">:</span> <span class="n">dec</span><span class="p">,</span>
-    <span class="s2">&quot;qlist&quot;</span> <span class="p">:</span> <span class="n">qlist</span><span class="p">,</span> <span class="c1"># np.array of quantities with shape (n_lens, n_quantity)</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<p>If using custom settings, you have to specify both <code class="code docutils literal"><span class="pre">params</span></code> and <code class="code docutils literal"><span class="pre">fullpaths</span></code>!
+Using inconsitent definitions result in a <code class="code docutils literal"><span class="pre">SyntaxError</span></code>.</p>
+<p>The first output is a dict with the following keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="code docutils literal"><span class="pre">id</span></code> catalog ID of the lenses</li>
+<li><code class="code docutils literal"><span class="pre">ra</span></code> Right Ascension of the lenses</li>
+<li><code class="code docutils literal"><span class="pre">dec</span></code> Delination of the lenses</li>
+<li><code class="code docutils literal"><span class="pre">z</span></code> Redshift of the lenses</li>
+<li><code class="code docutils literal"><span class="pre">qlist</span></code> np.array of quantities with shape (n_lens, n_quantity)</li>
+</ul>
+</div></blockquote>
 </dd></dl>
 
 <dl class="function">
 <dt id="proclens.xhandle.parbins.load_randcat">
-<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">load_randcat</code><span class="sig-paren">(</span><em>fields</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#load_randcat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.load_randcat" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">load_randcat</code><span class="sig-paren">(</span><em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#load_randcat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.load_randcat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads random point catalog from fits file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fields</strong> (<em>list of dicts</em>) &#8211; list of boundaries for <a class="reference internal" href="#proclens.xhandle.parbins.field_cut" title="proclens.xhandle.parbins.field_cut"><code class="xref py py-meth docutils literal"><span class="pre">proclens.xhandle.parbins.field_cut()</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>params</strong> (<em>dict</em>) &#8211; Pipeline settings in a dictionary format.
+If <code class="code docutils literal"><span class="pre">None</span></code> then the default <code class="xref py py-data docutils literal"><span class="pre">paths.params</span></code> will be used</li>
+<li><strong>fullpaths</strong> (<em>dict</em>) &#8211; Pipeline file paths in a dictionary format.
+If <code class="code docutils literal"><span class="pre">None</span></code> then the default <code class="xref py py-data docutils literal"><span class="pre">paths.fullpaths</span></code> will be used</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">lens catalog data in format,
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">lens catalog data in format,
 bool array for selection,
-raw data table before selection</td>
+raw data table before selection</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a>, np.array, record-array</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a>, np.array, record-array</p>
+</td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
+<p>If using custom settings, you have to specify both <code class="code docutils literal"><span class="pre">params</span></code> and <code class="code docutils literal"><span class="pre">fullpaths</span></code>!
+Using inconsitent definitions result in a <code class="code docutils literal"><span class="pre">SyntaxError</span></code>.</p>
+<p>The first output is a dict with the following keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="code docutils literal"><span class="pre">id</span></code> mock ID of the random points</li>
+<li><code class="code docutils literal"><span class="pre">ra</span></code> Right Ascension of the random points</li>
+<li><code class="code docutils literal"><span class="pre">dec</span></code> Delination of the random points</li>
+<li><code class="code docutils literal"><span class="pre">z</span></code> Redshift of the random points</li>
+<li><code class="code docutils literal"><span class="pre">qlist</span></code> np.array of mock quantities with shape (n_lens, n_quantity).
+This refers to the mock quantities assigned to the randoms points,</li>
+<li><code class="code docutils literal"><span class="pre">w</span></code> weight of the random points</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="proclens.xhandle.parbins.prepare_lenses">
+<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">prepare_lenses</code><span class="sig-paren">(</span><em>bin_settings=None</em>, <em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#prepare_lenses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.prepare_lenses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads lens data and defines sub-selections for different parameter bins</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>bin_settings</strong> (<em>list</em>) &#8211; (parameter_edges, N_randoms)
+can be specified independently from the pipeline settings,
+default is extracted from <code class="code docutils literal"><span class="pre">params</span></code></li>
+<li><strong>params</strong> (<em>dict</em>) &#8211; Pipeline settings in a dictionary format.
+If <code class="code docutils literal"><span class="pre">None</span></code> then the default <code class="xref py py-data docutils literal"><span class="pre">paths.params</span></code> will be used</li>
+<li><strong>fullpaths</strong> (<em>dict</em>) &#8211; Pipeline file paths in a dictionary format.
+If <code class="code docutils literal"><span class="pre">None</span></code> then the default <code class="xref py py-data docutils literal"><span class="pre">paths.fullpaths</span></code> will be used</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> &#8211; Relevant rows and indexes of the lens sample</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>If using custom settings, you have to specify both <code class="code docutils literal"><span class="pre">params</span></code> and <code class="code docutils literal"><span class="pre">fullpaths</span></code>!
+Using inconsitent definitions result in a <code class="code docutils literal"><span class="pre">SyntaxError</span></code>.</p>
 <p>The format of the output data table:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;id&quot;</span> <span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
-    <span class="s2">&quot;ra&quot;</span> <span class="p">:</span> <span class="n">ra</span><span class="p">,</span>
-    <span class="s2">&quot;dec&quot;</span> <span class="p">:</span> <span class="n">dec</span><span class="p">,</span>
-    <span class="s2">&quot;qlist&quot;</span> <span class="p">:</span> <span class="n">qlist</span><span class="p">,</span> <span class="c1"># np.array of quantities with shape (n_lens, n_quantity)</span>
-    <span class="s2">&quot;w&quot;</span> <span class="p">:</span> <span class="n">w</span><span class="p">,</span> <span class="c1"># weight of random points</span>
-<span class="p">}</span>
-</pre></div>
+<blockquote>
+<div><ul class="simple">
+<li><code class="code docutils literal"><span class="pre">id</span></code> catalog ID of the lenses</li>
+<li><code class="code docutils literal"><span class="pre">ra</span></code> Right Ascension of the lenses</li>
+<li><code class="code docutils literal"><span class="pre">dec</span></code> Delination of the lenses</li>
+<li><code class="code docutils literal"><span class="pre">qlist</span></code> np.array of quantities with shape (n_lens, n_quantity)</li>
+<li><code class="code docutils literal"><span class="pre">sinds</span></code> list of boolean selection indexes for each parameter bin</li>
+<li><code class="code docutils literal"><span class="pre">fullcat</span></code> selected rows of the full lens catalog</li>
+<li><code class="code docutils literal"><span class="pre">bounds</span></code> for each bin parameter bounds written as <img class="math" src="_images/math/2d824f7bf4fe6048a4f51f74061eff96a2b674c5.png" alt="[x_0;\,x_1)"/></li>
+<li><code class="code docutils literal"><span class="pre">plpairs</span></code> parameter boundaries simple simple list</li>
+</ul>
+<blockquote>
+<div>(just boundaries, not pairs or tuples)</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="proclens.xhandle.parbins.prepare_random">
+<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">prepare_random</code><span class="sig-paren">(</span><em>bin_settings=None</em>, <em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#prepare_random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.prepare_random" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads random points and defines sub-selections for different parameter bins</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>bin_settings</strong> (<em>list</em>) &#8211; (parameter_edges, N_randoms)
+can be specified independently from the pipeline settings,
+default is extracted from <code class="code docutils literal"><span class="pre">params</span></code></li>
+<li><strong>params</strong> (<em>dict</em>) &#8211; Pipeline settings in a dictionary format.
+If <code class="code docutils literal"><span class="pre">None</span></code> then the default <code class="xref py py-data docutils literal"><span class="pre">paths.params</span></code> will be used</li>
+<li><strong>fullpaths</strong> (<em>dict</em>) &#8211; Pipeline file paths in a dictionary format.
+If <code class="code docutils literal"><span class="pre">None</span></code> then the default <code class="xref py py-data docutils literal"><span class="pre">paths.fullpaths</span></code> will be used</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> &#8211; Relevant rows and indexes of the lens sample</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>If using custom settings, you have to specify both <code class="code docutils literal"><span class="pre">params</span></code> and <code class="code docutils literal"><span class="pre">fullpaths</span></code>!
+Using inconsitent definitions result in a <code class="code docutils literal"><span class="pre">SyntaxError</span></code>.</p>
+<p>The format of the output data table:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="code docutils literal"><span class="pre">id</span></code> mock ID of the random points</li>
+<li><code class="code docutils literal"><span class="pre">ra</span></code> Right Ascension of the random points</li>
+<li><code class="code docutils literal"><span class="pre">dec</span></code> Delination of the random points</li>
+<li><code class="code docutils literal"><span class="pre">qlist</span></code> np.array of mock quantities with shape (n_lens, n_quantity).
+This refers to the mock quantities assigned to the randoms points,</li>
+<li><code class="code docutils literal"><span class="pre">w</span></code> weight of the random points</li>
+<li><code class="code docutils literal"><span class="pre">sinds</span></code> list of boolean selection indexes for each parameter bin</li>
+<li><code class="code docutils literal"><span class="pre">fullcat</span></code> selected rows of the full lens catalog</li>
+<li><code class="code docutils literal"><span class="pre">bounds</span></code> for each bin parameter bounds written as <img class="math" src="_images/math/2d824f7bf4fe6048a4f51f74061eff96a2b674c5.png" alt="[x_0;\,x_1)"/></li>
+<li><code class="code docutils literal"><span class="pre">plpairs</span></code> parameter boundaries simple simple list</li>
+</ul>
+<blockquote>
+<div>(just boundaries, not pairs or tuples)</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
 </div>
+<div class="section" id="create-xshear-style-input-files">
+<h2>Create xshear-style input files<a class="headerlink" href="#create-xshear-style-input-files" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="proclens.xhandle.parbins.XIO">
+<em class="property">class </em><code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">XIO</code><span class="sig-paren">(</span><em>lenses</em>, <em>randoms=None</em>, <em>params=None</em>, <em>dirpaths=None</em>, <em>nrandoms=None</em>, <em>force_centers=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>XSHEAR style input file creator</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>lenses</strong> (<em>dict</em>) &#8211; dictionary with lens data</li>
+<li><strong>randoms</strong> (<em>dict, optional</em>) &#8211; dictionary with random points data</li>
+<li><strong>params</strong> (<em>dict</em>) &#8211; Pipeline settings in a dictionary format.
+If <code class="code docutils literal"><span class="pre">None</span></code> then the default <code class="xref py py-data docutils literal"><span class="pre">paths.params</span></code> will be used</li>
+<li><strong>dirpaths</strong> (<em>dict</em>) &#8211; Pipeline directory paths in a dictionary format.
+If <code class="code docutils literal"><span class="pre">None</span></code> then the default <code class="xref py py-data docutils literal"><span class="pre">paths.dirpaths</span></code> will be used</li>
+<li><strong>nrandoms</strong> (<em>float or int</em>) &#8211; number of random points to draw for each parameter bin with replacement.
+If <code class="code docutils literal"><span class="pre">None</span></code> then the value is extracted from <code class="code docutils literal"><span class="pre">params</span></code></li>
+<li><strong>force_centers</strong> (<em>int or np.array</em>) &#8211; number of JackKnife centers, or the (RA, DEC) positions of the centers</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>TODO this</p>
 </dd></dl>
 
 </div>
@@ -507,25 +676,78 @@ mean radius</p>
 <div class="section" id="jackknife-label-assignment">
 <h2>Jackknife label assignment<a class="headerlink" href="#jackknife-label-assignment" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.xhandle.shearops.assign_jk_labels">
-<code class="descclassname">proclens.xhandle.shearops.</code><code class="descname">assign_jk_labels</code><span class="sig-paren">(</span><em>pos</em>, <em>centers</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#assign_jk_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.assign_jk_labels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assigns JackKnife labels to 2D points on the sky via spherical k-means</p>
+<dt id="proclens.xhandle.parbins.assign_kmeans_labels">
+<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">assign_kmeans_labels</code><span class="sig-paren">(</span><em>pos</em>, <em>centers</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#assign_kmeans_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.assign_kmeans_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines 2D patches on the sky via spherical k-means</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>pos</strong> (<em>np.ndarray</em>) &#8211; positions of points in (RA, DEC)</li>
-<li><strong>centers</strong> (<em>int or np.ndarray</em>) &#8211; Number of JK centers to use, or the (RA, DEC) coordinates of the centers</li>
+<li><strong>centers</strong> (<em>int or np.ndarray</em>) &#8211; Number of centers to use, or the (RA, DEC) coordinates of the centers</li>
 <li><strong>verbose</strong> (<em>bool</em>) &#8211; verbose flag to pass to <strong>kmeans_radec</strong></li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">JK-labels, JK-centers</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">K-means labels, K-means centers</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.array, np.ndarray</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="proclens.xhandle.parbins.assign_jk_labels">
+<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">assign_jk_labels</code><span class="sig-paren">(</span><em>ra</em>, <em>dec</em>, <em>centers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#assign_jk_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.assign_jk_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assigns a Jacknife (JK) label to the points based on the passed centers</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ra</strong> (<em>np.array</em>) &#8211; Right Ascension of objects</li>
+<li><strong>dec</strong> (<em>np.array</em>) &#8211; Declination of objects</li>
+<li><strong>centers</strong> (<em>np.array</em>) &#8211; Coordinates of centers for K-means patches</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul class="simple">
+<li>inds which are <em>NOT IN</em> patch i,</li>
+<li>inds which are <em>IN</em> patch i,</li>
+<li>JK labels</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool array, bool array, int array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="proclens.xhandle.parbins.extract_jk_labels">
+<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">extract_jk_labels</code><span class="sig-paren">(</span><em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#extract_jk_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.extract_jk_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts JK-labels from k-means label array</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>labels</strong> (<em>np.array</em>) &#8211; k-means labels</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li>inds which are <em>NOT IN</em> patch i,</li>
+<li>inds which are <em>IN</em> patch i,</li>
+<li>JK labels</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool array, bool array, int array</td>
 </tr>
 </tbody>
 </table>
