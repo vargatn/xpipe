@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to the ProcLens weak lensing toolset &mdash; proclens 0.1 documentation</title>
+  <title>Welcome to the proclens weak lensing toolset &mdash; proclens 0.1 documentation</title>
   
 
   
@@ -93,11 +93,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_guide.html">Pipeline guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_guide.html">API guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config files explained</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">F.A.Q</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Python wrapper for xshear</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html#processing-results-from-xshear">Processing results from xshear</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html#ancillary-utilities">Ancillary utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html#visualization">Visualization</a></li>
 </ul>
 
             
@@ -142,7 +141,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Welcome to the ProcLens weak lensing toolset</li>
+      <li>Welcome to the proclens weak lensing toolset</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -162,7 +161,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="welcome-to-the-proclens-weak-lensing-toolset">
-<h1>Welcome to the ProcLens weak lensing toolset<a class="headerlink" href="#welcome-to-the-proclens-weak-lensing-toolset" title="Permalink to this headline">¶</a></h1>
+<h1>Welcome to the proclens weak lensing toolset<a class="headerlink" href="#welcome-to-the-proclens-weak-lensing-toolset" title="Permalink to this headline">¶</a></h1>
 <p><strong>proclens</strong> is a python package created to automate work with measuring and calibrating weak lensing
 shear and mass profiles in wide area lensing surveys such as DES. Features include:</p>
 <ul class="simple">
@@ -173,51 +172,12 @@ shear and mass profiles in wide area lensing surveys such as DES. Features inclu
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#api-mode">API mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#pipeline-mode">Pipeline mode:</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#quick-start">Quick-start:</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">F.A.Q</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#can-you-specify-variable-radial-scales-for-each-lens">Can you specify variable radial scales for each lens</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#can-this-do-something-else">Can this do something else?</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Python wrapper for xshear</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#select-lenses-by-field">Select lenses by field</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#load-catalogs">Load catalogs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#create-xshear-style-input-files">Create xshear-style input files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#create-xhsear-style-lens-catalog">Create xhsear-style lens catalog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#read-ra-dec-positions-for-lenses">Read (RA, DEC) positions for lenses</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="api.html#processing-results-from-xshear">Processing results from xshear</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#read-xshear-output-from-single-file">Read xshear output from single file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#read-xshear-output-from-multiple-files">Read xshear output from multiple files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#base-xshear-readers">Base xshear readers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#logarithmic-bin-properties">Logarithmic bin properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#jackknife-label-assignment">Jackknife label assignment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#stacked-profile-container">Stacked Profile Container</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#jackknife-covariance-estimate-from-multiple-lensing-profiles">Jackknife Covariance estimate from multiple lensing profiles</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="api.html#ancillary-utilities">Ancillary utilities</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#observed-to-absolute-magnitude-conversion">Observed to absolute magnitude conversion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#fits-to-pandas-conversion">FITS to pandas conversion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#parameter-selection">parameter selection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#list-partitioning">list partitioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#safe-divide">safe divide</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#distribution-matching">distribution matching</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="api.html#visualization">Visualization</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#corner-plot">corner plot</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_guide.html">Pipeline guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_guide.html">API guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config files explained</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">F.A.Q</a></li>
 </ul>
 </div>
 <div class="section" id="contact">

@@ -35,8 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="proclens 0.1 documentation" href="index.html"/>
-        <link rel="prev" title="Frequently Asked Questions" href="faq.html"/> 
+    <link rel="top" title="proclens 0.1 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -90,41 +89,13 @@
             
             
               <p class="caption"><span class="caption-text">User Documentation</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_guide.html">Pipeline guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_guide.html">API guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config files explained</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">F.A.Q</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Python wrapper for xshear</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#select-lenses-by-field">Select lenses by field</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#load-catalogs">Load catalogs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-xshear-style-input-files">Create xshear-style input files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-xhsear-style-lens-catalog">Create xhsear-style lens catalog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#read-ra-dec-positions-for-lenses">Read (RA, DEC) positions for lenses</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#processing-results-from-xshear">Processing results from xshear</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#read-xshear-output-from-single-file">Read xshear output from single file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#read-xshear-output-from-multiple-files">Read xshear output from multiple files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#base-xshear-readers">Base xshear readers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#logarithmic-bin-properties">Logarithmic bin properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#jackknife-label-assignment">Jackknife label assignment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#stacked-profile-container">Stacked Profile Container</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#jackknife-covariance-estimate-from-multiple-lensing-profiles">Jackknife Covariance estimate from multiple lensing profiles</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#ancillary-utilities">Ancillary utilities</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#observed-to-absolute-magnitude-conversion">Observed to absolute magnitude conversion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fits-to-pandas-conversion">FITS to pandas conversion</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#parameter-selection">parameter selection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#list-partitioning">list partitioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#safe-divide">safe divide</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#distribution-matching">distribution matching</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#visualization">Visualization</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#corner-plot">corner plot</a></li>
-</ul>
-</li>
 </ul>
 
             
@@ -246,7 +217,7 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">fields to be used with boundaries</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
 </tr>
 </tbody>
 </table>
@@ -276,7 +247,7 @@ bool array for selection,
 raw data table before selection</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a>, np.array, record-array</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict, np.array, record-array</p>
 </td>
 </tr>
 </tbody>
@@ -317,7 +288,7 @@ bool array for selection,
 raw data table before selection</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a>, np.array, record-array</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict, np.array, record-array</p>
 </td>
 </tr>
 </tbody>
@@ -361,7 +332,7 @@ If <code class="code docutils literal"><span class="pre">None</span></code> then
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> &#8211; Relevant rows and indexes of the lens sample</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
 </td>
 </tr>
 </tbody>
@@ -408,7 +379,7 @@ If <code class="code docutils literal"><span class="pre">None</span></code> then
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> &#8211; Relevant rows and indexes of the lens sample</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
 </td>
 </tr>
 </tbody>
@@ -713,7 +684,7 @@ the columns are:</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code>, column description dictionary</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray, np.ndarray, <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray, np.ndarray, dict</td>
 </tr>
 </tbody>
 </table>
@@ -1404,13 +1375,6 @@ of the two datasets</p>
            </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="faq.html" class="btn btn-neutral" title="Frequently Asked Questions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

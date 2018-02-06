@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 =================================================
-Welcome to the ProcLens weak lensing toolset
+Welcome to the proclens weak lensing toolset
 =================================================
 
 **proclens** is a python package created to automate work with measuring and calibrating weak lensing
@@ -19,12 +19,16 @@ shear and mass profiles in wide area lensing surveys such as DES. Features inclu
 
 .. toctree::
    :caption: User Documentation
-   :maxdepth: 2
+   :maxdepth: 1
 
    Installation <installation>
    Getting started <getting_started>
+   Pipeline guide <pipeline_guide>
+   API guide <api_guide>
+   Config files explained <config>
    F.A.Q <faq>
-   The proclens API reference <api>
+
+.. The proclens API reference <api>
 
 
 

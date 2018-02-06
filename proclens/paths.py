@@ -117,11 +117,8 @@ def get_fullpaths(params, project_path, default_inputs=True):
         raise KeyError(
             'Specified shearcat ("shear_to_use: ' + str(params['shear_to_use']) + '") is not in the local shearcats!')
 
-    fullpaths.update({'flist_prefix': dirpaths['xin'] + '/' + params['tag']})
-
     # xshear config file
     fullpaths.update({'xpath': project_path + 'submodules/xshear/bin/xshear'})
-    fullpaths.update({'xconfig': dirpaths['xin'] + '/' + params['tag'] + 'xconfig.cfg'})
 
     return fullpaths
 
@@ -187,6 +184,9 @@ def get_bin_settings(params, devmode):
 
     return param_bins, nrandoms
 
+def get_dpath(params, dirpaths):
+    dpath = dirpaths['xin'] + "/" + params["tag"]
+    return dpath
 
 ###################################################################
 #
