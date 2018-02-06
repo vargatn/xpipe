@@ -5,8 +5,8 @@ Wrapper to run xshear
 import argparse
 
 
-import proclens.paths as paths
-import proclens.xhandle.xwrap as xwrap
+import xpipe.paths as paths
+import xpipe.xhandle.xwrap as xwrap
 
 parser = argparse.ArgumentParser(description='Runs xshear')
 parser.add_argument('--head', action="store_true")

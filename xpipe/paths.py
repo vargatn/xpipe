@@ -195,7 +195,7 @@ def get_dpath(params, dirpaths):
 ###################################################################
 
 # reading the absolute path of the project
-user_project_file = '.proclens.yml'
+user_project_file = '.xpipe.yml'
 project_path = get_poject_path(user_project_file)
 
 # read parameter bins from config file

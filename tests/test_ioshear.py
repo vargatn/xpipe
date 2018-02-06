@@ -4,7 +4,7 @@ PyTest file for tools.selector
 
 import pytest
 import numpy as np
-import proclens.xhandle.ioshear as ioshear
+import xpipe.xhandle.ioshear as ioshear
 import tempfile
 
 

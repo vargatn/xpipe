@@ -10,37 +10,37 @@ Python wrapper for xshear
 Select lenses by field
 ----------------------
 
-.. autofunction:: proclens.xhandle.parbins.field_cut
+.. autofunction:: xpipe.xhandle.parbins.field_cut
 
-.. autofunction:: proclens.xhandle.parbins.get_fields_auto
+.. autofunction:: xpipe.xhandle.parbins.get_fields_auto
 
 Load catalogs
 ------------------
 
-.. autofunction:: proclens.xhandle.parbins.load_lenscat
+.. autofunction:: xpipe.xhandle.parbins.load_lenscat
 
-.. autofunction:: proclens.xhandle.parbins.load_randcat
+.. autofunction:: xpipe.xhandle.parbins.load_randcat
 
-.. autofunction:: proclens.xhandle.parbins.prepare_lenses
+.. autofunction:: xpipe.xhandle.parbins.prepare_lenses
 
-.. autofunction:: proclens.xhandle.parbins.prepare_random
+.. autofunction:: xpipe.xhandle.parbins.prepare_random
 
 Create xshear-style input files
 --------------------------------
 
-.. autoclass:: proclens.xhandle.parbins.XIO
+.. autoclass:: xpipe.xhandle.parbins.XIO
     :members:
 
 
 Create xhsear-style lens catalog
 --------------------------------
 
-.. autofunction:: proclens.xhandle.ioshear.makecat
+.. autofunction:: xpipe.xhandle.ioshear.makecat
 
 Read (RA, DEC) positions for lenses
 -----------------------------------
 
-.. autofunction:: proclens.xhandle.ioshear.read_lens_pos
+.. autofunction:: xpipe.xhandle.ioshear.read_lens_pos
 
 
 Processing results from xshear
@@ -50,61 +50,61 @@ Processing results from xshear
 Read xshear output from single file
 -----------------------------------
 
-.. autofunction:: proclens.xhandle.ioshear.read_single_bin
+.. autofunction:: xpipe.xhandle.ioshear.read_single_bin
 
 Read xshear output from multiple files
 --------------------------------------
 
-.. autofunction:: proclens.xhandle.ioshear.read_multiple_bin
+.. autofunction:: xpipe.xhandle.ioshear.read_multiple_bin
 
 
 Base xshear readers
 --------------------------------------
 
-.. autofunction:: proclens.xhandle.ioshear.xread
+.. autofunction:: xpipe.xhandle.ioshear.xread
 
 
-.. autofunction:: proclens.xhandle.ioshear.xpatches
+.. autofunction:: xpipe.xhandle.ioshear.xpatches
 
 
 Logarithmic bin properties
 --------------------------
 
-.. autofunction:: proclens.xhandle.shearops.redges
+.. autofunction:: xpipe.xhandle.shearops.redges
 
 
 Jackknife label assignment
 --------------------------
 
-.. autofunction:: proclens.xhandle.parbins.assign_kmeans_labels
+.. autofunction:: xpipe.xhandle.parbins.assign_kmeans_labels
 
-.. autofunction:: proclens.xhandle.parbins.assign_jk_labels
+.. autofunction:: xpipe.xhandle.parbins.assign_jk_labels
 
-.. autofunction:: proclens.xhandle.parbins.extract_jk_labels
+.. autofunction:: xpipe.xhandle.parbins.extract_jk_labels
 
 
 Stacked Profile Container
 -------------------------
 
-.. autoclass:: proclens.xhandle.shearops.StackedProfileContainer
+.. autoclass:: xpipe.xhandle.shearops.StackedProfileContainer
 
-    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.prof_maker
+    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.prof_maker
 
-    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.composite
+    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.composite
 
-    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.multiply
+    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.multiply
 
-    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.drop_data
+    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.drop_data
 
-    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.to_sub_dict
+    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.to_sub_dict
 
-    .. automethod:: proclens.xhandle.shearops.StackedProfileContainer.from_sub_dict
+    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.from_sub_dict
 
 
 Jackknife Covariance estimate from multiple lensing profiles
 ------------------------------------------------------------
 
-.. autofunction:: proclens.xhandle.shearops.stacked_pcov
+.. autofunction:: xpipe.xhandle.shearops.stacked_pcov
 
 
 
@@ -115,37 +115,37 @@ Ancillary utilities
 Observed to absolute magnitude conversion
 ----------------------------------------------------------
 
-.. autoclass:: proclens.tools.magtools.AbsMagConverter
+.. autoclass:: xpipe.tools.magtools.AbsMagConverter
 
 
 FITS to pandas conversion
 --------------------------
 
-.. autofunction:: proclens.tools.catalogs.to_pandas
+.. autofunction:: xpipe.tools.catalogs.to_pandas
 
 
 parameter selection
 --------------------
 
-.. autofunction:: proclens.tools.selector.selector
+.. autofunction:: xpipe.tools.selector.selector
 
 
 list partitioning
 -----------------
 
-.. autofunction:: proclens.tools.selector.partition
+.. autofunction:: xpipe.tools.selector.partition
 
 
 safe divide
 -----------
 
-.. autofunction:: proclens.tools.selector.safedivide
+.. autofunction:: xpipe.tools.selector.safedivide
 
 
 distribution matching
 ---------------------
 
-.. autofunction:: proclens.tools.selector.matchdd
+.. autofunction:: xpipe.tools.selector.matchdd
 
 Visualization
 =============
@@ -153,5 +153,5 @@ Visualization
 corner plot
 -----------
 
-.. autofunction:: proclens.tools.visual.corner
+.. autofunction:: xpipe.tools.visual.corner
 

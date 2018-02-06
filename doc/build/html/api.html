@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python wrapper for xshear &mdash; proclens 0.1 documentation</title>
+  <title>Python wrapper for xshear &mdash; xpipe 0.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="proclens 0.1 documentation" href="index.html"/> 
+    <link rel="top" title="xpipe 0.1 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -54,7 +54,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> proclens
+            <a href="index.html" class="icon icon-home"> xpipe
           
 
           
@@ -90,12 +90,10 @@
             
               <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Install and getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pipeline_guide.html">Pipeline guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_guide.html">API guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="config.html">Config files explained</a></li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">F.A.Q</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_guide.html">API guide</a></li>
 </ul>
 
             
@@ -110,7 +108,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">proclens</a>
+          <a href="index.html">xpipe</a>
         
       </nav>
 
@@ -166,8 +164,8 @@
 <div class="section" id="select-lenses-by-field">
 <h2>Select lenses by field<a class="headerlink" href="#select-lenses-by-field" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.xhandle.parbins.field_cut">
-<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">field_cut</code><span class="sig-paren">(</span><em>ra</em>, <em>dec</em>, <em>borders</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#field_cut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.field_cut" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.field_cut">
+<code class="descclassname">xpipe.xhandle.parbins.</code><code class="descname">field_cut</code><span class="sig-paren">(</span><em>ra</em>, <em>dec</em>, <em>borders</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#field_cut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.field_cut" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies RA, DEC cut based on DES field boundaries</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -205,8 +203,8 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="proclens.xhandle.parbins.get_fields_auto">
-<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">get_fields_auto</code><span class="sig-paren">(</span><em>params=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#get_fields_auto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.get_fields_auto" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.get_fields_auto">
+<code class="descclassname">xpipe.xhandle.parbins.</code><code class="descname">get_fields_auto</code><span class="sig-paren">(</span><em>params=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#get_fields_auto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.get_fields_auto" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts field boundaries from project <code class="code docutils literal"><span class="pre">params</span></code> dictionary</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -217,7 +215,7 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">fields to be used with boundaries</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
 </tr>
 </tbody>
 </table>
@@ -227,8 +225,8 @@
 <div class="section" id="load-catalogs">
 <h2>Load catalogs<a class="headerlink" href="#load-catalogs" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.xhandle.parbins.load_lenscat">
-<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">load_lenscat</code><span class="sig-paren">(</span><em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#load_lenscat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.load_lenscat" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.load_lenscat">
+<code class="descclassname">xpipe.xhandle.parbins.</code><code class="descname">load_lenscat</code><span class="sig-paren">(</span><em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#load_lenscat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.load_lenscat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads lens catalog from fits file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -247,7 +245,7 @@ bool array for selection,
 raw data table before selection</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict, np.array, record-array</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a>, np.array, record-array</p>
 </td>
 </tr>
 </tbody>
@@ -268,8 +266,8 @@ Using inconsitent definitions result in a <code class="code docutils literal"><s
 </dd></dl>
 
 <dl class="function">
-<dt id="proclens.xhandle.parbins.load_randcat">
-<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">load_randcat</code><span class="sig-paren">(</span><em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#load_randcat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.load_randcat" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.load_randcat">
+<code class="descclassname">xpipe.xhandle.parbins.</code><code class="descname">load_randcat</code><span class="sig-paren">(</span><em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#load_randcat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.load_randcat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads random point catalog from fits file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -288,7 +286,7 @@ bool array for selection,
 raw data table before selection</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict, np.array, record-array</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a>, np.array, record-array</p>
 </td>
 </tr>
 </tbody>
@@ -311,8 +309,8 @@ This refers to the mock quantities assigned to the randoms points,</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="proclens.xhandle.parbins.prepare_lenses">
-<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">prepare_lenses</code><span class="sig-paren">(</span><em>bin_settings=None</em>, <em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#prepare_lenses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.prepare_lenses" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.prepare_lenses">
+<code class="descclassname">xpipe.xhandle.parbins.</code><code class="descname">prepare_lenses</code><span class="sig-paren">(</span><em>bin_settings=None</em>, <em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#prepare_lenses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.prepare_lenses" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads lens data and defines sub-selections for different parameter bins</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -332,7 +330,7 @@ If <code class="code docutils literal"><span class="pre">None</span></code> then
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> &#8211; Relevant rows and indexes of the lens sample</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></p>
 </td>
 </tr>
 </tbody>
@@ -358,8 +356,8 @@ Using inconsitent definitions result in a <code class="code docutils literal"><s
 </dd></dl>
 
 <dl class="function">
-<dt id="proclens.xhandle.parbins.prepare_random">
-<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">prepare_random</code><span class="sig-paren">(</span><em>bin_settings=None</em>, <em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#prepare_random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.prepare_random" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.prepare_random">
+<code class="descclassname">xpipe.xhandle.parbins.</code><code class="descname">prepare_random</code><span class="sig-paren">(</span><em>bin_settings=None</em>, <em>params=None</em>, <em>fullpaths=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#prepare_random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.prepare_random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads random points and defines sub-selections for different parameter bins</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -379,7 +377,7 @@ If <code class="code docutils literal"><span class="pre">None</span></code> then
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> &#8211; Relevant rows and indexes of the lens sample</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></p>
 </td>
 </tr>
 </tbody>
@@ -410,8 +408,8 @@ This refers to the mock quantities assigned to the randoms points,</li>
 <div class="section" id="create-xshear-style-input-files">
 <h2>Create xshear-style input files<a class="headerlink" href="#create-xshear-style-input-files" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="proclens.xhandle.parbins.XIO">
-<em class="property">class </em><code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">XIO</code><span class="sig-paren">(</span><em>lenses</em>, <em>randoms=None</em>, <em>params=None</em>, <em>dirpaths=None</em>, <em>nrandoms=None</em>, <em>force_centers=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.XIO">
+<em class="property">class </em><code class="descclassname">xpipe.xhandle.parbins.</code><code class="descname">XIO</code><span class="sig-paren">(</span><em>lenses</em>, <em>randoms=None</em>, <em>params=None</em>, <em>dirpaths=None</em>, <em>nrandoms=None</em>, <em>force_centers=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#XIO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.XIO" title="Permalink to this definition">¶</a></dt>
 <dd><p>XSHEAR style input file creator</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -457,8 +455,8 @@ If <code class="code docutils literal"><span class="pre">None</span></code> then
 </pre></div>
 </div>
 <dl class="method">
-<dt id="proclens.xhandle.parbins.XIO.loop_bins">
-<code class="descname">loop_bins</code><span class="sig-paren">(</span><em>norands=False</em>, <em>match=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.loop_bins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.loop_bins" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.XIO.loop_bins">
+<code class="descname">loop_bins</code><span class="sig-paren">(</span><em>norands=False</em>, <em>match=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#XIO.loop_bins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.XIO.loop_bins" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loops over (lambda, z) parameter bins and save xshear input files</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -477,14 +475,14 @@ further matching.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="proclens.xhandle.parbins.XIO.mkdir">
-<code class="descname">mkdir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.mkdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.mkdir" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.XIO.mkdir">
+<code class="descname">mkdir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#XIO.mkdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.XIO.mkdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>creates project directory</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="proclens.xhandle.parbins.XIO.randsel">
-<code class="descname">randsel</code><span class="sig-paren">(</span><em>match=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.randsel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.randsel" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.XIO.randsel">
+<code class="descname">randsel</code><span class="sig-paren">(</span><em>match=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#XIO.randsel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.XIO.randsel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Selects random points to use (weighted draw with replacement)</p>
 <p>If <code class="code docutils literal"><span class="pre">self.nrandoms</span> <span class="pre">==</span> <span class="pre">-1</span></code> then all random points are used, and no random draw is made.
 In this case the weights are not applied properly, so be careful!</p>
@@ -501,32 +499,32 @@ further matching.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="proclens.xhandle.parbins.XIO.save_clust">
-<code class="descname">save_clust</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.save_clust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.save_clust" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.XIO.save_clust">
+<code class="descname">save_clust</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#XIO.save_clust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.XIO.save_clust" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes lenses to file in xshear style</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="proclens.xhandle.parbins.XIO.save_clust_jk">
-<code class="descname">save_clust_jk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.save_clust_jk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.save_clust_jk" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.XIO.save_clust_jk">
+<code class="descname">save_clust_jk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#XIO.save_clust_jk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.XIO.save_clust_jk" title="Permalink to this definition">¶</a></dt>
 <dd><p>writes cluster lens file for each JK patch in xshear style</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="proclens.xhandle.parbins.XIO.save_rands">
-<code class="descname">save_rands</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.save_rands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.save_rands" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.XIO.save_rands">
+<code class="descname">save_rands</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#XIO.save_rands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.XIO.save_rands" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes random points to file in xshear style</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="proclens.xhandle.parbins.XIO.save_rands_jk">
-<code class="descname">save_rands_jk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.save_rands_jk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.save_rands_jk" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.XIO.save_rands_jk">
+<code class="descname">save_rands_jk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#XIO.save_rands_jk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.XIO.save_rands_jk" title="Permalink to this definition">¶</a></dt>
 <dd><p>writes random points to file for each JK patch in xshear style</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="proclens.xhandle.parbins.XIO.setbin">
-<code class="descname">setbin</code><span class="sig-paren">(</span><em>bound</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#XIO.setbin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.XIO.setbin" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.XIO.setbin">
+<code class="descname">setbin</code><span class="sig-paren">(</span><em>bound</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#XIO.setbin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.XIO.setbin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assigns index and filenames for param bin based on <code class="code docutils literal"><span class="pre">bounds</span></code></p>
 </dd></dl>
 
@@ -536,8 +534,8 @@ further matching.</td>
 <div class="section" id="create-xhsear-style-lens-catalog">
 <h2>Create xhsear-style lens catalog<a class="headerlink" href="#create-xhsear-style-lens-catalog" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.xhandle.ioshear.makecat">
-<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">makecat</code><span class="sig-paren">(</span><em>fname</em>, <em>mid</em>, <em>ra</em>, <em>dec</em>, <em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#makecat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.makecat" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.ioshear.makecat">
+<code class="descclassname">xpipe.xhandle.ioshear.</code><code class="descname">makecat</code><span class="sig-paren">(</span><em>fname</em>, <em>mid</em>, <em>ra</em>, <em>dec</em>, <em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/ioshear.html#makecat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.ioshear.makecat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write an xshear style lens catalog to file</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -560,8 +558,8 @@ further matching.</td>
 <div class="section" id="read-ra-dec-positions-for-lenses">
 <h2>Read (RA, DEC) positions for lenses<a class="headerlink" href="#read-ra-dec-positions-for-lenses" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.xhandle.ioshear.read_lens_pos">
-<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">read_lens_pos</code><span class="sig-paren">(</span><em>fnames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#read_lens_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.read_lens_pos" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.ioshear.read_lens_pos">
+<code class="descclassname">xpipe.xhandle.ioshear.</code><code class="descname">read_lens_pos</code><span class="sig-paren">(</span><em>fnames</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/ioshear.html#read_lens_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.ioshear.read_lens_pos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads postions based on the list of filenames passed</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -584,8 +582,8 @@ further matching.</td>
 <div class="section" id="read-xshear-output-from-single-file">
 <h2>Read xshear output from single file<a class="headerlink" href="#read-xshear-output-from-single-file" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.xhandle.ioshear.read_single_bin">
-<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">read_single_bin</code><span class="sig-paren">(</span><em>fname</em>, <em>metaname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#read_single_bin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.read_single_bin" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.ioshear.read_single_bin">
+<code class="descclassname">xpipe.xhandle.ioshear.</code><code class="descname">read_single_bin</code><span class="sig-paren">(</span><em>fname</em>, <em>metaname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/ioshear.html#read_single_bin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.ioshear.read_single_bin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads and interprets xshear output from a single file</p>
 <p><code class="code docutils literal"><span class="pre">info</span></code> and <code class="code docutils literal"><span class="pre">data</span></code> are passed on from <strong>xread</strong>,
 while <code class="code docutils literal"><span class="pre">sheared_data</span></code> is just a list of <code class="code docutils literal"><span class="pre">data</span></code> tables corresponding to
@@ -614,8 +612,8 @@ metacalibration sheared results.</p>
 <div class="section" id="read-xshear-output-from-multiple-files">
 <h2>Read xshear output from multiple files<a class="headerlink" href="#read-xshear-output-from-multiple-files" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.xhandle.ioshear.read_multiple_bin">
-<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">read_multiple_bin</code><span class="sig-paren">(</span><em>fnames</em>, <em>metanames=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#read_multiple_bin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.read_multiple_bin" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.ioshear.read_multiple_bin">
+<code class="descclassname">xpipe.xhandle.ioshear.</code><code class="descname">read_multiple_bin</code><span class="sig-paren">(</span><em>fnames</em>, <em>metanames=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/ioshear.html#read_multiple_bin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.ioshear.read_multiple_bin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads and interprets xshear output from many smaller files</p>
 <p><code class="code docutils literal"><span class="pre">info</span></code> and <code class="code docutils literal"><span class="pre">data</span></code> are passed on from <strong>xread</strong>,
 while <code class="code docutils literal"><span class="pre">sheared_data</span></code> is just a list of <code class="code docutils literal"><span class="pre">data</span></code> tables corresponding to
@@ -645,8 +643,8 @@ metacalibration sheared results.</p>
 <div class="section" id="base-xshear-readers">
 <h2>Base xshear readers<a class="headerlink" href="#base-xshear-readers" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.xhandle.ioshear.xread">
-<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">xread</code><span class="sig-paren">(</span><em>xdata</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#xread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.xread" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.ioshear.xread">
+<code class="descclassname">xpipe.xhandle.ioshear.</code><code class="descname">xread</code><span class="sig-paren">(</span><em>xdata</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/ioshear.html#xread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.ioshear.xread" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reader for xshear output if style is set as <cite>both</cite></p>
 <p>Each row corresponds to the lensing profile of a single lens, average profiles require additional stacking</p>
 <p>The output data is divided into two tables:</p>
@@ -684,15 +682,15 @@ the columns are:</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code>, column description dictionary</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray, np.ndarray, dict</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">np.ndarray, np.ndarray, <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="function">
-<dt id="proclens.xhandle.ioshear.xpatches">
-<code class="descclassname">proclens.xhandle.ioshear.</code><code class="descname">xpatches</code><span class="sig-paren">(</span><em>raw_chunks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/ioshear.html#xpatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.ioshear.xpatches" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.ioshear.xpatches">
+<code class="descclassname">xpipe.xhandle.ioshear.</code><code class="descname">xpatches</code><span class="sig-paren">(</span><em>raw_chunks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/ioshear.html#xpatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.ioshear.xpatches" title="Permalink to this definition">¶</a></dt>
 <dd><p>Processes many smaller xshear output files via <strong>xread</strong></p>
 <p>Outputs a concatenated array of the many smaller files, along with a
 <code class="code docutils literal"><span class="pre">chunk_ids</span></code> assigned to each row to indicate which chunk it originally came from</p>
@@ -714,8 +712,8 @@ the columns are:</p>
 <div class="section" id="logarithmic-bin-properties">
 <h2>Logarithmic bin properties<a class="headerlink" href="#logarithmic-bin-properties" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.xhandle.shearops.redges">
-<code class="descclassname">proclens.xhandle.shearops.</code><code class="descname">redges</code><span class="sig-paren">(</span><em>rmin</em>, <em>rmax</em>, <em>nbin</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#redges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.redges" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.shearops.redges">
+<code class="descclassname">xpipe.xhandle.shearops.</code><code class="descname">redges</code><span class="sig-paren">(</span><em>rmin</em>, <em>rmax</em>, <em>nbin</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/shearops.html#redges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.shearops.redges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates nominal edges and centers for logarithmic radial bins(base10 logarithm)</p>
 <p>Edges and areas are exact, &#8220;center&#8221; values are estimated as CIRCUMFERENCE weighted
 mean radius</p>
@@ -744,8 +742,8 @@ mean radius</p>
 <div class="section" id="jackknife-label-assignment">
 <h2>Jackknife label assignment<a class="headerlink" href="#jackknife-label-assignment" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.xhandle.parbins.assign_kmeans_labels">
-<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">assign_kmeans_labels</code><span class="sig-paren">(</span><em>pos</em>, <em>centers</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#assign_kmeans_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.assign_kmeans_labels" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.assign_kmeans_labels">
+<code class="descclassname">xpipe.xhandle.parbins.</code><code class="descname">assign_kmeans_labels</code><span class="sig-paren">(</span><em>pos</em>, <em>centers</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#assign_kmeans_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.assign_kmeans_labels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines 2D patches on the sky via spherical k-means</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -769,8 +767,8 @@ mean radius</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="proclens.xhandle.parbins.assign_jk_labels">
-<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">assign_jk_labels</code><span class="sig-paren">(</span><em>ra</em>, <em>dec</em>, <em>centers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#assign_jk_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.assign_jk_labels" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.assign_jk_labels">
+<code class="descclassname">xpipe.xhandle.parbins.</code><code class="descname">assign_jk_labels</code><span class="sig-paren">(</span><em>ra</em>, <em>dec</em>, <em>centers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#assign_jk_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.assign_jk_labels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assigns a Jacknife (JK) label to the points based on the passed centers</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -799,8 +797,8 @@ mean radius</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="proclens.xhandle.parbins.extract_jk_labels">
-<code class="descclassname">proclens.xhandle.parbins.</code><code class="descname">extract_jk_labels</code><span class="sig-paren">(</span><em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/parbins.html#extract_jk_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.parbins.extract_jk_labels" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.parbins.extract_jk_labels">
+<code class="descclassname">xpipe.xhandle.parbins.</code><code class="descname">extract_jk_labels</code><span class="sig-paren">(</span><em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/parbins.html#extract_jk_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.parbins.extract_jk_labels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts JK-labels from k-means label array</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -825,8 +823,8 @@ mean radius</p>
 <div class="section" id="stacked-profile-container">
 <h2>Stacked Profile Container<a class="headerlink" href="#stacked-profile-container" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="proclens.xhandle.shearops.StackedProfileContainer">
-<em class="property">class </em><code class="descclassname">proclens.xhandle.shearops.</code><code class="descname">StackedProfileContainer</code><span class="sig-paren">(</span><em>info</em>, <em>data</em>, <em>labels</em>, <em>ncen</em>, <em>lcname=None</em>, <em>metadata=None</em>, <em>metatags=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.shearops.StackedProfileContainer">
+<em class="property">class </em><code class="descclassname">xpipe.xhandle.shearops.</code><code class="descname">StackedProfileContainer</code><span class="sig-paren">(</span><em>info</em>, <em>data</em>, <em>labels</em>, <em>ncen</em>, <em>lcname=None</em>, <em>metadata=None</em>, <em>metatags=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/shearops.html#StackedProfileContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.shearops.StackedProfileContainer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object Oriented interface for stacked shear and <img class="math" src="_images/math/9397aece1d243efa28d3c70fa88edd48f9591b8a.png" alt="\Delta\Sigma"/> calculated via <strong>xshear</strong></p>
 <p><strong>Features</strong></p>
 <blockquote>
@@ -916,8 +914,8 @@ columns used by the stacking algorithm. The default values used for <strong>Delt
 </tbody>
 </table>
 <dl class="method">
-<dt id="proclens.xhandle.shearops.StackedProfileContainer.prof_maker">
-<code class="descname">prof_maker</code><span class="sig-paren">(</span><em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.prof_maker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.prof_maker" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.shearops.StackedProfileContainer.prof_maker">
+<code class="descname">prof_maker</code><span class="sig-paren">(</span><em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/shearops.html#StackedProfileContainer.prof_maker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.shearops.StackedProfileContainer.prof_maker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the Jackknife estimate of on stacked profile and on the corresponding covariance</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -930,8 +928,8 @@ columns used by the stacking algorithm. The default values used for <strong>Delt
 </dd></dl>
 
 <dl class="method">
-<dt id="proclens.xhandle.shearops.StackedProfileContainer.composite">
-<code class="descname">composite</code><span class="sig-paren">(</span><em>other</em>, <em>operation='-'</em>, <em>keep_rr=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.composite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.composite" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.shearops.StackedProfileContainer.composite">
+<code class="descname">composite</code><span class="sig-paren">(</span><em>other</em>, <em>operation='-'</em>, <em>keep_rr=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/shearops.html#StackedProfileContainer.composite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.shearops.StackedProfileContainer.composite" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the JK estimate on the operation applied to the two profiles</p>
 <p><strong>Possible Operations:</strong></p>
 <blockquote>
@@ -959,8 +957,8 @@ copies of the object for storing the previous state.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="proclens.xhandle.shearops.StackedProfileContainer.multiply">
-<code class="descname">multiply</code><span class="sig-paren">(</span><em>val</em>, <em>keep_rr=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.multiply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.multiply" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.shearops.StackedProfileContainer.multiply">
+<code class="descname">multiply</code><span class="sig-paren">(</span><em>val</em>, <em>keep_rr=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/shearops.html#StackedProfileContainer.multiply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.shearops.StackedProfileContainer.multiply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the JK estimate on profile times the specified &#8220;val&#8221;,</p>
 <p>Operation performed in-place.
 Use deepcopy to obtain copies of the object for storing the previous state.</p>
@@ -975,24 +973,24 @@ Use deepcopy to obtain copies of the object for storing the previous state.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="proclens.xhandle.shearops.StackedProfileContainer.drop_data">
-<code class="descname">drop_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.drop_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.drop_data" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.shearops.StackedProfileContainer.drop_data">
+<code class="descname">drop_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/shearops.html#StackedProfileContainer.drop_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.shearops.StackedProfileContainer.drop_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>resets the <code class="code docutils literal"><span class="pre">info</span></code>, <code class="code docutils literal"><span class="pre">data</span></code> and <code class="code docutils literal"><span class="pre">labels</span></code> containers to <code class="code docutils literal"><span class="pre">None</span></code></p>
 <p>This reduces the size of the object in memory, but cannot re-stack the lenses anymore.
 Leaves the profile, JK-subprofiles and ancillary quantities unaffected</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="proclens.xhandle.shearops.StackedProfileContainer.to_sub_dict">
-<code class="descname">to_sub_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.to_sub_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.to_sub_dict" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.shearops.StackedProfileContainer.to_sub_dict">
+<code class="descname">to_sub_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/shearops.html#StackedProfileContainer.to_sub_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.shearops.StackedProfileContainer.to_sub_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extracts the calculated profile and ancillary information to a dictionary</p>
 <p>The resulting dict does not contain the base data, only the profile, the JK-subprofiles and
 ancillary quantities</p>
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="proclens.xhandle.shearops.StackedProfileContainer.from_sub_dict">
-<em class="property">classmethod </em><code class="descname">from_sub_dict</code><span class="sig-paren">(</span><em>sub_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#StackedProfileContainer.from_sub_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.StackedProfileContainer.from_sub_dict" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.shearops.StackedProfileContainer.from_sub_dict">
+<em class="property">classmethod </em><code class="descname">from_sub_dict</code><span class="sig-paren">(</span><em>sub_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/shearops.html#StackedProfileContainer.from_sub_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.shearops.StackedProfileContainer.from_sub_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reconstructs the object from a dictionary</p>
 <p>The resulting object does not contain the base data, only the profile, JK-subprofiles and
 ancillary quantities</p>
@@ -1004,8 +1002,8 @@ ancillary quantities</p>
 <div class="section" id="jackknife-covariance-estimate-from-multiple-lensing-profiles">
 <h2>Jackknife Covariance estimate from multiple lensing profiles<a class="headerlink" href="#jackknife-covariance-estimate-from-multiple-lensing-profiles" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.xhandle.shearops.stacked_pcov">
-<code class="descclassname">proclens.xhandle.shearops.</code><code class="descname">stacked_pcov</code><span class="sig-paren">(</span><em>plist</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/xhandle/shearops.html#stacked_pcov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.xhandle.shearops.stacked_pcov" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.xhandle.shearops.stacked_pcov">
+<code class="descclassname">xpipe.xhandle.shearops.</code><code class="descname">stacked_pcov</code><span class="sig-paren">(</span><em>plist</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/xhandle/shearops.html#stacked_pcov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.xhandle.shearops.stacked_pcov" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the Covariance between a list of profiles</p>
 <p>Only elements where both profile has at least 1 sources are considered, the rest is filled with placeholder
 values (-9999.0 by default).</p>
@@ -1030,8 +1028,8 @@ values (-9999.0 by default).</p>
 <div class="section" id="observed-to-absolute-magnitude-conversion">
 <h2>Observed to absolute magnitude conversion<a class="headerlink" href="#observed-to-absolute-magnitude-conversion" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="proclens.tools.magtools.AbsMagConverter">
-<em class="property">class </em><code class="descclassname">proclens.tools.magtools.</code><code class="descname">AbsMagConverter</code><span class="sig-paren">(</span><em>cosmo='default'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/magtools.html#AbsMagConverter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.magtools.AbsMagConverter" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.tools.magtools.AbsMagConverter">
+<em class="property">class </em><code class="descclassname">xpipe.tools.magtools.</code><code class="descname">AbsMagConverter</code><span class="sig-paren">(</span><em>cosmo='default'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/tools/magtools.html#AbsMagConverter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.tools.magtools.AbsMagConverter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apparent to Absolute magnitude conversion for red galaxies</p>
 <p>Uses distance modulus + k-correction with single template</p>
 <p class="rubric">Examples</p>
@@ -1086,8 +1084,8 @@ values (-9999.0 by default).</p>
 <div class="section" id="fits-to-pandas-conversion">
 <h2>FITS to pandas conversion<a class="headerlink" href="#fits-to-pandas-conversion" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.tools.catalogs.to_pandas">
-<code class="descclassname">proclens.tools.catalogs.</code><code class="descname">to_pandas</code><span class="sig-paren">(</span><em>recarr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/catalogs.html#to_pandas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.catalogs.to_pandas" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.tools.catalogs.to_pandas">
+<code class="descclassname">xpipe.tools.catalogs.</code><code class="descname">to_pandas</code><span class="sig-paren">(</span><em>recarr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/tools/catalogs.html#to_pandas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.tools.catalogs.to_pandas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts potentially nested record array (such as a FITS Table) into Pandas DataFrame</p>
 <p>FITS tables sometimes have multidimensional columns, which are not supported for DataFrames
 Pandas DataFrames however provide many nice features, such as SQL speed database matchings.</p>
@@ -1095,7 +1093,7 @@ Pandas DataFrames however provide many nice features, such as SQL speed database
 <p class="rubric">Examples</p>
 <p>Just pass the loaded FITS table:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitsio</span> <span class="k">as</span> <span class="nn">fio</span>
-<span class="kn">import</span> <span class="nn">proclens.io.catalogs</span> <span class="k">as</span> <span class="nn">catalogs</span>
+<span class="kn">import</span> <span class="nn">xpipe.io.catalogs</span> <span class="k">as</span> <span class="nn">catalogs</span>
 
 <span class="n">raw_data</span> <span class="o">=</span> <span class="n">fio</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.fits&quot;</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">catalogs</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
@@ -1119,8 +1117,8 @@ Pandas DataFrames however provide many nice features, such as SQL speed database
 <div class="section" id="parameter-selection">
 <h2>parameter selection<a class="headerlink" href="#parameter-selection" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.tools.selector.selector">
-<code class="descclassname">proclens.tools.selector.</code><code class="descname">selector</code><span class="sig-paren">(</span><em>pps</em>, <em>limits</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/selector.html#selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.selector.selector" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.tools.selector.selector">
+<code class="descclassname">xpipe.tools.selector.</code><code class="descname">selector</code><span class="sig-paren">(</span><em>pps</em>, <em>limits</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/tools/selector.html#selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.tools.selector.selector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies selection to array based on the passed parameter limits</p>
 <p>Selection is defined like <img class="math" src="_images/math/d9bb85c8c1f5039a029ee099c6a46fda55d4b180.png" alt="x\in[x_0;\;x_1)"/></p>
 <p class="rubric">Examples</p>
@@ -1192,8 +1190,8 @@ parameter limits expanded from sequence to list of tuples</p>
 <div class="section" id="list-partitioning">
 <h2>list partitioning<a class="headerlink" href="#list-partitioning" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.tools.selector.partition">
-<code class="descclassname">proclens.tools.selector.</code><code class="descname">partition</code><span class="sig-paren">(</span><em>lst</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/selector.html#partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.selector.partition" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.tools.selector.partition">
+<code class="descclassname">xpipe.tools.selector.</code><code class="descname">partition</code><span class="sig-paren">(</span><em>lst</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/tools/selector.html#partition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.tools.selector.partition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Divides a list into N roughly equal chunks</p>
 <p class="rubric">Examples</p>
 <p>Define some test list, and look at the obtained chunks with different <code class="code docutils literal"><span class="pre">n</span></code> values:</p>
@@ -1242,8 +1240,8 @@ roughly balanced chunks</p>
 <div class="section" id="safe-divide">
 <h2>safe divide<a class="headerlink" href="#safe-divide" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.tools.selector.safedivide">
-<code class="descclassname">proclens.tools.selector.</code><code class="descname">safedivide</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>eps=1e-08</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/selector.html#safedivide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.selector.safedivide" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.tools.selector.safedivide">
+<code class="descclassname">xpipe.tools.selector.</code><code class="descname">safedivide</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>eps=1e-08</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/tools/selector.html#safedivide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.tools.selector.safedivide" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates x / y for arrays, setting result to zero if x ~ 0 OR y ~ 0</p>
 <p>Defined such that</p>
 <blockquote>
@@ -1276,8 +1274,8 @@ roughly balanced chunks</p>
 <div class="section" id="distribution-matching">
 <h2>distribution matching<a class="headerlink" href="#distribution-matching" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.tools.selector.matchdd">
-<code class="descclassname">proclens.tools.selector.</code><code class="descname">matchdd</code><span class="sig-paren">(</span><em>pars</em>, <em>refpars</em>, <em>win=None</em>, <em>wref=None</em>, <em>bins=30</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/selector.html#matchdd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.selector.matchdd" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.tools.selector.matchdd">
+<code class="descclassname">xpipe.tools.selector.</code><code class="descname">matchdd</code><span class="sig-paren">(</span><em>pars</em>, <em>refpars</em>, <em>win=None</em>, <em>wref=None</em>, <em>bins=30</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/tools/selector.html#matchdd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.tools.selector.matchdd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Matches two D-dimensional distributions by reweighting individual objects</p>
 <p>New weights are assigned by comparing the normalized, weighted histograms
 of the two datasets</p>
@@ -1313,13 +1311,13 @@ of the two datasets</p>
 <div class="section" id="corner-plot">
 <h2>corner plot<a class="headerlink" href="#corner-plot" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="proclens.tools.visual.corner">
-<code class="descclassname">proclens.tools.visual.</code><code class="descname">corner</code><span class="sig-paren">(</span><em>par_names</em>, <em>pars</em>, <em>par_edges</em>, <em>figsize=(8</em>, <em>8)</em>, <em>color='black'</em>, <em>fig=None</em>, <em>axarr=None</em>, <em>mode='hist'</em>, <em>cmap='gray_r'</em>, <em>normed=True</em>, <em>fontsize=12</em>, <em>tick_list=None</em>, <em>clevels=(0.68</em>, <em>0.95)</em>, <em>grid=True</em>, <em>weights=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/proclens/tools/visual.html#corner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#proclens.tools.visual.corner" title="Permalink to this definition">¶</a></dt>
+<dt id="xpipe.tools.visual.corner">
+<code class="descclassname">xpipe.tools.visual.</code><code class="descname">corner</code><span class="sig-paren">(</span><em>par_names</em>, <em>pars</em>, <em>par_edges</em>, <em>figsize=(8</em>, <em>8)</em>, <em>color='black'</em>, <em>fig=None</em>, <em>axarr=None</em>, <em>mode='hist'</em>, <em>cmap='gray_r'</em>, <em>normed=True</em>, <em>fontsize=12</em>, <em>tick_list=None</em>, <em>clevels=(0.68</em>, <em>0.95)</em>, <em>grid=True</em>, <em>weights=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/xpipe/tools/visual.html#corner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xpipe.tools.visual.corner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates <em>NICE</em> corner plot (check if pars have the righ orientation, perhaps use pars.T)</p>
 <p class="rubric">Example</p>
 <p>Simple 2D gaussian with marginals and joint distribution:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">proclens</span> <span class="k">as</span> <span class="nn">proclens</span>
+<span class="kn">import</span> <span class="nn">xpipe</span> <span class="k">as</span> <span class="nn">xpipe</span>
 
 <span class="c1"># generate mock data</span>
 <span class="n">means</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
@@ -1330,7 +1328,7 @@ of the two datasets</p>
 <span class="n">par_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;$x$&quot;</span><span class="p">,</span> <span class="s2">&quot;$y$&quot;</span><span class="p">]</span>
 <span class="n">par_edges</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">axarr</span> <span class="o">=</span> <span class="n">proclens</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">visual</span><span class="o">.</span><span class="n">corner</span><span class="p">(</span><span class="n">par_names</span><span class="p">,</span> <span class="n">pars</span><span class="p">,</span> <span class="n">par_edges</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axarr</span> <span class="o">=</span> <span class="n">xpipe</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">visual</span><span class="o">.</span><span class="n">corner</span><span class="p">(</span><span class="n">par_names</span><span class="p">,</span> <span class="n">pars</span><span class="p">,</span> <span class="n">par_edges</span><span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">

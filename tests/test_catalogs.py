@@ -4,7 +4,7 @@ PyTest file for tools.catalogs
 
 import pytest
 import numpy as np
-import proclens.tools.catalogs as catalogs
+import xpipe.tools.catalogs as catalogs
 
 
 @pytest.fixture

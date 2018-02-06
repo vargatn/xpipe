@@ -4,8 +4,8 @@ Divides the redMaPPer cluster and randoms catalog into bins in richness and reds
 
 import argparse
 import pickle
-import proclens.paths as paths
-import proclens.xhandle.parbins as parbins
+import xpipe.paths as paths
+import xpipe.xhandle.parbins as parbins
 
 
 parser = argparse.ArgumentParser(description='Creates parameter bins for xshear calculations')

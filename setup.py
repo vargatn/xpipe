@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-setup(name="proclens",
+setup(name="xpipe",
       packages=find_packages(),
       description="Measurement and data processing for DES Y1 cluster lensing",
       install_requires=['numpy', 'scipy', 'pandas', 'astropy', 'fitsio', 'kmeans_radec', ],

@@ -215,7 +215,7 @@ def corner(par_names, pars, par_edges, figsize=(8, 8), color='black', fig=None,
     Simple 2D gaussian with marginals and joint distribution::
 
         import numpy as np
-        import proclens as proclens
+        import xpipe as xpipe
 
         # generate mock data
         means = [0, 0]
@@ -226,7 +226,7 @@ def corner(par_names, pars, par_edges, figsize=(8, 8), color='black', fig=None,
         par_names = ["$x$", "$y$"]
         par_edges = (np.linspace(-5, 5, 100), np.linspace(-5, 5, 100))
 
-        fig, axarr = proclens.tools.visual.corner(par_names, pars, par_edges)
+        fig, axarr = xpipe.tools.visual.corner(par_names, pars, par_edges)
 
 
     Parameters

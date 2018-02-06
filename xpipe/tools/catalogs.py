@@ -21,7 +21,7 @@ def to_pandas(recarr):
     Just pass the loaded FITS table::
 
         import fitsio as fio
-        import proclens.io.catalogs as catalogs
+        import xpipe.io.catalogs as catalogs
 
         raw_data = fio.read("data.fits")
         data = catalogs.to_pandas(raw_data)

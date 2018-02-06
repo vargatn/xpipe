@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# proclens documentation build configuration file, created by
+# xpipe documentation build configuration file, created by
 # sphinx-quickstart on Fri Nov 17 14:30:01 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -60,7 +60,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'proclens'
+project = u'xpipe'
 copyright = u'2017, Tamas Norbert Varga'
 author = u'Tamas Norbert Varga'
 
@@ -159,7 +159,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'proclens.tex', u'proclens Documentation',
+    (master_doc, 'xpipe.tex', u'xpipe Documentation',
      u'Tamas Norbert Varga', 'manual'),
 ]
 
@@ -169,7 +169,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'proclens', u'proclens Documentation',
+    (master_doc, 'xpipe', u'xpipe Documentation',
      [author], 1)
 ]
 
@@ -180,8 +180,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'proclens', u'proclens Documentation',
-     author, 'proclens', 'One line description of project.',
+    (master_doc, 'xpipe', u'xpipe Documentation',
+     author, 'xpipe', 'One line description of project.',
      'Miscellaneous'),
 ]
 

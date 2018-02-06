@@ -4,7 +4,7 @@ PyTest file for tools.selector
 
 import pytest
 import numpy as np
-import proclens.tools.selector as sl
+import xpipe.tools.selector as sl
 
 
 class TestSafeDivide(object):
