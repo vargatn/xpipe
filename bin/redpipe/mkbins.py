@@ -1,5 +1,5 @@
 """
-Divides the redMaPPer cluster and randoms catalog into bins in richness and redshift (and JK regions)
+Divides the lens and random points catalog into bins by parameters (and JK regions)
 """
 
 import argparse
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     lenses = parbins.prepare_lenses()
     randoms = parbins.prepare_random()
 
-    xio = parbins.XIO(lenses, randoms)
+    xio = parbins.XIO(lenses, randoms, force_centers=paths.params["njk_max"])
     xio.mkdir()
 
     logfile = xio.dpath + '/' + paths.params['tag'] + '_params.p'

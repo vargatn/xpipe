@@ -21,12 +21,31 @@ np.seterr('warn')
 ###################################################################
 # xshear config file generation
 
-head = OrderedDict([
-    ('H0', 70.),
-    ('omega_m', 0.3),
-    ('healpix_nside', 64),
-    ('mask_style', 'none'),
-])
+def get_head(params=None):
+    """
+    Returns the cosmology config part of an *XSHEAR* config file
+
+    Parameters
+    ----------
+    params : dict
+        Pipeline settings in a dictionary format. If :code:`None` then the default
+        :py:data:`paths.params` will be used
+
+    Returns
+    -------
+    dict
+        shear settings
+    """
+    if params is None:
+        params = paths.params
+
+    head = OrderedDict([
+        ('H0', params["cosmo_params"]["H0"]),
+        ('omega_m', params["cosmo_params"]["Om0"]),
+        ('healpix_nside', 64),
+        ('mask_style', 'none'),
+    ])
+    return head
 
 
 def get_shear(params=None):
@@ -130,7 +149,7 @@ tail_uniform = OrderedDict([
 def get_default_xshear_settings(params=None):
     """The baseline settings for a Metacal lensing measurement"""
     default_xshear_settings = {
-        'head': head,
+        'head': get_head(params=params),
         'shear': OrderedDict([
             ('shear_style', 'metacal'),
             ('sigmacrit_style', 'sample'),
@@ -192,7 +211,7 @@ def write_xconf(fname, pairs=True):
     """
 
     with open(fname, 'w+') as cfg:
-        addlines(cfg, head)
+        addlines(cfg, get_head())
         addlines(cfg, get_shear())
         addlines(cfg, get_redges())
         if pairs:
