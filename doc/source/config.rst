@@ -19,10 +19,10 @@ These files do not exist yet when you first clone the repository, however there 
 that when you create ``params.yml`` and ``inputs.yml`` they will be automatically looked for and read.
 
 
-Config files are defined as *yaml* files, and are read as dictuionaries, each entry consisting
+Config files are defined as *yaml* files, and are read as dictionaries, each entry consisting
 of a key and a corresponding value (note that this includes nested dictonaries).
 
-Note that in *yaml* one should use ``null`` instead of ``None`
+Note that in *yaml* one should use ``null`` instead of ``None``
 
 Load order
 -----------
@@ -35,7 +35,7 @@ from this point the load is recursive, e.g. param files are loaded as long as th
 custom params file defined in the last loaded config. Each new config file only *updates* the settings,
 such that keys which are not present in the later files are left at their latest value.
 
-The parameters defined here are loaded into the dictionary :code:`xpipe.paths.params`
+The parameters defined here are loaded into the dictionary :py:data:`xpipe.paths.params`
 
 
 .. _params.yml:
@@ -55,14 +55,6 @@ params.yml
 
     Absolute path to the ``data`` directory of the pipeline. If False: uses ``default project_path + /data``
 
-
-* :py:data:`pdf_paths: null`
-
-    Regular expression matching the absolute paths of the ``BPZ`` output files containing the full redshift PDF.
-    (e.g. ``/home/data/*.h5``).
-
-    **NOTE** This is only required for estimating the **Boost factors**, and can be safely left ``null`` in a simple
-    lensing run.
 
 * :py:data:`mode: full`
 
@@ -96,8 +88,15 @@ params.yml
     Parameter bins defined for :code:`mode: full`, e.g.::
 
         param_bins_full:
-            q1_edges: [0.2, 0.35, 0.5, 0.65]
-            q2_edges: [5., 10., 14., 20., 30., 45., 60., 999]
+            q0_edges: [0.2, 0.35, 0.5, 0.65]
+            q1_edges: [5., 10., 14., 20., 30., 45., 60., 999]
+
+    :code:`q0` and :code:`q1` refer to the *zero-th* and *first* *quantities* (in this order) you want to split
+    your lens catalog by. For defining what these relate to see :py:data:`lenskey` and :py:data:`randkey`.
+    In the above example :code:`q0`  is redshift, and :code:`q1` is optical richness.
+
+    In general you can define an arbitrary number of quantities keeping the notation
+    that the binning edges for quantity *n* are written as :code:`q[n]_edges`.
 
 
 * :py:data:`param_bins_dev`
@@ -105,8 +104,54 @@ params.yml
     Parameter bins defined for :code:`mode: dev`, e.g.::
 
         param_bins_dev:
-            q1_edges: [0.2, 0.35]
-            q2_edges: [45, 60]
+            q0_edges: [0.2, 0.35]
+            q1_edges: [45, 60]
+
+
+    :code:`q0` and :code:`q1` refer to the *zero-th* and *first* *quantities* (in this order) you want to split
+    your lens catalog by. For defining what these relate to see :py:data:`lenskey` and :py:data:`randkey`.
+    In the above example :code:`q0`  is redshift, and :code:`q1` is optical richness.
+
+    In general you can define an arbitrary number of quantities keeping the notation
+    that the binning edges for quantity *n* are written as :code:`q[n]_edges`.
+
+
+* :py:data:`lenskey`
+
+    Aliases for the columns of the lens data table (assuming fits-like record table)::
+
+        lenskey:
+          id: MEM_MATCH_ID
+          ra: RA
+          dec: DEC
+          z: Z_LAMBDA
+          q0: Z_LAMBDA
+          q1: LAMBDA_CHISQ
+
+    :code:`q0` and :code:`q1` refer to the *zero-th* and *first* *quantities* (in this order) you want to split
+    your lens catalog by (see :py:data:`param_bins_*`). In general you can define an arbitrary number of quantities keeping the notation
+    that the alias for quantity *n* are written as :code:`q[n]`.
+    In the above example :code:`q0`  is redshift, and :code:`q1` is optical richness.
+
+
+* :py:data:`randkey`
+
+    Aliases for the columns of the random points data table (assuming fits-like record table)::
+
+        randkey:
+          q0: ZTRUE
+          q1: AVG_LAMBDAOUT
+          ra: RA
+          dec: DEC
+          z: ZTRUE
+          w: WEIGHT
+
+    :code:`q0` and :code:`q1` refer to the *zero-th* and *first* *quantities* (in this order) you want to split
+    your random points catalog by. In general you can define an arbitrary number of quantities keeping the notation
+    that the alias for quantity *n* are written as :code:`q[n]`.
+    In the above example :code:`q0`  is redshift, and :code:`q1` is optical richness
+
+    **Note** that for random points you have to specify the *same* quantities as for the lens catalog.
 
 * :py:data:`nprocess: 2`
 
@@ -174,32 +219,6 @@ params.yml
     Note that the pair limit is considered for **each** call of *xshear* separately.
     That is if you separate lenses into Jackknife regions then this is applicable for a single region.
 
-* :py:data:`lenskey`
-
-    Aliases for the columns of the lens data table (assuming fits-like record table)::
-
-        lenskey:
-          id: MEM_MATCH_ID
-          ra: RA
-          dec: DEC
-          z: Z_LAMBDA
-          q0: Z_LAMBDA
-          q1: LAMBDA_CHISQ
-
-
-* :py:data:`randkey`
-
-    Aliases for the columns of the random points data table (assuming fits-like record table)::
-
-        randkey:
-          q0: ZTRUE
-          q1: AVG_LAMBDAOUT
-          ra: RA
-          dec: DEC
-          z: ZTRUE
-          w: WEIGHT
-
-
 * :py:data:`lens_prefix: y1clust`
 
     Prefix for lens-files
@@ -264,8 +283,13 @@ params.yml
 
     * :code:`boost` defines the radial range for the boost estimation in radial bins
 
+* :py:data:`pdf_paths: null`
 
+    Regular expression matching the absolute paths of the ``BPZ`` output files containing the full redshift PDF.
+    (e.g. ``/home/data/*.h5``).
 
+    **NOTE** This is only required for estimating the **Boost factors**, and can be safely left ``null`` in a simple
+    lensing run.
 
 
 .. _inputs.yml:
@@ -274,4 +298,58 @@ inputs.yml
 ----------
 
 
-blah
+This config file lists the available data products. Currently all products are listed under the :py:data:`local`
+key, indicating that they are found on disk, (as opposed to downloaded from some network location).
+
+The two major sub-headings are:
+
+* :py:data:`shearcat`
+
+    Lists the available *xshear*-style source catalog files located within::
+
+        [custom_data_path]/shearcat/
+
+    where :py:data:`[custom_data_path]` is the absolute path to the :code:`data` folder
+    specified by the corresponding key in params.yml_
+
+    Each input file has it's *key* as an alias for the file name, such that you can use the key you
+    define here for a valid value of :py:data:`shear_to_use` for params.yml_, e.g.::
+
+          shearcat:
+            default: default.dat
+            im3shape: im3shape_shear_catalog.dat
+            metacal: metacal_shear_catalog.dat
+
+
+    These input files should be written in *ASCII*
+
+
+* :py:data:`lenscat`
+
+    Lists the available lens catalog files located within::
+
+        [custom_data_path]/lenscat/
+
+    where :py:data:`[custom_data_path]` is the absolute path to the :code:`data` folder
+    specified by the corresponding key in params.yml_
+
+    Each dataset has it's *key* as an alias, which you can use to define the lens dataset for a valid
+    value of :py:data:`cat_to_use` for params.yml_. In addition, each dataset is implicitely assumed to
+    consist of a **lens** catalog, and a corresponding catalog of **random points**, such that for each
+    key there are two *sub-keys*: :py:data:`lens` and :py:data:`rand`. Both of these files should be written
+    in *fits* format::
+
+          lenscat:
+            y1clust:
+                lens: des_y1_lens_catalog.fits
+                rand: des_y1_rand_catalog.fits
+            svclust:
+                lens: des_sv_lens_catalog.fits
+                rand: des_sv_rand_catalog.fits
+            testclust:
+                lens: test_catalog.fits
+                rand: null
+
+    In case there are no random points available for the dataset you are using, it is safe to leave the
+    :py:data:`rand` field empty, but in this case make sure you also use the :code:`--norands` flag
+    when exectuing the pipeline scripts.
