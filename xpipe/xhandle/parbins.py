@@ -412,7 +412,7 @@ class XIO(object):
             If :code:`None` then the default :py:data:`paths.dirpaths` will be used
         nrandoms : float or int
             number of random points to draw for each parameter bin with replacement.
-            If :code:`None` then the value is extracted from :code:`params`
+            If :code:`None` then the value is extracted from :py:data:`paths.params`
         force_centers : int or np.array
             number of JackKnife centers, or the (RA, DEC) positions of the centers
 
@@ -458,7 +458,11 @@ class XIO(object):
 
         # inds of random points drawn
         self.idraw = None
-        self.nrandoms = nrandoms
+
+        if nrandoms is None:
+            self.nrandoms = paths.params["nrandoms"][paths.params["mode"]]
+        else:
+            self.nrandoms = nrandoms
 
         if params is None and dirpaths is None:
             self.params = paths.params
@@ -556,7 +560,6 @@ class XIO(object):
 
         rind = self.randoms['sinds'][self.ind]
         pars = self.randoms["qlist"][rind]
-
         sind = self.lenses['sinds'][self.ind]
         refpars = self.lenses["qlist"][sind]
 
@@ -567,9 +570,10 @@ class XIO(object):
 
         nr = rind.sum()
         if self.nrandoms == -1:
-            self.idraw = np.arange(rind.sum())
+            self.idraw = np.arange(nr)
         else:
             self.idraw = self.rng.choice(np.arange(nr), size=self.nrandoms, p=prw, replace=True)
+
 
     def save_rands(self):
         """Writes random points to file in xshear style"""
@@ -622,6 +626,8 @@ class XIO(object):
                 self.randsel(match=match)
                 self.save_rands()
                 self.save_rands_jk()
+
+            break
 
 
 def assign_kmeans_labels(pos, centers, verbose=False):
