@@ -288,7 +288,6 @@ def prepare_lenses(bin_settings=None, params=None, fullpaths=None):
 
         * :code:`plpairs` parameter boundaries simple simple list
          (just boundaries, not pairs or tuples)
-
     """
 
     if params is None and fullpaths is None:
@@ -415,6 +414,12 @@ class XIO(object):
             If :code:`None` then the value is extracted from :py:data:`paths.params`
         force_centers : int or np.array
             number of JackKnife centers, or the (RA, DEC) positions of the centers
+
+        Notes
+        -----
+
+        If :code:`nrandoms == -1` then all random points are used, and no random draw is made.
+        In this case the weights are not applied properly, so be careful!
 
         Examples
         --------
@@ -578,6 +583,7 @@ class XIO(object):
     def save_rands(self):
         """Writes random points to file in xshear style"""
         rind = self.randoms['sinds'][self.ind]
+        print rind
         makecat(self.dpath + "/" + self.rlist[self.ind],
                         self.randoms['id'][rind][self.idraw], self.randoms['ra'][rind][self.idraw],
                         self.randoms['dec'][rind][self.idraw], self.randoms['z'][rind][self.idraw])

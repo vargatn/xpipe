@@ -1,4 +1,4 @@
-.. proclens documentation master file, created by
+.. xpipe documentation master file, created by
    sphinx-quickstart on Fri Nov 17 14:30:01 2017.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -24,7 +24,7 @@ shear and mass profiles in wide area lensing surveys such as DES. Features inclu
    Install and getting started <installation>
    Pipeline guide <pipeline_guide>
    Config files explained <config>
-   API guide <api_guide>
+   API reference <api>
 
 
 

@@ -32,6 +32,7 @@ import sphinx_rtd_theme
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
@@ -40,12 +41,16 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.napoleon']
+    'sphinx.ext.napoleon',
+]
 
 napoleon_google_docstring = False
 napoleon_use_param = False
 napoleon_use_ivar = True
 autoclass_content = 'both'
+
+autosummary_generate = True
+numpydoc_show_class_members=False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

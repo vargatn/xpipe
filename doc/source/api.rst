@@ -1,157 +1,95 @@
 
-.. toctree::
-   :maxdepth: 2
-   :hidden:
 
 
-Python wrapper for xshear
-============================
 
-Select lenses by field
-----------------------
 
-.. autofunction:: xpipe.xhandle.parbins.field_cut
-
-.. autofunction:: xpipe.xhandle.parbins.get_fields_auto
-
-Load catalogs
-------------------
-
-.. autofunction:: xpipe.xhandle.parbins.load_lenscat
-
-.. autofunction:: xpipe.xhandle.parbins.load_randcat
-
-.. autofunction:: xpipe.xhandle.parbins.prepare_lenses
-
-.. autofunction:: xpipe.xhandle.parbins.prepare_random
-
-Create xshear-style input files
---------------------------------
-
-.. autoclass:: xpipe.xhandle.parbins.XIO
-    :members:
-
-
-Create xhsear-style lens catalog
---------------------------------
-
-.. autofunction:: xpipe.xhandle.ioshear.makecat
-
-Read (RA, DEC) positions for lenses
------------------------------------
-
-.. autofunction:: xpipe.xhandle.ioshear.read_lens_pos
-
-
-Processing results from xshear
-===================================
-
-
-Read xshear output from single file
------------------------------------
-
-.. autofunction:: xpipe.xhandle.ioshear.read_single_bin
-
-Read xshear output from multiple files
---------------------------------------
-
-.. autofunction:: xpipe.xhandle.ioshear.read_multiple_bin
-
-
-Base xshear readers
---------------------------------------
-
-.. autofunction:: xpipe.xhandle.ioshear.xread
-
-
-.. autofunction:: xpipe.xhandle.ioshear.xpatches
-
-
-Logarithmic bin properties
---------------------------
-
-.. autofunction:: xpipe.xhandle.shearops.redges
-
-
-Jackknife label assignment
---------------------------
-
-.. autofunction:: xpipe.xhandle.parbins.assign_kmeans_labels
-
-.. autofunction:: xpipe.xhandle.parbins.assign_jk_labels
-
-.. autofunction:: xpipe.xhandle.parbins.extract_jk_labels
-
-
-Stacked Profile Container
--------------------------
-
-.. autoclass:: xpipe.xhandle.shearops.StackedProfileContainer
-
-    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.prof_maker
-
-    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.composite
-
-    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.multiply
-
-    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.drop_data
-
-    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.to_sub_dict
-
-    .. automethod:: xpipe.xhandle.shearops.StackedProfileContainer.from_sub_dict
-
-
-Jackknife Covariance estimate from multiple lensing profiles
-------------------------------------------------------------
-
-.. autofunction:: xpipe.xhandle.shearops.stacked_pcov
-
-
-
-Ancillary utilities
-=====================
-
-
-Observed to absolute magnitude conversion
-----------------------------------------------------------
-
-.. autoclass:: xpipe.tools.magtools.AbsMagConverter
-
-
-FITS to pandas conversion
---------------------------
-
-.. autofunction:: xpipe.tools.catalogs.to_pandas
-
-
-parameter selection
---------------------
-
-.. autofunction:: xpipe.tools.selector.selector
-
-
-list partitioning
------------------
-
-.. autofunction:: xpipe.tools.selector.partition
-
-
-safe divide
------------
-
-.. autofunction:: xpipe.tools.selector.safedivide
-
-
-distribution matching
----------------------
-
-.. autofunction:: xpipe.tools.selector.matchdd
-
-Visualization
+=============
+API Reference
 =============
 
-corner plot
------------
 
-.. autofunction:: xpipe.tools.visual.corner
+Input file manipulation
+-----------------------
 
+The bulk of the action is performed by the main writer class:
+
+.. autosummary::
+    :toctree: generated
+    :template: custom.rst
+
+    xpipe.xhandle.parbins.XIO
+
+Additional helper functions are defined below.
+
+
+Specify observational fields for the lens catalog:
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.parbins.field_cut
+    xpipe.xhandle.parbins.get_fields_auto
+
+
+Define K-means and Jackknife regions on the sphere:
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.parbins.assign_kmeans_labels
+    xpipe.xhandle.parbins.assign_jk_labels
+    xpipe.xhandle.parbins.extract_jk_labels
+
+
+Load and prepare lens and random point catalogs:
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.parbins.load_lenscat
+    xpipe.xhandle.parbins.prepare_lenses
+    xpipe.xhandle.parbins.load_randcat
+    xpipe.xhandle.parbins.prepare_random
+
+
+XSHEAR wrapper
+---------------
+
+
+Useful tools
+---------------
+
+tools.catalogs
+""""""""""""""
+
+
+.. automodule:: xpipe.tools.catalogs
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.tools.catalogs.to_pandas
+
+additional functions:
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.tools.catalogs.flat_type
+    xpipe.tools.catalogs.flat_copy
+
+
+tools.selector
+""""""""""""""
+
+.. automodule:: xpipe.tools.selector
+
+.. currentmodule:: xpipe
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.tools.selector.selector
+    xpipe.tools.selector.matchdd
+    xpipe.tools.selector.partition
+    xpipe.tools.selector.safedivide

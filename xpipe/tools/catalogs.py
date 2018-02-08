@@ -1,5 +1,5 @@
 """
-Handles Fits -> Pandas transformations
+Handles Fits -> Pandas transformations for tables with multidimensional "columns"
 """
 
 import numpy as np

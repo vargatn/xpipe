@@ -1,5 +1,5 @@
 """
-Parameter selection in N-Dimensions
+Manipulate arrays and parameter distributions
 """
 
 import numpy as np
