@@ -11,7 +11,7 @@ from collections import OrderedDict
 import pandas as pd
 import fitsio as fio
 import scipy.interpolate as interp
-
+from ..tools.selector import partition
 from .. import paths
 
 BADVAL = -9999.
@@ -199,7 +199,7 @@ def write_custom_xconf(fname, xsettings=None, params=None):
 
 def write_xconf(fname, pairs=True):
     """
-    Writes simple *XSHEAR* config file
+    Writes simple *XSHEAR* config file based on :py:data:`paths.params`
 
     Parameters
     ----------
@@ -267,6 +267,14 @@ sheared_source_settings = {
 
 ###################################################################
 # rotated shear catalog
+
+
+def get_rot_seeds(nrot, seed_master):
+    """Radnom generates seeds for random rotations using the master seed"""
+    rng = np.random.RandomState(seed=seed_master)
+    smax = np.iinfo(np.uint32).max
+    seed_rots = rng.randint(low=0, high=smax, size=nrot)
+    return seed_rots
 
 
 def rot2d(e1, e2, alpha):
@@ -349,9 +357,7 @@ class CatRotator(object):
             pass
 
     def rotate(self):
-        """
-        Perform a random rotation on the shear catalog
-        """
+        """Perform a random rotation on the shear catalog"""
         print '    starting reading'
         self.readcat()
         print '    rotating with seed = ' + str(self.seed)
@@ -360,3 +366,299 @@ class CatRotator(object):
         self.writecat()
         print '    finished'
 
+
+def single_rotate(flist, seed_rot, metasel=False, head=False):
+    """
+    runs one single rotation of the source catalog with METACAL SELECTION RESPONSES
+
+    Parameters
+    ----------
+    flist : list
+        list of individual *xshear* input files
+    seed_rot : int
+        random seed to be used in the rotation
+    metasel : bool
+        whether to perform the rotation in calculating the metacal selection responses also.
+    head : bool
+        whether to use only the first few rows of the shear catalog
+
+    """
+    #"""runs one single rotation of the source catalog with METACAL SELECTION RESPONSES"""
+
+    print "    writing xshear input"
+    xpath = paths.dirpaths["xin"] + "/" + paths.params["tag"] + \
+            "xconfig_rot_seed" + str(seed_rot) + ".cfg"
+    write_custom_xconf(xpath, xsettings=get_main_source_settings_nopairs())
+
+    print '    creating main catalog'
+    sname = paths.fullpaths[paths.params['shear_to_use']]
+    cr = CatRotator(sname, seed=seed_rot)
+    cr.rotate()
+    print '    running measurement'
+    clust_infos = create_infodict(flist, pairs=False, head=head,
+                                  rotate=True, seed=seed_rot, shape_path=cr.oname,
+                                  xconfig=xpath)
+
+    multi_xrun(clust_infos, nprocess=paths.params['nprocess'])
+    print '    finished...'
+    print '    removing catalog'
+    cr.rmcat()
+
+    # starting runs for metacal selection responses
+    if metasel:
+        print '    creating sheared catalogs'
+        for tag in sheared_tags:
+            xpath_sheared = paths.dirpaths["xin"] + "/" + paths.params["tag"] + \
+                            "xconfig" + tag + "_rot_seed" + str(seed_rot) + ".cfg"
+            write_custom_xconf(xpath_sheared, xsettings=sheared_source_settings)
+
+            sname = paths.fullpaths[paths.params['shear_to_use']].replace(".dat", tag + ".dat")
+            cr = CatRotator(sname, seed=seed_rot)
+            cr.rotate()
+            print '    running sheared measurement', tag
+            clust_infos = create_infodict(flist, pairs=False, head=head,
+                                          rotate=True, seed=seed_rot, shape_path=cr.oname, metatag=tag,
+                                          xconfig=xpath_sheared)
+            multi_xrun(clust_infos, nprocess=paths.params['nprocess'])
+            print '    finished...'
+            print '    removing catalog'
+            cr.rmcat()
+
+
+def serial_rotate(flist, metasel=False, nrot=20, head=False, seed_master=5):
+    """
+    performs the random rotations serially and saves them to file
+
+
+    Parameters
+    ----------
+    flist : list
+        list of individual *xshear* input files
+    metasel : bool
+        whether to perform the rotation in calculating the metacal selection responses also.
+    nrot : int
+        number of rotations to perform
+    head : bool
+        whether to use only the first few rows of the shear catalog
+    seed_master : int
+        master seed to generate random seeds for the rotating the entire catalog
+
+    """
+
+    seed_rots = get_rot_seeds(nrot=nrot, seed_master=seed_master)
+
+    for i, seed_rot in enumerate(seed_rots):
+        print 'rotation ', i
+        single_rotate(flist, seed_rot, metasel=metasel, head=head)
+
+
+def chunkwise_rotate(flist, metasel=False, nrot=20, nchunks=1, ichunk=0, head=False, seed_master=5):
+    """
+    Performs the random rotations and saves them to file
+
+    Parameters
+    ----------
+    flist : list
+        list of individual *xshear* input files
+    metasel : bool
+        whether to perform the rotation in calculating the metacal selection responses also.
+    nrot : int
+        number of rotations in total
+    nchunks : int
+        number of chunks to divide the task into
+    ichunk : int
+        index of the current chunk
+    head : bool
+        whether to use only the first few rows of the shear catalog
+    seed_master : int
+        master seed to generate random seeds for the rotating the entire catalog
+
+
+    """
+    seed_rots = get_rot_seeds(nrot=nrot, seed_master=seed_master)
+    seed_chunks = partition(seed_rots, nchunks)
+
+    print 'using seeds: ', seed_chunks[ichunk]
+    for i, seed_rot in enumerate(seed_chunks[ichunk]):
+        print 'rotation ', i
+        single_rotate(flist, seed_rot, metasel=metasel, head=head)
+
+
+###################################################################
+
+
+def create_infodict(flist, head=False, pairs=False, seed=None,
+                    rotate=False, seed_tag="", shape_path=None, metatag=None, xconfig=None, params=None, dirpaths=None):
+    """
+    Creates configuration dictionary which can be passed to multiprocessing map_async()
+
+    Parameters
+    ----------
+    flist : list
+        list of individual *xshear* input files
+    head : bool
+        whether to use only the first few rows of the shear catalog
+    pairs : bool
+        whether to log source-lens pairs
+    seed : int
+        random seed
+    rotate : bool
+        whether to perform random rotations
+    seed_tag : str
+        additional comment to write to each file. default is ``"_seed" + str(seed)``
+    shape_path : str
+        absolute path to the source catalog. If None the default path will be loaded
+        from :py:data:`path.params`
+    metatag : str
+        tag to indicate which metacalibration sheared version this run corresponds to
+    xconfig : str
+        absolute path to xshear executable
+    params : dict
+        Pipeline settings in a dictionary format.
+        If :code:`None` then the default :py:data:`paths.params` will be used
+    dirpaths : dict
+        Pipeline directory paths in a dictionary format.
+        If :code:`None` then the default :py:data:`paths.fullpaths` will be used
+
+    Returns
+    -------
+    list of dict
+
+    """
+
+    if params is None and dirpaths is None:
+        params = paths.params
+        dirpaths = paths.dirpaths
+    elif None in (params, dirpaths):
+        raise SyntaxError("Some of the arguments are left at default,"
+                          " which results in inconsistent behaviour. "
+                          "If using custom input, define all arguments!")
+
+    iroot = dirpaths["xin"] + "/" + params["tag"] + "/"
+    oroot = dirpaths["xout"] + "/" + params["tag"] + "/"
+
+
+    if rotate:
+        seed_tag += '_seed' + str(seed)
+
+    if metatag is None:
+        metatag = ""
+
+    infodicts = []
+    for file in flist:
+        infodict_raw = {
+            'infile':  iroot + file,
+            'outfile': oroot + file.split('.dat')[0] + seed_tag + '_result' + metatag + '.dat',
+            'pairsfile': oroot + file.split('.dat')[0] + seed_tag + '_result_pairs' + metatag + '.dat',
+            'logfile': oroot + file.split('.dat')[0] + seed_tag + '_result_log' + metatag + '.dat',
+            'head': head,
+            'pairs': pairs,
+            'seed': seed,
+            'rotate_shears': rotate,
+            'shape_path': shape_path,
+            'xconfig': xconfig,
+        }
+        infodicts.append(infodict_raw)
+    return infodicts
+
+
+def call_xshear(infodict):
+    """
+    Calls xshear in a single process
+
+    Run is based on the passed information dict
+
+    Parameters
+    ----------
+    infodict : dict
+        A single list element returned from :py:func:`create_infodict`
+    """
+
+    infile = infodict['infile']
+    outfile = infodict['outfile']
+    pairsfile = infodict['pairsfile']
+    logfile = infodict['logfile']
+
+    if 'shape_path' in infodict.keys() and infodict['shape_path'] is not None:
+        shape_path = infodict['shape_path']
+    else:
+        shape_path = paths.fullpaths[paths.params['shear_to_use']]
+
+    if 'head' in infodict.keys() and infodict['head']:
+        cmd1 = 'head -n ' + str(paths.params["headsize"]) + " " + shape_path
+    else:
+        cmd1 = 'cat ' + shape_path
+
+    if 'xconfig' in infodict.keys() and infodict['xconfig'] is not None:
+        xconfig = infodict['xconfig']
+    else:
+        xconfig = paths.fullpaths['xconfig']
+    print xconfig
+
+    cmd2 = paths.fullpaths['xpath'] + ' ' + xconfig + ' ' +\
+           infile + ' ' + pairsfile
+
+    print 'processing ' + os.path.split(infile)[1] + ' with ' + os.path.split(shape_path)[1]
+
+    try:
+        rfile = open(outfile, 'w+')
+        lfile = open(logfile, 'w+')
+
+        # for i in xrange(1000000000000):
+            # pass
+
+        p1 = sp.Popen(cmd1.split(' '), stdout=sp.PIPE)
+        p2 = sp.Popen(cmd2.split(' '), stdin=p1.stdout, stdout=rfile, stderr=lfile)
+
+        p1.stdout.close()
+        p2.communicate()
+        # p2.wait()
+
+        rfile.close()
+        lfile.close()
+        print 'finished: ' + os.path.split(outfile)[1]
+    except KeyboardInterrupt:
+        raise KeyboardInterrupt
+
+
+def call_chunks(chunk):
+    """Executes serial calculation for each chunk (simple for loop)"""
+    try:
+        for infodict in chunk:
+            call_xshear(infodict)
+    except KeyboardInterrupt:
+        pass
+
+
+def multi_xrun(infodicts, nprocess=1):
+    """
+    OpenMP style parallelization for xshear tasks
+
+    Separates tasks into chunks, and passes each chunk for an independent process
+    for serial evaulation via :py:func:`call_chunks`
+
+    Parameters
+    ----------
+    infodict : dict
+        A single list element returned from :py:func:`create_infodict`
+    nprocess : int
+        Number of processes (cores) to use. Maximum number is always set by ``len(infodicts)``
+
+    """
+    # at most as many processes can be used as there are independent tasks...
+    if nprocess > len(infodicts):
+        nprocess = len(infodicts)
+
+    print 'starting xshear calculations in ' + str(nprocess) + ' processes'
+    fparchunks = sl.partition(infodicts, nprocess)
+    pool = mp.Pool(processes=nprocess)
+    try:
+        pp = pool.map_async(call_chunks, fparchunks)
+        pp.get(86400)  # apparently this counters a bug in the exception passing in python.subprocess...
+    except KeyboardInterrupt:
+        print "Caught KeyboardInterrupt, terminating workers"
+        pool.terminate()
+        pool.join()
+    else:
+        pool.close()
+        pool.join()

@@ -1,16 +1,102 @@
 """
 # TODO add documentation
 """
-import kmeans_radec as krd
-import numpy as np
-import fitsio as fio
 import os
 
-from .. import paths
-from ..tools.selector import selector, matchdd
-from ..tools.catalogs import to_pandas
-from .ioshear import makecat
+import fitsio as fio
+import kmeans_radec as krd
+import numpy as np
 
+
+from .ioshear import makecat
+from .. import paths
+from ..tools.catalogs import to_pandas
+from ..tools.selector import selector, matchdd
+
+
+flist_suffix = "_flist.dat"
+rlist_suffix = "_rlist.dat"
+flist_jk_suffix = "_flist_jk.dat"
+rlist_jk_suffix = "_rlist_jk.dat"
+
+
+def get_dpath(params, dirpaths):
+    """Return absolute path to project subdirectory"""
+    dpath = dirpaths['xin'] + "/" + params["tag"]
+    return dpath
+
+
+def _bin_fnames(qlist, fnames):
+    all_list = []
+    chunk = []
+    for i, qname in enumerate(qlist):
+        # print chunk
+        if i == 0 or qlist[i - 1] == qlist[i]:
+            chunk.append(fnames[i])
+        else:
+            all_list.append(chunk)
+            chunk = [fnames[i],]
+
+    all_list.append(chunk)
+
+    return all_list
+
+
+def get_file_lists(params, dirpaths):
+    """
+    Return lists of input files
+
+    Parameters
+    ----------
+    params : dict
+        Pipeline settings in a dictionary format.
+    dirpaths : dict
+        Pipeline directory paths in a dictionary format.
+
+
+    Returns
+    -------
+    list, list, list, list
+        flist, flist_jk, rlist, rlist_jk
+
+    """
+    dpath = get_dpath(params, dirpaths)
+
+    fpath = dpath + "/" + params["tag"] + flist_suffix
+    fpath_jk = dpath + "/" + params["tag"] + flist_jk_suffix
+
+    try:
+        with open(fpath) as file:
+            flist = file.read().splitlines()
+
+        with open(fpath_jk) as file:
+            _flist_jk = file.read().splitlines()
+
+        qtags = [fname.split("_qbin-")[1].split("_patch")[0] for fname in _flist_jk]
+        flist_jk = _bin_fnames(qtags, _flist_jk)
+
+    except IOError:
+        flist = None
+        flist_jk = None
+
+    rpath = dpath + "/" + params["tag"] + rlist_suffix
+    rpath_jk = dpath + "/" + params["tag"] + rlist_jk_suffix
+
+    try:
+        with open(rpath) as file:
+            rlist = file.read().splitlines()
+
+        with open(rpath_jk) as file:
+            _rlist_jk = file.read().splitlines()
+
+        qtags = [fname.split("_qbin-")[1].split("_patch")[0] for fname in _rlist_jk]
+        rlist_jk = _bin_fnames(qtags, _rlist_jk)
+
+    except IOError:
+        rlist = None
+        rlist_jk = None
+
+    return flist, flist_jk, rlist, rlist_jk
 
 def field_cut(ra, dec, borders):
     """
@@ -534,7 +620,6 @@ class XIO(object):
             jkinds, jkninds, labels = assign_jk_labels(ra, dec, self._bin_jk_centers)
             self._save_jk_cens()
         else:
-            print "here"
             jkinds, jkninds, labels = extract_jk_labels(self.lenses["jk"][sind])
 
         # write data table of selected clusters along with the assigned Jackknife IDs
@@ -543,8 +628,9 @@ class XIO(object):
         fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), ftab.to_records(), clobber=True)
 
         for label, jkind in enumerate(jkinds):
-            fname = self.dpath + "/" +  self.flist[self.ind].replace('.dat', '_patch' + str(label) + '.dat')
-            self.flist_jk.append(fname)
+            froot = self.flist[self.ind].replace('.dat', '_patch' + str(label) + '.dat')
+            fname = self.dpath + "/" +  froot
+            self.flist_jk.append(froot)
             makecat(fname, self.lenses["id"][sind][jkind], self.lenses["ra"][sind][jkind],
                     self.lenses["dec"][sind][jkind], self.lenses["z"][sind][jkind])
 
@@ -583,7 +669,6 @@ class XIO(object):
     def save_rands(self):
         """Writes random points to file in xshear style"""
         rind = self.randoms['sinds'][self.ind]
-        print rind
         makecat(self.dpath + "/" + self.rlist[self.ind],
                         self.randoms['id'][rind][self.idraw], self.randoms['ra'][rind][self.idraw],
                         self.randoms['dec'][rind][self.idraw], self.randoms['z'][rind][self.idraw])
@@ -601,8 +686,9 @@ class XIO(object):
             jkinds, jkninds, labels = extract_jk_labels(self.randoms["jk"][rind][self.idraw])
 
         for label, jkind in enumerate(jkinds):
-            fname = self.dpath + "/" + self.rlist[self.ind].replace('.dat', '_patch' + str(label) + '.dat')
-            self.rlist_jk.append(fname)
+            froot = self.rlist[self.ind].replace('.dat', '_patch' + str(label) + '.dat')
+            fname = self.dpath + "/" + froot
+            self.rlist_jk.append(froot)
             makecat(fname, self.randoms["id"][rind][jkind], self.randoms["ra"][rind][jkind],
                     self.randoms["dec"][rind][jkind], self.randoms["z"][rind][jkind])
 
@@ -633,7 +719,23 @@ class XIO(object):
                 self.save_rands()
                 self.save_rands_jk()
 
-            break
+        self.savelists(norands=norands)
+
+    def savelists(self, norands=False):
+        """writes JK file paths to a file for future lookup"""
+
+        fpath = self.dpath + "/" + self.params["tag"] + flist_suffix
+        fpath_jk = self.dpath + "/" + self.params["tag"] + flist_jk_suffix
+
+        np.savetxt(fpath, self.flist, fmt="%s")
+        np.savetxt(fpath_jk, self.flist_jk, fmt="%s")
+
+        if not norands:
+            rpath = self.dpath + "/" + self.params["tag"] + rlist_suffix
+            rpath_jk = self.dpath + "/" + self.params["tag"] + rlist_jk_suffix
+
+            np.savetxt(rpath, self.rlist, fmt="%s")
+            np.savetxt(rpath_jk, self.rlist_jk, fmt="%s")
 
 
 def assign_kmeans_labels(pos, centers, verbose=False):

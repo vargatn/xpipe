@@ -12,6 +12,7 @@ import numpy as np
 default_inputs_suffix = 'settings/default_inputs.yml'
 inputs_suffix = 'settings/inputs.yml'
 
+
 ###################################################################
 # readers
 
@@ -29,11 +30,13 @@ def read_yaml(cfg):
          cfg = yaml.safe_load(file)
     return cfg
 
+
 def get_pdf_flist(params):
     ppaths = None
     if params['pdf_paths'] is not None:
         ppaths = np.sort(glob.glob(params['pdf_paths']))
     return ppaths
+
 
 ###################################################################
 # modeset
@@ -184,9 +187,6 @@ def get_bin_settings(params, devmode):
 
     return param_bins, nrandoms
 
-def get_dpath(params, dirpaths):
-    dpath = dirpaths['xin'] + "/" + params["tag"]
-    return dpath
 
 ###################################################################
 #
