@@ -46,12 +46,12 @@ cat_to_use: default
 
 # parameter bins
 param_bins_full:
-  q1_edges: [0.2, 0.35, 0.5, 0.65]
-  q2_edges: [5., 10., 14., 20., 30., 45., 60., 999]
+  q0_edges: [0.2, 0.35, 0.5, 0.65]
+  q1_edges: [5., 10., 14., 20., 30., 45., 60., 999]
 
 param_bins_dev:
-  q1_edges: [0.2, 0.35]
-  q2_edges: [45, 60]
+  q0_edges: [0.2, 0.35]
+  q1_edges: [45, 60]
 
 # number of processes (cores) to use in calculations
 nprocess: 2
@@ -101,17 +101,19 @@ pairlog:
 # aliases for catolog parameters
 
 lenskey:
-  mid: MEM_MATCH_ID
+  id: MEM_MATCH_ID
   ra: RA
   dec: DEC
-  q1: Z_LAMBDA
-  q2: LAMBDA_CHISQ
+  z: Z_LAMBDA
+  q0: Z_LAMBDA
+  q1: LAMBDA_CHISQ
 
 randkey:
-  q1: ZTRUE
-  q2: AVG_LAMBDAOUT
+  q0: ZTRUE
+  q1: AVG_LAMBDAOUT
   ra: RA
   dec: DEC
+  z: ZTRUE
   w: WEIGHT
 
 ######################################################

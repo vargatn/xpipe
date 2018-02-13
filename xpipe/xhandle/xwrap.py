@@ -3,14 +3,12 @@ Handles calling xshear with multiprocessing (OpenMP-style single node calculatio
 """
 
 import os
-import copy
 import numpy as np
 import subprocess as sp
 import multiprocessing as mp
 from collections import OrderedDict
 import pandas as pd
-import fitsio as fio
-import scipy.interpolate as interp
+
 from ..tools.selector import partition
 from .. import paths
 
@@ -71,6 +69,7 @@ def get_shear(params=None):
         ('sigmacrit_style', 'sample'),
         ('shear_units', 'both'),
         ('sourceid_style',  'index'),
+        ('weight_style', params['weight_style']),
     ])
     return shear
 
@@ -488,7 +487,8 @@ def chunkwise_rotate(flist, metasel=False, nrot=20, nchunks=1, ichunk=0, head=Fa
 
 
 def create_infodict(flist, head=False, pairs=False, seed=None,
-                    rotate=False, seed_tag="", shape_path=None, metatag=None, xconfig=None, params=None, dirpaths=None):
+                    rotate=False, seed_tag="", shape_path=None, metatag=None,
+                    xconfig=None, params=None, dirpaths=None, fullpaths=None, src_bins=(0,)):
     """
     Creates configuration dictionary which can be passed to multiprocessing map_async()
 
@@ -519,6 +519,9 @@ def create_infodict(flist, head=False, pairs=False, seed=None,
     dirpaths : dict
         Pipeline directory paths in a dictionary format.
         If :code:`None` then the default :py:data:`paths.fullpaths` will be used
+    fullpaths : dict
+        Pipeline file paths in a dictionary format.
+        If :code:`None` then the default :py:data:`paths.fullpaths` will be used
 
     Returns
     -------
@@ -526,10 +529,11 @@ def create_infodict(flist, head=False, pairs=False, seed=None,
 
     """
 
-    if params is None and dirpaths is None:
+    if params is None and dirpaths is None and fullpaths is None:
         params = paths.params
         dirpaths = paths.dirpaths
-    elif None in (params, dirpaths):
+        fullpaths = paths.fullpaths
+    elif None in (params, dirpaths, fullpaths):
         raise SyntaxError("Some of the arguments are left at default,"
                           " which results in inconsistent behaviour. "
                           "If using custom input, define all arguments!")
@@ -537,28 +541,43 @@ def create_infodict(flist, head=False, pairs=False, seed=None,
     iroot = dirpaths["xin"] + "/" + params["tag"] + "/"
     oroot = dirpaths["xout"] + "/" + params["tag"] + "/"
 
-
     if rotate:
         seed_tag += '_seed' + str(seed)
 
     if metatag is None:
         metatag = ""
 
+    if shape_path is None:
+        shape_path = fullpaths[params['shear_to_use']]
+
+    if xconfig is None:
+        xconfig = dirpaths["xin"] + "/" + params["tag"] + "/" + params["tag"] + "_xconfig.dat"
+
+
     infodicts = []
     for file in flist:
-        infodict_raw = {
-            'infile':  iroot + file,
-            'outfile': oroot + file.split('.dat')[0] + seed_tag + '_result' + metatag + '.dat',
-            'pairsfile': oroot + file.split('.dat')[0] + seed_tag + '_result_pairs' + metatag + '.dat',
-            'logfile': oroot + file.split('.dat')[0] + seed_tag + '_result_log' + metatag + '.dat',
-            'head': head,
-            'pairs': pairs,
-            'seed': seed,
-            'rotate_shears': rotate,
-            'shape_path': shape_path,
-            'xconfig': xconfig,
-        }
-        infodicts.append(infodict_raw)
+        for isrc in src_bins:
+
+            src_tag = ""
+            _spath = shape_path
+            if len(src_bins) > 1:
+                src_tag = "_sbin" + str(isrc)
+                _spath = shape_path + src_tag + ".dat"
+
+            infodict_raw = {
+                'infile':  iroot + file,
+                'outfile': oroot + file.split('.dat')[0] + src_tag + seed_tag + '_result' + metatag + '.dat',
+                'pairsfile': oroot + file.split('.dat')[0] + src_tag + seed_tag + '_result_pairs' + metatag + '.dat',
+                'logfile': oroot + file.split('.dat')[0] + src_tag + seed_tag + '_result_log' + metatag + '.dat',
+                'head': head,
+                'pairs': pairs,
+                'seed': seed,
+                'rotate_shears': rotate,
+                'shape_path': _spath,
+                'xconfig': xconfig,
+            }
+
+            infodicts.append(infodict_raw)
     return infodicts
 
 
@@ -579,13 +598,10 @@ def call_xshear(infodict):
     pairsfile = infodict['pairsfile']
     logfile = infodict['logfile']
 
-    if 'shape_path' in infodict.keys() and infodict['shape_path'] is not None:
-        shape_path = infodict['shape_path']
-    else:
-        shape_path = paths.fullpaths[paths.params['shear_to_use']]
+    shape_path = infodict['shape_path']
 
     if 'head' in infodict.keys() and infodict['head']:
-        cmd1 = 'head -n ' + str(paths.params["headsize"]) + " " + shape_path
+        cmd1 = 'head -n ' + str(infodict['head']) + " " + shape_path
     else:
         cmd1 = 'cat ' + shape_path
 
@@ -604,15 +620,11 @@ def call_xshear(infodict):
         rfile = open(outfile, 'w+')
         lfile = open(logfile, 'w+')
 
-        # for i in xrange(1000000000000):
-            # pass
-
         p1 = sp.Popen(cmd1.split(' '), stdout=sp.PIPE)
         p2 = sp.Popen(cmd2.split(' '), stdin=p1.stdout, stdout=rfile, stderr=lfile)
 
         p1.stdout.close()
         p2.communicate()
-        # p2.wait()
 
         rfile.close()
         lfile.close()
@@ -650,7 +662,7 @@ def multi_xrun(infodicts, nprocess=1):
         nprocess = len(infodicts)
 
     print 'starting xshear calculations in ' + str(nprocess) + ' processes'
-    fparchunks = sl.partition(infodicts, nprocess)
+    fparchunks = partition(infodicts, nprocess)
     pool = mp.Pool(processes=nprocess)
     try:
         pp = pool.map_async(call_chunks, fparchunks)

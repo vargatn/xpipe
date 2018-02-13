@@ -18,7 +18,10 @@ if __name__ == '__main__':
     paths.update_params(args.params)
 
     lenses = parbins.prepare_lenses()
-    randoms = parbins.prepare_random()
+    if not args.norands:
+        randoms = parbins.prepare_random()
+    else:
+        randoms = None
 
     xio = parbins.XIO(lenses, randoms, force_centers=paths.params["njk_max"])
     xio.mkdir()

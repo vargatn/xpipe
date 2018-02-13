@@ -213,8 +213,9 @@ def load_lenscat(params=None, fullpaths=None):
         raise SyntaxError("Some of the arguments are left at default,"
                           " which results in inconsistent behaviour. "
                           "If using custom input, define all arguments!")
-
+    print fullpaths[params["cat_to_use"]]["lens"]
     lenscat = fio.read(fullpaths[params["cat_to_use"]]["lens"])
+
     lenskey = params['lenskey']
 
     ids = lenscat[lenskey['id']]
@@ -222,10 +223,13 @@ def load_lenscat(params=None, fullpaths=None):
     dec = lenscat[lenskey['dec']]
     z = lenscat[lenskey["z"]]
 
-    select = np.zeros(len(ra), dtype=bool)
-    fields = get_fields_auto()
-    for name in fields.keys():
-        select += field_cut(ra, dec, fields[name])
+    if params["fields_to_use"] is not None:
+        select = np.zeros(len(ra), dtype=bool)
+        fields = get_fields_auto()
+        for name in fields.keys():
+            select += field_cut(ra, dec, fields[name])
+    else:
+        select = np.ones(len(ra), dtype=bool)
 
     # number of parameter columns
     nq = len(lenskey.keys()) - 4
@@ -304,10 +308,13 @@ def load_randcat(params=None, fullpaths=None):
     z = randcat[randkey["z"]]
     ids = np.arange(len(randcat))
 
-    select = np.zeros(len(ra), dtype=bool)
-    fields = get_fields_auto()
-    for name in fields.keys():
-        select += field_cut(ra, dec, fields[name])
+    if params["fields_to_use"] is not None:
+        select = np.zeros(len(ra), dtype=bool)
+        fields = get_fields_auto()
+        for name in fields.keys():
+            select += field_cut(ra, dec, fields[name])
+    else:
+        select = np.ones(len(ra), dtype=bool)
 
     # number of parameter columns
     nq = len(randkey.keys()) - 4
@@ -592,6 +599,10 @@ class XIO(object):
         self.dpath = self.dirpaths['xin'] + "/" + self.params["tag"]
         if not os.path.isdir(self.dpath):
             os.mkdir(self.dpath)
+
+        self.opath = self.dirpaths['xout'] + "/" + self.params["tag"]
+        if not os.path.isdir(self.dpath):
+            os.mkdir(self.opath)
 
     def _save_jk_cens(self):
         fname = self.dpath + '/' + self.params["tag"] + "_jkcens" + self.bin_tag + '.dat'
