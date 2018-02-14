@@ -20,7 +20,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     paths.update_params(args.params)
 
-    # write xshear config file
     xpath = parbins.get_dpath(paths.params, paths.dirpaths) + "/" +\
             paths.params["tag"] + "_xconfig.cfg"
     xwrap.write_xconf(xpath)
@@ -29,6 +28,7 @@ if __name__ == '__main__':
 
     # TODO this is placeholder
     alist = np.concatenate(flist_jk[3:8] + flist_jk[11:16] + flist_jk[19:])
+    blist = np.concatenate(rlist_jk[3:8] + rlist_jk[11:16] + rlist_jk[19:])
 
     if not args.noclust:
         clust_infos = xwrap.create_infodict(alist, head=args.head,
@@ -38,4 +38,7 @@ if __name__ == '__main__':
 
 
     if not args.norands:
-        pass
+        rands_infos = xwrap.create_infodict(blist, head=args.head,
+                                            pairs=args.nopairs, src_bins=paths.params["source_bins_to_use"],
+                                            xconfig=xpath)
+        xwrap.multi_xrun(rands_infos, nprocess=paths.params['nprocess'])
