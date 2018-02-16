@@ -5,7 +5,7 @@ Installation
 
 The package itself can be obtained from bitbucket: ::
 
-    git clone https://vargatn@bitbucket.org/vargatn/xpipe.git
+    git clone https://github.com/vargatn/xpipe.git
 
 There are two modes: *pipeline* and *API*, for instructions, see the below sections.
 
