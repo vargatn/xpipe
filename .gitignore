@@ -2,7 +2,7 @@
 *.swp
 *.pyc
 *.cache
-proclens.egg-info
+xpipe.egg-info
 
 doc/source/generated
 
