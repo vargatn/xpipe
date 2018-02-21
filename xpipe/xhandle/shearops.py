@@ -699,9 +699,6 @@ def process_profile(fnames, metanames=None, labels=None, ncens=None):
     # TODO finish this
     """
 
-    if metanames is not None:
-        assert len(fnames) == len(metanames)
-
     if type(fnames) is str or len(fnames) == 0:
         if type(fnames) is not str:
             fnames = fnames[0]

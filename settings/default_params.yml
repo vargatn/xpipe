@@ -122,6 +122,17 @@ randkey:
 lens_prefix: y1clust
 rand_prefix: y1rand
 
+suffixes:
+  "profile": "_profile.dat"
+  "dst_cov": "_dst_cov.dat"
+  "dsx_cov": "_dsx_cov.dat"
+  "radial_snum": "_radial_snum"
+  "corr_boost": "_corr_boost.dat"
+  "corr_boost_cov": "_corr_boost_cov.dat"
+  "calibs_log": "_calibs_log.dat"
+
+
+
 ######################################################
 # DES fields with rectangular boundary in radec
 

@@ -264,6 +264,16 @@ sheared_source_settings = {
 }
 
 
+def get_metanames(fnames):
+    metanames = []
+    for tag in sheared_tags:
+        _fnames = []
+        for fname in fnames:
+            _fnames.append(fname.replace(".dat", tag + ".dat"))
+        metanames.append(_fnames)
+    return metanames
+
+
 ###################################################################
 # rotated shear catalog
 
@@ -675,3 +685,4 @@ def multi_xrun(infodicts, nprocess=1):
     else:
         pool.close()
         pool.join()
+

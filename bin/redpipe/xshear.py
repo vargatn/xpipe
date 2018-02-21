@@ -26,9 +26,12 @@ if __name__ == '__main__':
 
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
 
+    print flist_jk
     # TODO this is placeholder
-    alist = np.concatenate(flist_jk[3:8] + flist_jk[11:16] + flist_jk[19:])
-    blist = np.concatenate(rlist_jk[3:8] + rlist_jk[11:16] + rlist_jk[19:])
+    alist = np.concatenate(flist_jk)
+    # blist = np.concatenate(rlist_jk)
+    # alist = np.concatenate(flist_jk[3:8] + flist_jk[11:16] + flist_jk[19:])
+    # blist = np.concatenate(rlist_jk[3:8] + rlist_jk[11:16] + rlist_jk[19:])
 
     if not args.noclust:
         clust_infos = xwrap.create_infodict(alist, head=args.head,

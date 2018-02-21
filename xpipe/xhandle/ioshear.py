@@ -344,3 +344,4 @@ def read_multiple_bin(fnames, metanames=None):
                         for raw_data in raw_sheared]
 
     return cinfo, cdata, sheared_data, clabels
+

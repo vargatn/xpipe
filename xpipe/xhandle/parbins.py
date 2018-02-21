@@ -638,9 +638,9 @@ class XIO(object):
             jkinds, jkninds, labels = extract_jk_labels(self.lenses["jk"][sind])
 
         # write data table of selected clusters along with the assigned Jackknife IDs
-        ftab = to_pandas(self.lenses["fullcat"][sind])
-        ftab["JK_ID"] = labels
-        fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), ftab.to_records(), clobber=True)
+        # ftab = to_pandas(self.lenses["fullcat"][sind])
+        # ftab["JK_ID"] = labels
+        # fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), ftab.to_records(), clobber=True)
 
         for label, jkind in enumerate(jkinds):
             froot = self.flist[self.ind].replace('.dat', '_patch' + str(label) + '.dat')
