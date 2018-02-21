@@ -601,8 +601,12 @@ class XIO(object):
             os.mkdir(self.dpath)
 
         self.opath = self.dirpaths['xout'] + "/" + self.params["tag"]
-        if not os.path.isdir(self.dpath):
+        if not os.path.isdir(self.opath):
             os.mkdir(self.opath)
+
+        self.respath = self.dirpaths['results'] + "/" + self.params["tag"]
+        if not os.path.isdir(self.respath):
+            os.mkdir(self.respath)
 
     def _save_jk_cens(self):
         fname = self.dpath + '/' + self.params["tag"] + "_jkcens" + self.bin_tag + '.dat'

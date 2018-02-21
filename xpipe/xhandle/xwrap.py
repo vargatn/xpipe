@@ -560,6 +560,7 @@ def create_infodict(flist, head=False, pairs=False, seed=None,
 
             src_tag = ""
             _spath = shape_path
+
             if len(src_bins) > 1:
                 src_tag = "_sbin" + str(isrc)
                 _spath = shape_path + src_tag + ".dat"
