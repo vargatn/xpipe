@@ -25,6 +25,10 @@ parser.add_argument('--noclust', action="store_true")
 parser.add_argument('--norands', action="store_true")
 parser.add_argument('--params', type=str)
 
+parser.add_argument("--nchunk", type=int, default=1)
+parser.add_argument("--ichunk", type=int, default=0)
+
+
 shape_path = paths.fullpaths[paths.params["shear_to_use"]]
 sheared_shape_paths = []
 for tag in xwrap.sheared_tags:
