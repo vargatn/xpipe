@@ -8,6 +8,7 @@ import numpy as np
 import xpipe.paths as paths
 import xpipe.xhandle.parbins as parbins
 import xpipe.xhandle.xwrap as xwrap
+import xpipe.tools.selector as selector
 
 parser = argparse.ArgumentParser(description='Runs xshear')
 parser.add_argument('--head', type=int, default=0)
@@ -15,6 +16,10 @@ parser.add_argument('--nopairs', action="store_false")
 parser.add_argument('--noclust', action="store_true")
 parser.add_argument('--norands', action="store_true")
 parser.add_argument('--params', type=str)
+
+parser.add_argument("--nchunk", type=int, default=1)
+parser.add_argument("--ichunk", type=int, default=0)
+
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -26,12 +31,11 @@ if __name__ == '__main__':
 
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
 
-    print flist_jk
-    # TODO this is placeholder
-    alist = np.concatenate(flist_jk)
-    # blist = np.concatenate(rlist_jk)
-    # alist = np.concatenate(flist_jk[3:8] + flist_jk[11:16] + flist_jk[19:])
-    # blist = np.concatenate(rlist_jk[3:8] + rlist_jk[11:16] + rlist_jk[19:])
+    _alist = np.concatenate(flist_jk)
+    alist = selector.partition(_alist, args.nchunk)[args.ichunk]
+
+    _blist = np.concatenate(rlist_jk)
+    blist = selector.partition(_blist, args.nchunk)[args.ichunk]
 
     if not args.noclust:
         clust_infos = xwrap.create_infodict(alist, head=args.head,

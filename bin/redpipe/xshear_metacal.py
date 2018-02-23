@@ -14,6 +14,7 @@ import numpy as np
 import xpipe.paths as paths
 import xpipe.xhandle.parbins as parbins
 import xpipe.xhandle.xwrap as xwrap
+import xpipe.tools.selector as selector
 
 parser = argparse.ArgumentParser(description='Runs xshear')
 parser.add_argument('--ichunk', type=int, default=0)
@@ -38,13 +39,20 @@ if __name__ == '__main__':
 
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
 
+    _alist = np.concatenate(flist_jk)
+    alist = selector.partition(_alist, args.nchunk)[args.ichunk]
+
+    _blist = np.concatenate(rlist_jk)
+    blist = selector.partition(_blist, args.nchunk)[args.ichunk]
+
+
     if args.ichunk == 0 or args.runall:
         print xpath
         xwrap.write_custom_xconf(xpath, xsettings=xwrap.get_main_source_settings())
 
 
         if not args.noclust:
-            clust_infos = xwrap.create_infodict(np.concatenate(flist_jk),
+            clust_infos = xwrap.create_infodict(alist,
                                                 head=args.head,
                                                 pairs=args.nopairs,
                                                 src_bins=paths.params["source_bins_to_use"],
@@ -53,7 +61,7 @@ if __name__ == '__main__':
             xwrap.multi_xrun(clust_infos, nprocess=paths.params['nprocess'])
 
         if not args.norands:
-            rands_infos = xwrap.create_infodict(np.concatenate(rlist_jk),
+            rands_infos = xwrap.create_infodict(blist,
                                                 head=args.head,
                                                 pairs=args.nopairs,
                                                 src_bins=paths.params["source_bins_to_use"],
@@ -68,7 +76,7 @@ if __name__ == '__main__':
             xwrap.write_custom_xconf(sheared_xconfig_fname, xsettings=xwrap.sheared_source_settings)
 
             if not args.noclust:
-                sheared_clust_infos = xwrap.create_infodict(np.concatenate(flist_jk),
+                sheared_clust_infos = xwrap.create_infodict(alist,
                                                             head=args.head,
                                                             pairs=args.nopairs,
                                                             src_bins=paths.params["source_bins_to_use"],
@@ -78,7 +86,7 @@ if __name__ == '__main__':
                 xwrap.multi_xrun(sheared_clust_infos, nprocess=paths.params['nprocess'])
 
             if not args.norands:
-                sheared_rand_infos = xwrap.create_infodict(np.concatenate(rlist_jk),
+                sheared_rand_infos = xwrap.create_infodict(blist,
                                                            head=args.head,
                                                            pairs=args.nopairs,
                                                            src_bins=paths.params["source_bins_to_use"],
