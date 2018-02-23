@@ -23,6 +23,8 @@ parser.add_argument('--norands', action="store_true", default=False)
 # TODO update with intuitive source bin detection
 # TODO add better output handling
 # TODO add random point subbtraction
+# TODO add proper output name handling
+
 
 def write_profile(prof, path):
     """saves DeltaSigma and covariance in text format"""
@@ -51,14 +53,16 @@ if __name__ == '__main__':
 
         clust_infos = xwrap.create_infodict(clust_name)
         clust_files = [info["outfile"] for info in clust_infos]
+        # print clust_files[0]
+        bin_tag = clust_files[0].split(paths.params["tag"])[2].split(paths.params["lens_prefix"])[1].split("_patch")[0]
+        # print bin_tag
 
         clust = shearops.process_profile(clust_files, metanames=None)
 
-
         resroot = paths.dirpaths["results"] + "/" +\
-                  paths.params["tag"] + "/" + paths.params["lens_prefix"] + "_bin" + str(i)
+                  paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["lens_prefix"] + bin_tag
         write_profile(clust, resroot)
-        #
+
         clusts.append(clust)
 
         # if not args.norands:
