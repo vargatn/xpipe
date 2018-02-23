@@ -31,13 +31,10 @@ if __name__ == '__main__':
 
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
 
-    _alist = np.concatenate(flist_jk)
-    alist = selector.partition(_alist, args.nchunk)[args.ichunk]
-
-    _blist = np.concatenate(rlist_jk)
-    blist = selector.partition(_blist, args.nchunk)[args.ichunk]
-
     if not args.noclust:
+        _alist = np.concatenate(flist_jk)
+        alist = selector.partition(_alist, args.nchunk)[args.ichunk]
+
         clust_infos = xwrap.create_infodict(alist, head=args.head,
                                             pairs=args.nopairs, src_bins=paths.params["source_bins_to_use"],
                                             xconfig=xpath)
@@ -45,6 +42,8 @@ if __name__ == '__main__':
 
 
     if not args.norands:
+        _blist = np.concatenate(rlist_jk)
+        blist = selector.partition(_blist, args.nchunk)[args.ichunk]
         rands_infos = xwrap.create_infodict(blist, head=args.head,
                                             pairs=args.nopairs, src_bins=paths.params["source_bins_to_use"],
                                             xconfig=xpath)

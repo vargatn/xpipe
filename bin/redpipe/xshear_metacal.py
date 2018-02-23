@@ -43,19 +43,14 @@ if __name__ == '__main__':
 
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
 
-    _alist = np.concatenate(flist_jk)
-    alist = selector.partition(_alist, args.nchunk)[args.ichunk]
-
-    _blist = np.concatenate(rlist_jk)
-    blist = selector.partition(_blist, args.nchunk)[args.ichunk]
-
-
     if args.ichunk == 0 or args.runall:
         print xpath
         xwrap.write_custom_xconf(xpath, xsettings=xwrap.get_main_source_settings())
 
 
         if not args.noclust:
+            _alist = np.concatenate(flist_jk)
+            alist = selector.partition(_alist, args.nchunk)[args.ichunk]
             clust_infos = xwrap.create_infodict(alist,
                                                 head=args.head,
                                                 pairs=args.nopairs,
@@ -65,6 +60,8 @@ if __name__ == '__main__':
             xwrap.multi_xrun(clust_infos, nprocess=paths.params['nprocess'])
 
         if not args.norands:
+            _blist = np.concatenate(rlist_jk)
+            blist = selector.partition(_blist, args.nchunk)[args.ichunk]
             rands_infos = xwrap.create_infodict(blist,
                                                 head=args.head,
                                                 pairs=args.nopairs,
@@ -80,6 +77,8 @@ if __name__ == '__main__':
             xwrap.write_custom_xconf(sheared_xconfig_fname, xsettings=xwrap.sheared_source_settings)
 
             if not args.noclust:
+                _alist = np.concatenate(flist_jk)
+                alist = selector.partition(_alist, args.nchunk)[args.ichunk]
                 sheared_clust_infos = xwrap.create_infodict(alist,
                                                             head=args.head,
                                                             pairs=args.nopairs,
@@ -90,6 +89,8 @@ if __name__ == '__main__':
                 xwrap.multi_xrun(sheared_clust_infos, nprocess=paths.params['nprocess'])
 
             if not args.norands:
+                _blist = np.concatenate(rlist_jk)
+                blist = selector.partition(_blist, args.nchunk)[args.ichunk]
                 sheared_rand_infos = xwrap.create_infodict(blist,
                                                            head=args.head,
                                                            pairs=args.nopairs,
