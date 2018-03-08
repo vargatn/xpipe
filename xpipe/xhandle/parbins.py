@@ -222,7 +222,6 @@ def load_lenscat(params=None, fullpaths=None, which=None):
         lenscat = fio.read(lenspath[which])
     else:
         lenscat = fio.read(lenspath)
-
     lenskey = params['lenskey']
 
     ids = lenscat[lenskey['id']]
@@ -444,7 +443,7 @@ def prepare_lenses(bin_settings=None, params=None, fullpaths=None):
             if i == 0:
                 _sinds.append(np.arange(len(_data["id"])))
             else:
-                _sinds.append(_sinds[i-1].max() + np.arange(len(_data["id"])))
+                _sinds.append(_sinds[i-1].max() + 1 + np.arange(len(_data["id"])))
 
         # collating into fiducial format
         data = {}
@@ -460,7 +459,7 @@ def prepare_lenses(bin_settings=None, params=None, fullpaths=None):
             arr[sind] = True
             sinds.append(arr)
 
-        data.update({"sinds": sinds})
+        data.update({"sinds": _sinds})
         data["qlist"] = None
         data["plpairs"] = None
         data.update({"bounds": bounds})
@@ -569,7 +568,7 @@ def prepare_random(bin_settings=None, params=None, fullpaths=None):
             if i == 0:
                 _sinds.append(np.arange(len(_data["id"])))
             else:
-                _sinds.append(_sinds[i-1].max() + np.arange(len(_data["id"])))
+                _sinds.append(_sinds[i-1].max() + 1 + np.arange(len(_data["id"])))
 
         # collating into fiducial format
         data = {}
@@ -585,7 +584,7 @@ def prepare_random(bin_settings=None, params=None, fullpaths=None):
             arr[sind] = True
             sinds.append(arr)
 
-        data.update({"sinds": sinds})
+        data.update({"sinds": _sinds})
         data["qlist"] = None
         data["plpairs"] = None
         data.update({"bounds": bounds})
