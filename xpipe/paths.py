@@ -94,8 +94,14 @@ def get_local_filenames(pths, dirs):
             elif isinstance(pths[dkey][item], dict):
                 idict = {}
                 for key in pths[dkey][item].keys():
-                    ftail = pths[dkey][item][key].split('/')[-1]
-                    idict.update({key: dirs[dkey] + '/' + ftail})
+                    val = pths[dkey][item][key]
+                    if isinstance(val, str):
+                        ftail = pths[dkey][item][key]
+                        idict.update({key: dirs[dkey] + '/' + ftail})
+                    elif isinstance(val, list):
+                        valarr = np.array(val)
+                        ftails = np.array([dirs[dkey] + '/' + ftail for ftail in valarr.flatten()]).reshape(valarr.shape)
+                        idict.update({key: ftails})
                 fullpaths.update({item: idict})
 
     return fullpaths
@@ -176,14 +182,17 @@ def _complete_params_path(fname):
 
 def get_bin_settings(params, devmode):
     """Returns appropriate bin edges and the number of random points to use"""
+
     if devmode:
         param_bins = params['param_bins_dev']
         nrandoms = params['nrandoms']['dev']
     else:
         param_bins = params['param_bins_full']
         nrandoms = params['nrandoms']['full']
-    keys = np.sort(param_bins.keys())
-    param_bins = [param_bins[key] for key in keys]
+
+    if param_bins != "auto":
+        keys = np.sort(param_bins.keys())
+        param_bins = [param_bins[key] for key in keys]
 
     return param_bins, nrandoms
 

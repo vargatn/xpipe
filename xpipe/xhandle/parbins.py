@@ -167,7 +167,7 @@ def get_fields_auto(params=None):
     return fields
 
 
-def load_lenscat(params=None, fullpaths=None):
+def load_lenscat(params=None, fullpaths=None, which=None):
     """
     Loads lens catalog from fits file
 
@@ -179,6 +179,9 @@ def load_lenscat(params=None, fullpaths=None):
     fullpaths : dict
         Pipeline file paths in a dictionary format.
         If :code:`None` then the default :py:data:`paths.fullpaths` will be used
+    which : int or tuple
+        if lens catalog consists of multiple file, this is the index for which to load. It should index
+        the paths.fullpaths list to recover the absolute filepath of the loaded file
 
     Returns
     -------
@@ -213,8 +216,12 @@ def load_lenscat(params=None, fullpaths=None):
         raise SyntaxError("Some of the arguments are left at default,"
                           " which results in inconsistent behaviour. "
                           "If using custom input, define all arguments!")
-    print fullpaths[params["cat_to_use"]]["lens"]
-    lenscat = fio.read(fullpaths[params["cat_to_use"]]["lens"])
+
+    lenspath = fullpaths[params["cat_to_use"]]["lens"]
+    if isinstance(lenspath, np.ndarray):
+        lenscat = fio.read(lenspath[which])
+    else:
+        lenscat = fio.read(lenspath)
 
     lenskey = params['lenskey']
 
@@ -249,7 +256,7 @@ def load_lenscat(params=None, fullpaths=None):
     return data, lenscat[select]
 
 
-def load_randcat(params=None, fullpaths=None):
+def load_randcat(params=None, fullpaths=None, which=None):
     """
     Loads random point catalog from fits file
 
@@ -261,6 +268,9 @@ def load_randcat(params=None, fullpaths=None):
     fullpaths : dict
         Pipeline file paths in a dictionary format.
         If :code:`None` then the default :py:data:`paths.fullpaths` will be used
+    which : int or tuple
+        if lens catalog consists of multiple file, this is the index for which to load. It should index
+        the paths.fullpaths list to recover the absolute filepath of the loaded file
 
     Returns
     -------
@@ -299,7 +309,12 @@ def load_randcat(params=None, fullpaths=None):
                           " which results in inconsistent behaviour. "
                           "If using custom input, define all arguments!")
 
-    randcat = fio.read(fullpaths[params["cat_to_use"]]["rand"])
+    randpath = fullpaths[params["cat_to_use"]]["rand"]
+    if isinstance(randpath, np.ndarray):
+        randcat = fio.read(randpath[which])
+    else:
+        randcat = fio.read(randpath)
+
     randkey = params['randkey']
 
     w = randcat[randkey['w']]
@@ -394,17 +409,65 @@ def prepare_lenses(bin_settings=None, params=None, fullpaths=None):
     if bin_settings is None:
         bin_settings = paths.get_bin_settings(params, paths.assign_mode(params))
 
-    data, fullcat = load_lenscat(params, fullpaths)
-    sinds, bounds, plpairs = selector(data["qlist"], bin_settings[0])
+    lenspaths = fullpaths[params["cat_to_use"]]["lens"]
 
-    data.update({
-        "sinds" : sinds,
-        "fullcat" : fullcat,
-        "bounds" : bounds,
-        "plpairs" : plpairs,
-    })
+    if isinstance(lenspaths, str):
+        data, fullcat = load_lenscat(params, fullpaths)
+        sinds, bounds, plpairs = selector(data["qlist"], bin_settings[0])
+
+        data.update({
+            "sinds" : sinds,
+            "fullcat" : fullcat,
+            "bounds" : bounds,
+            "plpairs" : plpairs,
+        })
+
+    elif isinstance(lenspaths, np.ndarray):
+        datas  = []
+        fullcats = []
+        _sinds = []
+        bounds = []
+
+        # preparing individual datasets
+        for i, lpth in enumerate(lenspaths.flatten()):
+            which = np.unravel_index(i, dims=lenspaths.shape)
+            _data, _fullcat = load_lenscat(which=which)
+            datas.append(_data)
+            fullcats.append(_fullcat)
+
+            bound = []
+            for j in which:
+                _bound = (None, None, j)
+                bound.append(_bound)
+            bounds.append(bound)
+
+            if i == 0:
+                _sinds.append(np.arange(len(_data["id"])))
+            else:
+                _sinds.append(_sinds[i-1].max() + np.arange(len(_data["id"])))
+
+        # collating into fiducial format
+        data = {}
+        for key in datas[0].keys():
+            data.update({key: np.concatenate([_data[key] for _data in datas])})
+
+        data.update({"fullcat": np.concatenate(fullcats)})
+
+        # reformatting sinds into normal boolean format
+        sinds = []
+        for sind in _sinds:
+            arr = np.zeros(len(data["id"]), dtype=bool)
+            arr[sind] = True
+            sinds.append(arr)
+
+        data.update({"sinds": sinds})
+        data["qlist"] = None
+        data["plpairs"] = None
+        data.update({"bounds": bounds})
+
     if "jkey" in params["lenskey"].keys() and params["lenskey"]["jkey"] is not None:
-        data.update({"jk" : fullcat[params["lenskey"]["jkey"]]})
+        data.update({"jk": data["fullcat"][params["lenskey"]["jkey"]]})
+
     return data
 
 
@@ -470,17 +533,65 @@ def prepare_random(bin_settings=None, params=None, fullpaths=None):
     if bin_settings is None:
         bin_settings = paths.get_bin_settings(params, paths.assign_mode(params))
 
-    data, fullcat = load_randcat(params, fullpaths)
-    sinds, bounds, plpairs = selector(data["qlist"], bin_settings[0])
+    randpaths = fullpaths[params["cat_to_use"]]["lens"]
 
-    data.update({
-        "sinds" : sinds,
-        "fullcat": fullcat,
-        "bounds": bounds,
-        "plpairs": plpairs,
-    })
+    if isinstance(randpaths, str):
+
+        data, fullcat = load_randcat(params, fullpaths)
+        sinds, bounds, plpairs = selector(data["qlist"], bin_settings[0])
+
+        data.update({
+            "sinds" : sinds,
+            "fullcat": fullcat,
+            "bounds": bounds,
+            "plpairs": plpairs,
+        })
+
+    elif isinstance(randpaths, np.ndarray):
+        datas  = []
+        fullcats = []
+        _sinds = []
+        bounds = []
+
+        # preparing individual datasets
+        for i, lpth in enumerate(randpaths.flatten()):
+            which = np.unravel_index(i, dims=randpaths.shape)
+            _data, _fullcat = load_lenscat(which=which)
+            datas.append(_data)
+            fullcats.append(_fullcat)
+
+            bound = []
+            for j in which:
+                _bound = (None, None, j)
+                bound.append(_bound)
+            bounds.append(bound)
+
+            if i == 0:
+                _sinds.append(np.arange(len(_data["id"])))
+            else:
+                _sinds.append(_sinds[i-1].max() + np.arange(len(_data["id"])))
+
+        # collating into fiducial format
+        data = {}
+        for key in datas[0].keys():
+            data.update({key: np.concatenate([_data[key] for _data in datas])})
+
+        data.update({"fullcat": np.concatenate(fullcats)})
+
+        # reformatting sinds into normal boolean format
+        sinds = []
+        for sind in _sinds:
+            arr = np.zeros(len(data["id"]), dtype=bool)
+            arr[sind] = True
+            sinds.append(arr)
+
+        data.update({"sinds": sinds})
+        data["qlist"] = None
+        data["plpairs"] = None
+        data.update({"bounds": bounds})
+
     if "jkey" in params["lenskey"].keys() and params["lenskey"]["jkey"] is not None:
-        data.update({"jk" : fullcat[params["lenskey"]["jkey"]]})
+        data.update({"jk": data["fullcat"][params["lenskey"]["jkey"]]})
     return data
 
 

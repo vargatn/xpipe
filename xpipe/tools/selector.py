@@ -126,10 +126,11 @@ def selector(pps, limits):
     for example::
 
         >>> bounds[13]
-        ((0, (100.0, 300.0)), (1, (-60.0, -30.0)), (2, (0.2, 0.4)), (3, (30.0, 45.0)))
+        ((0, (100.0, 300.0), 1), (1, (-60.0, -30.0), 0), (2, (0.2, 0.4), 0), (3, (30.0, 45.0), 1))
 
     where the first number indicates the column of the data file it corresponds to, and the
-    tuple contains the parameter boundaries for that column. Indeed we find::
+    tuple contains the parameter boundaries for that column. The last element is an index for the original parameter
+    edge. Indeed we find::
 
         >>> data[sinds[13], :].min(axis=0)
         array([ 100.03881951,  -59.96803764,    0.20010631,   30.02361767])
