@@ -17,7 +17,6 @@ import xpipe.xhandle.xwrap as xwrap
 import xpipe.tools.selector as selector
 
 parser = argparse.ArgumentParser(description='Runs xshear')
-parser.add_argument('--ichunk', type=int, default=0)
 parser.add_argument('--runall', action="store_true")
 parser.add_argument('--head', action="store_true")
 parser.add_argument('--nopairs', action="store_false")

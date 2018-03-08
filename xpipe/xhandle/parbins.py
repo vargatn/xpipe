@@ -226,6 +226,9 @@ def load_lenscat(params=None, fullpaths=None, which=None):
 
     ids = lenscat[lenskey['id']]
     ra = lenscat[lenskey['ra']]
+    mira = ra < 0.
+    ra[mira] = ra[mira] + 360.
+
     dec = lenscat[lenskey['dec']]
     z = lenscat[lenskey["z"]]
 
@@ -318,6 +321,9 @@ def load_randcat(params=None, fullpaths=None, which=None):
 
     w = randcat[randkey['w']]
     ra = randcat[randkey['ra']]
+    mira = ra < 0.
+    ra[mira] = ra[mira] + 360.
+    
     dec = randcat[randkey['dec']]
     z = randcat[randkey["z"]]
     ids = np.arange(len(randcat))
