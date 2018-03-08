@@ -242,6 +242,8 @@ def load_lenscat(params=None, fullpaths=None, which=None):
 
     # number of parameter columns
     nq = len(lenskey.keys()) - 4
+    if "jkey" in lenskey.keys():
+        nq -= 1
     qlist = np.zeros(shape=(len(ra), nq))
     for ival in np.arange(nq):
         colname = "q" + str(ival)
@@ -323,7 +325,7 @@ def load_randcat(params=None, fullpaths=None, which=None):
     ra = randcat[randkey['ra']]
     mira = ra < 0.
     ra[mira] = ra[mira] + 360.
-    
+
     dec = randcat[randkey['dec']]
     z = randcat[randkey["z"]]
     ids = np.arange(len(randcat))
@@ -338,6 +340,8 @@ def load_randcat(params=None, fullpaths=None, which=None):
 
     # number of parameter columns
     nq = len(randkey.keys()) - 4
+    if "jkey" in randkey.keys():
+        nq -= 1
     qlist = np.zeros(shape=(len(ra), nq))
     for ival in np.arange(nq):
         colname = "q" + str(ival)
