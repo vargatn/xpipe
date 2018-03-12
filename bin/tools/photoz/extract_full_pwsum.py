@@ -39,11 +39,20 @@ if __name__ == "__main__":
                                                  force_rbin=args.force_rbin)
 
         infodicts = pzboost.balance_infodicts(raw_infodicts, args.ibin, args.nchunk, args.ichunk)
-        # pzboost.multi_pwsum_run(infodicts, nprocess=paths.params['nprocess'])
-        pzboost.extract_pwsum(infodicts[0])
+        pzboost.multi_pwsum_run(infodicts, nprocess=paths.params['nprocess'])
+
     if not args.norands:
-        # TODO finish this script ASAP
-        pass
+        # exectuting random points chunk
+        pairs_files, bin_vals = xwrap.extract_pairs_bins(rlist_jk)
+        raw_infodicts = pzboost.create_infodicts(pairs_names=pairs_files,
+                                                 bin_vals=bin_vals,
+                                                 pdf_paths=paths.pdf_files,
+                                                 pdfid=args.pdfid,
+                                                 force_zcens=force_zcens,
+                                                 force_rbin=args.force_rbin)
+
+        infodicts = pzboost.balance_infodicts(raw_infodicts, args.ibin, args.nchunk, args.ichunk)
+        pzboost.multi_pwsum_run(infodicts, nprocess=paths.params['nprocess'])
 
 
 
