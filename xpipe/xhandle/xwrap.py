@@ -495,6 +495,45 @@ def chunkwise_rotate(flist, metasel=False, nrot=20, nchunks=1, ichunk=0, head=Fa
 
 ###################################################################
 
+def extract_pairs_bins(infiles, jk=True):
+    """
+    Extracts pairs files and bin IDs from input file lists
+
+    Parameters
+    ----------
+    infiles : list
+        absolute file paths for the input file lists
+    jk : bool
+        if True, assumes a nested list where the top level list contains paramter bins, and the sub-lists
+        consist of the file paths for individual JackKnife patches
+
+    Returns
+    -------
+     list, list
+        Pairs files (nesting depends on the :code:`jk` flag
+        bin IDs
+
+    """
+
+    if jk:
+        bin_vals = []
+        pairs_files = []
+        for names in infiles:
+            clust_info = create_infodict(names)
+            pairs_file = [info["pairsfile"] for info in clust_info]
+            pairs_files.append(pairs_file)
+
+            bin_val = np.array(pairs_file[0].split("_qbin-")[1].split("_patch")[0], dtype=int)
+            bin_vals.append(bin_val)
+
+    else:
+        clust_info = create_infodict(infiles)
+        pairs_files = [info["pairsfile"] for info in clust_info]
+
+        bin_vals = np.array([name.split("_qbin-")[1].split(".dat")[0] for name in infiles], dtype=int)
+
+    return pairs_files, np.array(bin_vals)
+
 
 def create_infodict(flist, head=False, pairs=False, seed=None,
                     rotate=False, seed_tag="", shape_path=None, metatag=None,

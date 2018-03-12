@@ -53,9 +53,8 @@ if __name__ == '__main__':
 
         clust_infos = xwrap.create_infodict(clust_name)
         clust_files = [info["outfile"] for info in clust_infos]
-        # print clust_files[0]
-        bin_tag = clust_files[0].split(paths.params["tag"])[2].split(paths.params["lens_prefix"])[1].split("_patch")[0]
-        # print bin_tag
+
+        bin_tag = clust_files[0].split("_" + paths.params["lens_prefix"])[1].split("_patch")[0]
 
         clust = shearops.process_profile(clust_files, metanames=None)
 
