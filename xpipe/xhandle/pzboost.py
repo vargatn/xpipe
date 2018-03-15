@@ -14,6 +14,7 @@ import pandas as pd
 
 from ..tools import selector as sl
 from .. import paths
+from ..xhandle import shearops
 
 pcols = [('lens_id', 'i8'), ('source_id', 'i8'), ('rbin', 'i4'), ('source_weight', 'f8'), ('scinv', 'f8'),
          ('gsens_t', 'f8'), ('z_sample', 'f8')]
@@ -270,12 +271,10 @@ def calc_pwsum(pscat, pdf_paths, pdfid='INDEX', source_id="source_id", force_zce
 
 def check_pwsum_files(pnames, npatch):
     """Tests wether the JK patch has a PDF extracted and saved"""
-    # FIXME this might have some path inconsistencies
-
     has_pairsfile = np.zeros(npatch, dtype=bool)
     fnames = []
     for pid, pname in enumerate(pnames):
-        fname = paths.dirpaths['xout'] + '/' + pname.replace('.dat', pwsum_suffix)
+        fname = pname.replace('.dat', pwsum_suffix)
         fnames.append(fname)
         if os.path.isfile(fname):
             has_pairsfile[pid] = True
@@ -290,33 +289,35 @@ def _check_zcens(pnames, has_pairsfile):
     return zcens
 
 
-def combine_pwsums(infodict):
+def combine_pwsums(infodicts):
     """Combines pwsums from JK patches into a PDFContainer object"""
     # TODO check file path consistency
-    npatch = infodict[0]['npatch']
-    pdf_paths = infodict[0]['pdf_paths']
-    pnames = [infod['pname'] for infod in infodict]
-    bin_vals = np.array([infod['bin_val'] for infod in infodict])
+
+    npatch = len(infodicts)
+    pdf_paths = infodicts[0]['pdf_paths']
+    pnames = [info['pname'] for info in infodicts]
+    bin_vals = np.array([info['bin_val'] for info in infodicts])
 
     if not (bin_vals - bin_vals[0] == 0).all():
         raise ValueError("the JK patches are mixed up, aborting...")
 
     fullpars = paths.params["pzpars"]["full"]
-    if "fullpars" in infodict[0].keys() and infodict[0]["fullpars"] is not None:
-        fullpars.update(infodict[0]["fullpars"])
+    if "fullpars" in infodicts[0].keys() and infodicts[0]["fullpars"] is not None:
+        fullpars.update(infodicts[0]["fullpars"])
 
     fnames, has_pairsfile = check_pwsum_files(pnames, npatch)
-    # print fnames
+
     zcens = _check_zcens(fnames, has_pairsfile)
     nrbins = paths.params['radial_bins']['nbin']
     nzbins = len(zcens)
+
     pdf_subs = np.zeros(shape=(nrbins, npatch, nzbins))
     w_subs = np.zeros(shape=(nrbins, npatch))
     nsources = np.zeros(shape=(nrbins, npatch), dtype=int)
 
     for pid in np.arange(npatch):
         if has_pairsfile[pid]:
-            print 'lbin:',bin_vals[pid][0], 'zbin:', bin_vals[pid][1],'processing patch', pid
+            print "qbin", bin_vals[pid], "processing patch", pid
             for i, fname in enumerate(fnames):
                 if has_pairsfile[i] and i != pid:
                     zdata = dict(np.load(fname))
@@ -332,13 +333,14 @@ def combine_pwsums(infodict):
     pcont.nsources = nsources
     pcont.pdf_subs = pdf_subs
     pcont.normsub()
-
-    # TODO this function no longer exists
-    corename = paths.get_corename(pnames[0])
     bdict = pcont.to_dict()
 
-    bname = paths.dirpaths['xout'] + '/' + corename + raw_pdf_tag + fullpars['tag'] + '.p'
+    root_name = pnames[0].split("_result_pairs")[0]
+    if "_patch" in root_name:
+        root_name = root_name.split("_patch")[0]
+    bname = root_name + raw_pdf_tag + fullpars['tag'] + '.p'
     print bname
+
     pickle.dump(bdict, open(bname, 'wb'))
 
 
@@ -347,14 +349,35 @@ def combine_pwsums(infodict):
 
 class PDFContainer(object):
     def __init__(self, haspairs, npatch, nrbin, oname=None,
-                 zcens=None, zmin=None, zmax=None, nzbin=None, **kwargs):
+                 zcens=None, zmin=None, zmax=None, nzbin=None, rcens=None, **kwargs):
+        """
+        # TODO write this
+        Parameters
+        ----------
+        haspairs
+        npatch
+        nrbin
+        oname
+        zcens
+        zmin
+        zmax
+        nzbin
+        rcens
+        kwargs
+        """
+
         self.oname = oname
         self.haspairs = haspairs.astype(bool)
         self.npatch = npatch
         self.pindexes = np.arange(self.npatch)[self.haspairs]
         self.nrbin = nrbin
         self.rbins = np.arange(self.nrbin)
-        self.rcens = paths.cens[self.rbins]
+
+        self.rcens = rcens
+        if self.rcens is None:
+            self.rcens = shearops.redges(paths.params["radial_bins"]["rmin"],
+                                         paths.params["radial_bins"]["rmax"],
+                                         paths.params["radial_bins"]["nbin"])
 
         self.pexts = None
         # FITS data file
