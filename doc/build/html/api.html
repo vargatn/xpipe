@@ -98,6 +98,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#input-file-manipulation">Input file manipulation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="generated/xpipe.xhandle.parbins.XIO.html">xpipe.xhandle.parbins.XIO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/xpipe.xhandle.parbins.get_file_lists.html">xpipe.xhandle.parbins.get_file_lists</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/xpipe.xhandle.parbins.field_cut.html">xpipe.xhandle.parbins.field_cut</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/xpipe.xhandle.parbins.get_fields_auto.html">xpipe.xhandle.parbins.get_fields_auto</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/xpipe.xhandle.parbins.assign_kmeans_labels.html">xpipe.xhandle.parbins.assign_kmeans_labels</a></li>
@@ -142,7 +143,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#useful-tools">Useful tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-xpipe.tools.catalogs">tools.catalogs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tools-catalogs">tools.catalogs</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/xpipe.tools.catalogs.to_pandas.html">xpipe.tools.catalogs.to_pandas</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/xpipe.tools.catalogs.flat_type.html">xpipe.tools.catalogs.flat_type</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/xpipe.tools.catalogs.flat_copy.html">xpipe.tools.catalogs.flat_copy</a></li>
@@ -246,10 +247,13 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.parbins.field_cut.html#xpipe.xhandle.parbins.field_cut" title="xpipe.xhandle.parbins.field_cut"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.parbins.field_cut</span></code></a>(ra,&nbsp;dec,&nbsp;borders)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.parbins.get_file_lists.html#xpipe.xhandle.parbins.get_file_lists" title="xpipe.xhandle.parbins.get_file_lists"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.parbins.get_file_lists</span></code></a>(params,&nbsp;…)</td>
+<td>Return lists of input files</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/xpipe.xhandle.parbins.field_cut.html#xpipe.xhandle.parbins.field_cut" title="xpipe.xhandle.parbins.field_cut"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.parbins.field_cut</span></code></a>(ra,&nbsp;dec,&nbsp;borders)</td>
 <td>Applies RA, DEC cut based on DES field boundaries</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/xpipe.xhandle.parbins.get_fields_auto.html#xpipe.xhandle.parbins.get_fields_auto" title="xpipe.xhandle.parbins.get_fields_auto"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.parbins.get_fields_auto</span></code></a>([params])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.parbins.get_fields_auto.html#xpipe.xhandle.parbins.get_fields_auto" title="xpipe.xhandle.parbins.get_fields_auto"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.parbins.get_fields_auto</span></code></a>([params])</td>
 <td>Extracts field boundaries from project <code class="code docutils literal"><span class="pre">params</span></code> dictionary</td>
 </tr>
 </tbody>
@@ -425,9 +429,8 @@
 </div>
 <div class="section" id="useful-tools">
 <h2>Useful tools<a class="headerlink" href="#useful-tools" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="module-xpipe.tools.catalogs">
-<span id="tools-catalogs"></span><h3>tools.catalogs<a class="headerlink" href="#module-xpipe.tools.catalogs" title="Permalink to this headline">¶</a></h3>
-<p>Handles Fits -&gt; Pandas transformations for tables with multidimensional “columns”</p>
+<div class="section" id="tools-catalogs">
+<h3>tools.catalogs<a class="headerlink" href="#tools-catalogs" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />

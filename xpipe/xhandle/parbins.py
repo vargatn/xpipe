@@ -57,7 +57,18 @@ def get_file_lists(params, dirpaths):
     Returns
     -------
     list, list, list, list
-        flist, flist_jk, rlist, rlist_jk
+
+        * list of the input **lens** file paths for each parameter bin
+
+        * list of the **lens** K-means patches files for each parameter bin.
+          This is a nested list, the top level contains different bins,
+          while each entry is a list of different patches.
+
+        * list of the input **random point** file paths for each parameter bin
+
+        * list of the **random point** K-means patches files for each parameter bin.
+          This is a nested list, the top level contains different bins,
+          while each entry is a list of different patches.
 
     """
     dpath = get_dpath(params, dirpaths)
@@ -126,7 +137,7 @@ def field_cut(ra, dec, borders):
     Returns
     -------
     np.array
-        bool array indexing the objects within the selected area
+        * bool array indexing the objects within the selected area
     """
 
     select = np.zeros(len(ra), dtype=bool)
@@ -154,7 +165,7 @@ def get_fields_auto(params=None):
     Returns
     -------
     dict
-        fields to be used with boundaries
+        * fields to be used with boundaries
     """
 
     if params is None:
@@ -186,9 +197,9 @@ def load_lenscat(params=None, fullpaths=None, which=None):
     Returns
     -------
     dict, np.array, record-array
-        lens catalog data in format,
-        bool array for selection,
-        raw data table before selection
+        * lens catalog data in format,
+        * bool array for selection,
+        * raw data table before selection
 
     Notes
     ------
@@ -279,9 +290,9 @@ def load_randcat(params=None, fullpaths=None, which=None):
     Returns
     -------
     dict, np.array, record-array
-        lens catalog data in format,
-        bool array for selection,
-        raw data table before selection
+        * lens catalog data in format,
+        * bool array for selection,
+        * raw data table before selection
 
     Notes
     ------
@@ -379,7 +390,7 @@ def prepare_lenses(bin_settings=None, params=None, fullpaths=None):
     Returns
     -------
     data : dict
-        Relevant rows and indexes of the lens sample
+        * Relevant rows and indexes of the lens sample
 
     Notes
     ------
@@ -405,6 +416,7 @@ def prepare_lenses(bin_settings=None, params=None, fullpaths=None):
 
         * :code:`plpairs` parameter boundaries simple simple list
          (just boundaries, not pairs or tuples)
+
     """
 
     if params is None and fullpaths is None:
@@ -500,7 +512,7 @@ def prepare_random(bin_settings=None, params=None, fullpaths=None):
     Returns
     -------
     data : dict
-        Relevant rows and indexes of the lens sample
+        * Relevant rows and indexes of the lens sample
 
     Notes
     ------
@@ -889,7 +901,8 @@ def assign_kmeans_labels(pos, centers, verbose=False):
     Returns
     -------
     np.array, np.ndarray
-        K-means labels, K-means centers
+        * K-means labels
+        * K-means centers
     """
 
     if not np.iterable(centers):  # if centers is a number

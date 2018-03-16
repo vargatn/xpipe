@@ -24,6 +24,7 @@ Specify observational fields for the lens catalog:
 .. autosummary::
     :toctree: generated
 
+    xpipe.xhandle.parbins.get_file_lists
     xpipe.xhandle.parbins.field_cut
     xpipe.xhandle.parbins.get_fields_auto
 
@@ -131,9 +132,6 @@ Useful tools
 
 tools.catalogs
 """"""""""""""
-
-
-.. automodule:: xpipe.tools.catalogs
 
 .. autosummary::
     :toctree: generated
