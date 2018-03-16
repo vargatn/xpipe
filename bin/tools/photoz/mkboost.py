@@ -48,23 +48,23 @@ if __name__ == "__main__":
         bname = get_bname(pnames)
         print "processing", bname
 
-        # bcont = pzboost.PDFContainer.from_file(bname)
-        # bcont.decomp_gauss(refprof=paths.params['pzpars']['boost']['refprof'],
-        #                    force_rbmin=paths.params['pzpars']['boost']['rbmin'],
-        #                    force_rbmax=paths.params['pzpars']['boost']['rbmax'])
-        # boostdict = bcont.to_boostdict()
-        #
+        bcont = pzboost.PDFContainer.from_file(bname)
+        bcont.decomp_gauss(refprof=paths.params['pzpars']['boost']['refprof'],
+                           force_rbmin=paths.params['pzpars']['boost']['rbmin'],
+                           force_rbmax=paths.params['pzpars']['boost']['rbmax'])
+        boostdict = bcont.to_boostdict()
+
         bpath = (bname.split("/")[-1].split("_pzcont")[0] + "_" +
                  paths.params['pzpars']["full"]['tag'] + '_boostdict' + args.tag + '.p')
 
         print 'saving '
         print bpath
-        # pickle.dump(boostdict, open(bpath, 'wb'))
+        pickle.dump(boostdict, open(bpath, 'wb'))
 
         respath = (bname.split("/")[-1].split("_pzcont")[0] + "_" +
                    paths.params['pzpars']["full"]['tag'] + '_boost' + args.tag + '.dat')
 
-        # write_pz_boost(boostdict,  respath)
+        write_pz_boost(boostdict,  respath)
         print respath
         print 'finished'
 

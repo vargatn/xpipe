@@ -199,7 +199,6 @@ def extract_pwsum(infodict):
     pdf_paths = infodict['pdf_paths']
     oname = fname.replace('.dat', pwsum_suffix)
     fbase = os.path.split(fname)[1].split('_result')[0]
-
     force_rbin = infodict['force_rbin']
     if os.path.isfile(fname):
         print "starting", fname

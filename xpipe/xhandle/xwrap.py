@@ -523,15 +523,15 @@ def extract_pairs_bins(infiles, jk=True):
             pairs_file = [info["pairsfile"] for info in clust_info]
             pairs_files.append(pairs_file)
 
-            bin_val = np.array(pairs_file[0].split("_qbin-")[1].split("_patch")[0], dtype=int)
+            bin_val = np.array(pairs_file[0].split("_qbin-")[1].split("_patch")[0].split("-"), dtype=int)
             bin_vals.append(bin_val)
-
+        bin_vals = np.array(bin_vals)
     else:
         clust_info = create_infodict(infiles)
         pairs_files = [info["pairsfile"] for info in clust_info]
 
-        bin_vals = np.array([name.split("_qbin-")[1].split(".dat")[0] for name in infiles], dtype=int)
-
+        bin_vals = np.array([name.split("_qbin-")[1].split(".dat")[0].split("-") for name in infiles], dtype=int)
+    print bin_vals
     return pairs_files, np.array(bin_vals)
 
 

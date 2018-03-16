@@ -31,7 +31,7 @@ shear and mass profiles in wide area lensing surveys such as DES. Features inclu
 Contact
 ========
 
-In case of questions, please contact me at ::
+In case of questions or if you would like to use parts of this pipeline in a publication, please contact me at ::
 
     T.Varga [at] physik.lmu.de
 
