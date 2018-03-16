@@ -377,7 +377,7 @@ class PDFContainer(object):
         if self.rcens is None:
             self.rcens = shearops.redges(paths.params["radial_bins"]["rmin"],
                                          paths.params["radial_bins"]["rmax"],
-                                         paths.params["radial_bins"]["nbin"])
+                                         paths.params["radial_bins"]["nbin"])[0]
 
         self.pexts = None
         # FITS data file
@@ -659,6 +659,7 @@ class PDFContainer(object):
             rbmax = force_rbmax
 
         for ipatch in np.arange(self.npatch):
+            print "processing patch", ipatch
             sbins = np.nonzero(self.nsources[:, ipatch])[0]
 
             # these are the radial bin indices which we actually want to use in the Boost factor estimation
