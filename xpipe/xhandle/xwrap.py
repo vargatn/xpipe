@@ -265,6 +265,20 @@ sheared_source_settings = {
 
 
 def get_metanames(fnames):
+    """
+    Calculates METACAL-style sheared file names
+
+    Parameters
+    ----------
+    fnames : list
+        input file names
+
+    Returns
+    -------
+    list
+        * METANAMES, the fnames appended by the :code:`sheared_tags`
+
+    """
     metanames = []
     for tag in sheared_tags:
         _fnames = []
@@ -481,7 +495,6 @@ def chunkwise_rotate(flist, metasel=False, nrot=20, nchunks=1, ichunk=0, head=Fa
         whether to use only the first few rows of the shear catalog
     seed_master : int
         master seed to generate random seeds for the rotating the entire catalog
-
 
     """
     seed_rots = get_rot_seeds(nrot=nrot, seed_master=seed_master)

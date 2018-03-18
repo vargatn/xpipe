@@ -85,6 +85,7 @@ addittional helper functions:
     xpipe.xhandle.xwrap.get_redges
     xpipe.xhandle.xwrap.get_shear
     xpipe.xhandle.xwrap.get_head
+    xpipe.xhandle.xwrap.get_metanames
 
 
 Running xshear
