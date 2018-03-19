@@ -49,6 +49,9 @@ Load and prepare lens and random point catalogs:
     xpipe.xhandle.parbins.load_randcat
     xpipe.xhandle.parbins.prepare_random
 
+------------
+
+
 
 XSHEAR wrapper
 ---------------
@@ -126,6 +129,8 @@ additional functions:
     xpipe.xhandle.xwrap.get_rot_seeds
     xpipe.xhandle.xwrap.rot2d
 
+------------
+
 
 Postprocessing XSHEAR output
 ----------------------------
@@ -196,6 +201,83 @@ Addtitional helpers for I/O:
 
     xpipe.xhandle.ioshear.makecat
     xpipe.xhandle.ioshear.read_lens_pos
+
+------------
+
+Cluster member contamination estimates
+--------------------------------------
+
+Tool to package information about what to do:
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.pzboost.create_infodicts
+
+Calculate average photo-z P(z) PDF:
+"""""""""""""""""""""""""""""""""""
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.pzboost.multi_pwsum_run
+    xpipe.xhandle.pzboost.extract_pwsum
+    xpipe.xhandle.pzboost.calc_pwsum
+
+Additional useful tools:
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.pzboost.balance_infodicts
+    xpipe.xhandle.pzboost.partition_tasks
+    xpipe.xhandle.pzboost.call_pwsum_chunk
+
+P(z) and Boost container object
+"""""""""""""""""""""""""""""""
+
+The Main Container Object is:
+
+.. autosummary::
+    :toctree: generated
+    :template: custom.rst
+
+    xpipe.xhandle.pzboost.PDFContainer
+
+
+The JK-region collation is performed by:
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.pzboost.combine_pwsums
+
+Classes for the P(z) decomposition:
+
+The JK-region collation is performed by:
+
+.. autosummary::
+    :toctree: generated
+    :template: custom.rst
+
+    xpipe.xhandle.pzboost.BoostMixer
+    xpipe.xhandle.pzboost.BoostMixerRandRef
+
+
+Additional useful tools:
+
+.. autosummary::
+    :toctree: generated
+
+
+    xpipe.xhandle.pzboost.check_pwsum_files
+    xpipe.xhandle.pzboost.gauss
+    xpipe.xhandle.pzboost.get_hist_zarr
+
+
+
+
+------------
 
 
 Useful tools

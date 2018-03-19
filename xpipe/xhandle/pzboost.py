@@ -29,10 +29,6 @@ pwsum_suffix = "_pwsum.npz"
 
 
 
-# TODO document this ASAP!!!
-"""creates infodicts for extracting PDFs"""
-
-
 ###################################################################
 # constructing stacked PDFs based on source-lens pair logs
 
@@ -180,7 +176,22 @@ def balance_infodicts(master_infodicts, ibin, nchunk, ichunk):
 
 
 def partition_tasks(master_infodicts, tasks):
-    """split LARGE job into chunks"""
+    """
+    split LARGE job into chunks
+
+    Parameters
+    ----------
+    master_infodicts : nested list of dict
+        raw infodicts in parameter bin format
+    tasks : int
+        number of tasks to divide into
+
+    Returns
+    -------
+    nested list of dict
+        list of infodicts. Each entry is a list of dicts, corresponding
+        to a task.
+    """
     flat_master = np.array(master_infodicts).flatten()
     _tasks = np.min((len(flat_master), tasks)).astype(int)
     fparchunks = sl.partition(flat_master, _tasks)
@@ -188,13 +199,17 @@ def partition_tasks(master_infodicts, tasks):
 
 
 def call_pwsum_chunk(indodicts):
-    """Executes a single chunk serially (simple for loop"""
+    """Executes a single chunk serially (simple for loop)"""
     for infodict in indodicts:
         extract_pwsum(infodict)
 
 
 def extract_pwsum(infodict):
-    """Extracts w * PDF from hdf5 files"""
+    """
+    Extracts weighted sum of P(Z) PDF from hdf5 files
+
+    Loops over radial bins, calls :py:data:`calc_pwsum` and saves results intp ``.npz`` files
+    """
     fname = infodict['pname']
     pdf_paths = infodict['pdf_paths']
     oname = fname.replace('.dat', pwsum_suffix)
@@ -236,7 +251,36 @@ def extract_pwsum(infodict):
 
 
 def calc_pwsum(pscat, pdf_paths, pdfid='INDEX', source_id="source_id", force_zcens=None):
-    """Calculates w * PDF and w for a single JK-patch. Writes directly to disk"""
+    """
+    Calculates w * PDF and w for a single JK-patch. Writes directly to disk
+
+    Parameters
+    ----------
+    pscat : pandas.DataFrame
+        DataFrame of sources in a radial bin
+    pdf_paths : list of str
+        full paths to P(z) PDF files
+    pdfid : str
+        ID column in the P(Z) PDF files
+    source_id : str
+        ID column in the source data table
+    force_zcens : np.array
+        redshift centers as a numpy array
+
+    Returns
+    -------
+    np.array, np.array, np.array, int
+        * :math:`\sum \; w \; p(z)`
+        * :math:`\sum \; w`
+        * zcens
+        * number of sources
+
+    Notes
+    -----
+
+    The weight in this function is defined for :math:`\Delta\Sigma`
+
+    """
     zcens = force_zcens
     if force_zcens is None:
         with pd.HDFStore(pdf_paths[0], 'r') as hh:
@@ -290,7 +334,6 @@ def _check_zcens(pnames, has_pairsfile):
 
 def combine_pwsums(infodicts):
     """Combines pwsums from JK patches into a PDFContainer object"""
-    # TODO check file path consistency
 
     npatch = len(infodicts)
     pdf_paths = infodicts[0]['pdf_paths']
@@ -350,19 +393,53 @@ class PDFContainer(object):
     def __init__(self, haspairs, npatch, nrbin, oname=None,
                  zcens=None, zmin=None, zmax=None, nzbin=None, rcens=None, **kwargs):
         """
-        # TODO write this
+        Container for P(Z) PDF information, including JK-regions
+
         Parameters
         ----------
-        haspairs
-        npatch
-        nrbin
-        oname
-        zcens
-        zmin
-        zmax
-        nzbin
-        rcens
-        kwargs
+        haspairs : np.array, bool
+            which JK patch has P(Z) PDF extracted
+        npatch : int
+            number of JK-regions
+        nrbin : int
+            number of radial bins
+        oname : str
+            output name for pairs FITS file (LEGACY PARAMETER)
+        zcens : np.array
+            centers for the redshift grid
+        zmin : double
+            minimum redshift of the redshift grid
+        zmax : double
+            maximum redshift of the redshift grid
+        nzbin : int
+            number of redshift bins
+        rcens : np.array
+            radial bin centers
+
+        Notes
+        -----
+
+        In the simplest scenario initialization is done as ::
+
+                pcont = PDFContainer(haspairs=has_pairsfile, npatch=npatch,
+                         nrbin=nrbins, zcens=zcens, pdf_paths=pdf_paths)
+
+                pcont.nsources = nsources
+                pcont.pdf_subs = pdf_subs
+                pcont.normsub()
+
+        That is some of the data have to be added after the object is created (placeholder values for these exist
+        alread).
+
+
+        To extract P(z) decomposition boost factors continue with e.g.::
+
+            bcont = pzboost.PDFContainer.from_file(bname)
+            bcont.decomp_gauss(refprof=paths.params['pzpars']['boost']['refprof'],
+                           force_rbmin=paths.params['pzpars']['boost']['rbmin'],
+                           force_rbmax=paths.params['pzpars']['boost']['rbmax'])
+            boostdict = bcont.to_boostdict()
+
         """
 
         self.oname = oname
@@ -448,6 +525,32 @@ class PDFContainer(object):
         self.verbose_prefix = ''
 
     def to_dict(self):
+        """
+        Extracts data into dictionary
+
+        Notes
+        -----
+
+        The structure of the returned dictionary is::
+
+            infodict = {
+                'oname': self.oname,
+                'haspairs': self.haspairs,
+                'npatch': self.npatch,
+                'pindexes': self.pindexes,
+                'nrbin': self.nrbin,
+                'pexts': self.pexts,
+                'zmin': self.zmin,
+                'zmax': self.zmax,
+                'nbin': self.nbin,
+                'rkey': self.rkey,
+                'wkey': self.wkey,
+                'zkey': self.zkey,
+                'nsources': self.nsources,
+                'pdf_subs': self.pdf_subs,
+            }
+
+        """
         infodict = {
             'oname': self.oname,
             'haspairs': self.haspairs,
@@ -468,6 +571,7 @@ class PDFContainer(object):
 
     @classmethod
     def from_dict(cls, infodict):
+        """Loads object from dictionary"""
 
         pdfcont = cls(oname=infodict['oname'], haspairs=infodict['haspairs'],
                       zmin=infodict['zmin'], zmax=infodict['zmax'],
@@ -486,13 +590,36 @@ class PDFContainer(object):
 
     @classmethod
     def from_file(cls, fname):
-        """Loads self from pickled dict"""
+        """Loads object from pickled dict, (wraps :py:data:`from_dict`)"""
         infodict = pickle.load(open(fname, 'rb'))
         pdfcont = cls.from_dict(infodict)
         return pdfcont
 
     def to_boostdict(self):
-        """saving Boost results"""
+        """
+        Saving boost factor results into dictionary
+
+        Notes
+        -----
+
+        The structure of the returned dictionary is::
+
+            boostdict = {
+                'rbins': self.rbins,
+                'rvals': self.rcens,
+                'amps': self.amps,
+                'amps_err': self.amps_err,
+                'mean': self.mean,
+                'mean_err': self.mean_err,
+                'sigma': self.sigma,
+                'sigma_err': self.sigma_err,
+                'boost_rvals': self.boost_rvals,
+                'boost': self.boost,
+                'boost_err': self.boost_err,
+                'boost_cov': self.boost_cov,
+            }
+
+        """
 
         boostdict = {
             'rbins': self.rbins,
@@ -544,7 +671,7 @@ class PDFContainer(object):
         self.nsources[rb] = nsources
 
     def _calc_histogram(self, zvals, weights):
-        """histogram """
+        """auto histogram"""
         counts, tmp = np.histogram(zvals, self.zedges, weights=weights)
         return counts
 
@@ -676,7 +803,25 @@ class PDFContainer(object):
                     self.point_subs[2 + rbins_to_use, ipatch] = res['x'][2:]
 
     def decomp_gauss(self, refprof, force_rbmin=None, force_rbmax=None):
-        """Estimates boost factors from P(z) decomposition"""
+        """
+        Estimates boost factors from P(z) decomposition
+
+        Parameters
+        ----------
+        refprof : int or PDFContainer
+            index of radial bin of reference P(z) to use, or the Object which contains the reference for
+            each radial bin
+        force_rbmin : int
+            index of minimum radial range
+        force_rbmax : int
+            index of maximum radial range
+
+        Notes
+        -----
+
+        Only those JK-regions will be used which have a valid source-lens pair in **ALL** radial ranges!
+
+        """
         self._decomp_gauss_jk(refprof, force_rbmin, force_rbmax)
         self._get_boost_err()
 
@@ -727,6 +872,7 @@ class PDFContainer(object):
 
 
 def get_hist_zarr():
+    """Extract redhsift histogram parameters"""
     zmin = paths.params['pzpars']['zmin']
     zmax = paths.params['pzpars']['zmax']
     nbin = paths.params['pzpars']['nbin']
@@ -742,11 +888,19 @@ def gauss(xx, m=0.0, s=1.0):
     """
     1D Gaussian
 
-    :param x: data array
+    Parameters
+    ----------
+    x : np.array
+        data array
+    m : double
+        mean
+    s : double
+        sigma
 
-    :param m: mean
-    :param s: sigma
-    :returns: y
+    Returns
+    -------
+    np.array
+        1D Gaussian
     """
 
     anorm = 1. / (np.sqrt(2. * np.pi) * s)
@@ -761,9 +915,28 @@ class BoostMixer(object):
 
         the mean, width of the gaussian is fixed for all pdf in pdfarr, the mixing amplitude is free
 
-        :param zcens: centers of redshift bins
-        :param pdfarr: list of pdfs to decompose (e.g. radial bins
-        :param refpdf: single reference pdf to use in the decomposition
+        Parameters
+        ----------
+        zcens : np.array
+            centers of redshift bins
+        pdfarr : np.ndarray
+            list of pdfs to decompose (e.g. radial bins)
+        refpdf : np.array
+            single reference pdf to use in the decomposition
+
+        Notes
+        -----
+
+        This class has an explicit :code:`__call__` method implemented which should be used to evaluate
+        the difference between data andmodel::
+
+            diff = bmixer(point)
+
+        where::
+
+            mean = point[0]
+            sigma = point[1]
+            amps = point[2:]
         """
 
         self.zcens = zcens
@@ -792,7 +965,7 @@ class BoostMixer(object):
             self.mixarr[i, :] = amps[i] * garr + (1. - amps[i]) * self.refpdf
 
     def __call__(self, point):
-        """Calculate residual"""
+        """Calculate residual between the P(z) and the model"""
         mean = point[0]
         sigma = point[1]
         amps = point[2:]
@@ -810,9 +983,30 @@ class BoostMixerRandRef(object):
 
         the mean, width of the gaussian is fixed for all pdf in pdfarr, the mixing amplitude is free.
 
-        :param zcens: centers of redshift bins
-        :param pdfarr: list of pdfs to decompose (e.g. radial bins
-        :param refpdf: single reference pdf to use in the decomposition
+        Parameters
+        ----------
+        zcens : np.array
+            centers of redshift bins
+        pdfarr : np.ndarray
+            list of pdfs to decompose (e.g. radial bins)
+        refpdf : np.ndarray
+            list of reference pdf to use in the decomposition
+
+
+        Notes
+        -----
+
+        This class has an explicit :code:`__call__` method implemented which should be used to evaluate
+        the difference between data andmodel::
+
+            diff = bmixer(point)
+
+        where::
+
+            mean = point[0]
+            sigma = point[1]
+            amps = point[2:]
+
         """
         self.zcens = zcens
         self.bw = np.mean(np.diff(self.zcens))
@@ -840,7 +1034,7 @@ class BoostMixerRandRef(object):
             self.mixarr[i, :] = amps[i] * garr + (1. - amps[i]) * self.refpdfarr[i]
 
     def __call__(self, point):
-        """Calculate residual between"""
+        """Calculate residual between the P(z) and the model"""
         mean = point[0]
         sigma = point[1]
         amps = point[2:]
