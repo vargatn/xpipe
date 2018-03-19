@@ -206,6 +206,13 @@ def get_bin_settings(params, devmode):
 #
 ###################################################################
 
+
+params = None
+devmode = None
+dirpaths = None
+fullpaths = None
+pdf_files = None
+
 # reading the absolute path of the project
 user_project_file = '.xpipe.yml'
 project_path = get_poject_path(user_project_file)
