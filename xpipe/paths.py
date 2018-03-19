@@ -19,9 +19,12 @@ inputs_suffix = 'settings/inputs.yml'
 def get_poject_path(user_cfg):
     """Loads the absolute path to the cluster pipeline"""
     path = os.path.expanduser('~') + '/' + user_cfg
-    with open(path)as file:
-         cfg = yaml.safe_load(file)
-    return cfg['project_path']
+    project_path = None
+    if os.path.isfile(path):
+        with open(path)as file:
+            cfg = yaml.safe_load(file)
+            project_path = cfg["project_path"]
+    return project_path
 
 
 def read_yaml(cfg):
@@ -207,30 +210,31 @@ def get_bin_settings(params, devmode):
 user_project_file = '.xpipe.yml'
 project_path = get_poject_path(user_project_file)
 
-# read parameter bins from config file
-print "reading DEFAULTS from default_params.yml"
+if project_path is not None:
+    # read parameter bins from config file
+    print "reading DEFAULTS from default_params.yml"
 
-default_param_path = project_path + 'settings/default_params.yml'
-params = read_yaml(default_param_path)
+    default_param_path = project_path + 'settings/default_params.yml'
+    params = read_yaml(default_param_path)
 
-devmode = assign_mode(params)
-dirpaths = get_dirpaths(params, project_path)
-fullpaths = get_fullpaths(params, project_path, default_inputs=True)
-pdf_files = get_pdf_flist(params)
+    devmode = assign_mode(params)
+    dirpaths = get_dirpaths(params, project_path)
+    fullpaths = get_fullpaths(params, project_path, default_inputs=True)
+    pdf_files = get_pdf_flist(params)
 
-# READING custom params files
-has_custom_specified = "custom_params_file" in params.keys()
-while has_custom_specified and params["custom_params_file"] is not None:
-    custom_param_path = _complete_params_path(params["custom_params_file"])
-    if os.path.isfile(custom_param_path):
-        _update_params(custom_param_path)
-    else:
-        break
-
-
-# TODO add effective re-initialization of params for API mode
+    # READING custom params files
+    has_custom_specified = "custom_params_file" in params.keys()
+    while has_custom_specified and params["custom_params_file"] is not None:
+        custom_param_path = _complete_params_path(params["custom_params_file"])
+        if os.path.isfile(custom_param_path):
+            _update_params(custom_param_path)
+        else:
+            break
 
 
-def set_params(**kwargs):
-    global devmode, dirpaths, fullpaths, fullurls, pdf_files
+    # TODO add effective re-initialization of params for API mode
+
+
+    def set_params(**kwargs):
+        global devmode, dirpaths, fullpaths, fullurls, pdf_files
 
