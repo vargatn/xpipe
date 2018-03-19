@@ -1,12 +1,13 @@
 """
-
+Postprocess XSHEAR output
 """
 
 import math
 
 import numpy as np
 
-from .ioshear import read_single_bin, read_multiple_bin, sheared_tags
+from .ioshear import read_single_bin, read_multiple_bin
+from .xwrap import sheared_tags
 
 BADVAL = -9999.0
 
@@ -599,6 +600,8 @@ class StackedProfileContainer(object):
             an other profile...
         operation : str
             string specifying what to do...
+        keep_rr : bool
+            whether to reset radial values to placeholder
         """
 
         # making sure that there is a profile in both containers
@@ -687,7 +690,7 @@ def stacked_pcov(plist):
     return supercov_t, supercov_x
 
 
-def process_profile(fnames, metanames=None, labels=None, ncens=None):
+def process_profile(fnames, metanames=None, labels=None):
     """
     Extracts StackedProfileContainer from xshear output
 
@@ -695,8 +698,16 @@ def process_profile(fnames, metanames=None, labels=None, ncens=None):
     ----------
     fnames : list of str
         filenames to be read (without metatags)
+    metanames : list
+        fnames appended by the :code:`sheared_tags`
+    labels : list
+        JK-labels for each entry in the lens files (in the order they are written to disk)
 
-    # TODO finish this
+    Returns
+    -------
+    StackedProfileContainer
+        Weak Lensing profile object
+
     """
 
     if type(fnames) is str or len(fnames) == 0:
@@ -706,8 +717,7 @@ def process_profile(fnames, metanames=None, labels=None, ncens=None):
     else:
         cinfo, cdata, sheared_data, labels = read_multiple_bin(fnames, metanames=metanames)
 
-    if ncens is None:
-        ncens = len(fnames)
+    ncens = len(fnames)
 
     prof = StackedProfileContainer(cinfo, cdata, labels, ncens,
                                    metadata=sheared_data,

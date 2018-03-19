@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; xpipe 0.1 documentation</title>
+  <title>API Reference &mdash; xpipe 0.4 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="xpipe 0.1 documentation" href="index.html"/>
+    <link rel="top" title="xpipe 0.4 documentation" href="index.html"/>
         <link rel="next" title="xpipe.xhandle.parbins.XIO" href="generated/xpipe.xhandle.parbins.XIO.html"/>
         <link rel="prev" title="Config files explained" href="config.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1
+                0.4
               </div>
             
           
@@ -139,6 +139,29 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.xwrap.CatRotator.html">xpipe.xhandle.xwrap.CatRotator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.xwrap.get_rot_seeds.html">xpipe.xhandle.xwrap.get_rot_seeds</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.xwrap.rot2d.html">xpipe.xhandle.xwrap.rot2d</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#postprocessing-xshear-output">Postprocessing XSHEAR output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/xpipe.xhandle.shearops.process_profile.html">xpipe.xhandle.shearops.process_profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/xpipe.xhandle.shearops.StackedProfileContainer.html">xpipe.xhandle.shearops.StackedProfileContainer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#some-other-useful-functions">Some other useful functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.shearops.redges.html">xpipe.xhandle.shearops.redges</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.shearops.stacked_pcov.html">xpipe.xhandle.shearops.stacked_pcov</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#xshear-results-i-o">XSHEAR results I/O</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.ioshear.xread.html">xpipe.xhandle.ioshear.xread</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_single_bin.html">xpipe.xhandle.ioshear.read_single_bin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_multiple_bin.html">xpipe.xhandle.ioshear.read_multiple_bin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.ioshear.xpatches.html">xpipe.xhandle.ioshear.xpatches</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_raw.html">xpipe.xhandle.ioshear.read_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_multiple_raw.html">xpipe.xhandle.ioshear.read_multiple_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_sheared_raw.html">xpipe.xhandle.ioshear.read_sheared_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_multiple_sheared_raw.html">xpipe.xhandle.ioshear.read_multiple_sheared_raw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.ioshear.makecat.html">xpipe.xhandle.ioshear.makecat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_lens_pos.html">xpipe.xhandle.ioshear.read_lens_pos</a></li>
 </ul>
 </li>
 </ul>
@@ -431,6 +454,127 @@
 </table>
 </div>
 </div>
+<div class="section" id="postprocessing-xshear-output">
+<h2>Postprocessing XSHEAR output<a class="headerlink" href="#postprocessing-xshear-output" title="Permalink to this headline">¶</a></h2>
+<p>High level wrapper for postprocessing single parameter bins:</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.shearops.process_profile.html#xpipe.xhandle.shearops.process_profile" title="xpipe.xhandle.shearops.process_profile"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.shearops.process_profile</span></code></a>(fnames)</td>
+<td>Extracts StackedProfileContainer from xshear output</td>
+</tr>
+</tbody>
+</table>
+<p>Which wraps the main container class, responsible for most of the postprocessing:</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.shearops.StackedProfileContainer.html#xpipe.xhandle.shearops.StackedProfileContainer" title="xpipe.xhandle.shearops.StackedProfileContainer"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.shearops.StackedProfileContainer</span></code></a>(…)</td>
+<td>Object Oriented interface for stacked shear and <img class="math" src="_images/math/9397aece1d243efa28d3c70fa88edd48f9591b8a.png" alt="\Delta\Sigma"/> calculated via <strong>xshear</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="some-other-useful-functions">
+<h3>Some other useful functions<a class="headerlink" href="#some-other-useful-functions" title="Permalink to this headline">¶</a></h3>
+<p>Extract <strong>area-weighted</strong> radial bins centers for the lensing measurement:</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.shearops.redges.html#xpipe.xhandle.shearops.redges" title="xpipe.xhandle.shearops.redges"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.shearops.redges</span></code></a>(rmin,&nbsp;rmax,&nbsp;nbin)</td>
+<td>Calculates nominal edges and centers for logarithmic radial bins(base10 logarithm)</td>
+</tr>
+</tbody>
+</table>
+<p>Jackknife covariance between different parameter bins:</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.shearops.stacked_pcov.html#xpipe.xhandle.shearops.stacked_pcov" title="xpipe.xhandle.shearops.stacked_pcov"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.shearops.stacked_pcov</span></code></a>(plist)</td>
+<td>Calculates the Covariance between a list of profiles</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="xshear-results-i-o">
+<h3>XSHEAR results I/O<a class="headerlink" href="#xshear-results-i-o" title="Permalink to this headline">¶</a></h3>
+<p>The main reader function</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.ioshear.xread.html#xpipe.xhandle.ioshear.xread" title="xpipe.xhandle.ioshear.xread"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.ioshear.xread</span></code></a>(xdata,&nbsp;**kwargs)</td>
+<td>Reader for xshear output if style is set as <cite>both</cite></td>
+</tr>
+</tbody>
+</table>
+<p>Addtitional helpers for I/O:</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_single_bin.html#xpipe.xhandle.ioshear.read_single_bin" title="xpipe.xhandle.ioshear.read_single_bin"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.ioshear.read_single_bin</span></code></a>(fname)</td>
+<td>Reads and interprets xshear output from a single file</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_multiple_bin.html#xpipe.xhandle.ioshear.read_multiple_bin" title="xpipe.xhandle.ioshear.read_multiple_bin"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.ioshear.read_multiple_bin</span></code></a>(fnames)</td>
+<td>Reads and interprets xshear output from many smaller files</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.ioshear.xpatches.html#xpipe.xhandle.ioshear.xpatches" title="xpipe.xhandle.ioshear.xpatches"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.ioshear.xpatches</span></code></a>(raw_chunks)</td>
+<td>Processes many smaller xshear output files via <strong>xread</strong></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_raw.html#xpipe.xhandle.ioshear.read_raw" title="xpipe.xhandle.ioshear.read_raw"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.ioshear.read_raw</span></code></a>(fname)</td>
+<td>Reads xshear output from file</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_multiple_raw.html#xpipe.xhandle.ioshear.read_multiple_raw" title="xpipe.xhandle.ioshear.read_multiple_raw"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.ioshear.read_multiple_raw</span></code></a>(fnames)</td>
+<td>Reads xshear output from multiple files, and concatenates them</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_sheared_raw.html#xpipe.xhandle.ioshear.read_sheared_raw" title="xpipe.xhandle.ioshear.read_sheared_raw"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.ioshear.read_sheared_raw</span></code></a>(fname)</td>
+<td>reads raw xshear output from metacal sheared runs</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_multiple_sheared_raw.html#xpipe.xhandle.ioshear.read_multiple_sheared_raw" title="xpipe.xhandle.ioshear.read_multiple_sheared_raw"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.ioshear.read_multiple_sheared_raw</span></code></a>(fnames)</td>
+<td>reads raw xshear output from metacal sheared runs</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/xpipe.xhandle.ioshear.makecat.html#xpipe.xhandle.ioshear.makecat" title="xpipe.xhandle.ioshear.makecat"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.ioshear.makecat</span></code></a>(fname,&nbsp;mid,&nbsp;…)</td>
+<td>Write an xshear style lens catalog to file</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/xpipe.xhandle.ioshear.read_lens_pos.html#xpipe.xhandle.ioshear.read_lens_pos" title="xpipe.xhandle.ioshear.read_lens_pos"><code class="xref py py-obj docutils literal"><span class="pre">xpipe.xhandle.ioshear.read_lens_pos</span></code></a>(fnames)</td>
+<td>Reads postions based on the list of filenames passed</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section" id="useful-tools">
 <h2>Useful tools<a class="headerlink" href="#useful-tools" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="tools-catalogs">
@@ -533,7 +677,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1',
+            VERSION:'0.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

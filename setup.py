@@ -6,4 +6,4 @@ setup(name="xpipe",
       install_requires=['numpy', 'scipy', 'pandas', 'astropy', 'fitsio', 'kmeans_radec', ],
       author="Tamas Norbert Varga",
       author_email="T.Varga@usm.lmu.de",
-      version="0.1")
+      version="0.4")

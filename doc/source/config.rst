@@ -274,6 +274,7 @@ params.yml
           boost:
             rbmin: 3
             rbmax: 13
+            refbin: 14
 
 
     There are two modes histogram :py:data:`hist` which relies on Monte-Carlo samples of redshifts
@@ -353,3 +354,17 @@ The two major sub-headings are:
     In case there are no random points available for the dataset you are using, it is safe to leave the
     :py:data:`rand` field empty, but in this case make sure you also use the :code:`--norands` flag
     when exectuing the pipeline scripts.
+
+
+    In case the input catalog is defined in multiple files (for example when the parameter  bins are not trivial to
+    define), a list of filenames can be defined for :py:data:`lens` and :py:data:`rand`::
+
+        lenscat:
+            pre_binned_data:
+                lens: [
+                    [des_y1_lens_catalog_bin-0-0.fits, des_y1_lens_catalog_bin-0-1.fits],
+                    [des_y1_lens_catalog_bin-1-0.fits, des_y1_lens_catalog_bin-1-1.fits],
+                ]
+
+    **Note:** The defined files will be assumed to correspond to separat parameter selections, and thus
+    this mode **cannot** be used together with the definiton of parameter bins in params.yml_

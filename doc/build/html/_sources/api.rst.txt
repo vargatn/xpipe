@@ -127,6 +127,76 @@ additional functions:
     xpipe.xhandle.xwrap.rot2d
 
 
+Postprocessing XSHEAR output
+----------------------------
+
+High level wrapper for postprocessing single parameter bins:
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.shearops.process_profile
+
+Which wraps the main container class, responsible for most of the postprocessing:
+
+.. autosummary::
+    :toctree: generated
+    :template: custom.rst
+
+    xpipe.xhandle.shearops.StackedProfileContainer
+
+Some other useful functions
+"""""""""""""""""""""""""""
+
+Extract **area-weighted** radial bins centers for the lensing measurement:
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.shearops.redges
+
+Jackknife covariance between different parameter bins:
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.shearops.stacked_pcov
+
+XSHEAR results I/O
+""""""""""""""""""
+
+The main reader function
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.ioshear.xread
+
+
+Addtitional helpers for I/O:
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.ioshear.read_single_bin
+    xpipe.xhandle.ioshear.read_multiple_bin
+
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.ioshear.xpatches
+    xpipe.xhandle.ioshear.read_raw
+    xpipe.xhandle.ioshear.read_multiple_raw
+    xpipe.xhandle.ioshear.read_sheared_raw
+    xpipe.xhandle.ioshear.read_multiple_sheared_raw
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.ioshear.makecat
+    xpipe.xhandle.ioshear.read_lens_pos
+
 
 Useful tools
 ---------------

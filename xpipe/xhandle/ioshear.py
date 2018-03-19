@@ -6,8 +6,7 @@ import os
 import numpy as np
 import pandas as pd
 
-
-sheared_tags = ["_1p", "_1m", "_2p", "_2m"]
+from .xwrap import sheared_tags
 
 
 ###################################################################
