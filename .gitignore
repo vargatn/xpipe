@@ -4,8 +4,6 @@
 *.cache
 xpipe.egg-info
 
-doc/source/generated
-
 build
 dist
 files.txt
