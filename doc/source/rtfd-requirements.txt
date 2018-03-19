@@ -1,2 +1,3 @@
+astropy
 fitsio
 https://github.com/esheldon/kmeans_radec/archive/master.zip
