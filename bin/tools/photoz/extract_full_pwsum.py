@@ -19,6 +19,7 @@ parser.add_argument('--noclust', action="store_true", default=False)
 parser.add_argument('--norands', action="store_true", default=False)
 parser.add_argument('--force_rbin', type=int, default=None)
 parser.add_argument('--pdfid', type=str, default="coadd_objects_id")
+parser.add_argument('--run_missing', action='store_true', default=False)
 
 
 force_zcens = np.linspace(0.01, 3.50, 350)
@@ -39,6 +40,10 @@ if __name__ == "__main__":
                                                  force_rbin=args.force_rbin)
 
         infodicts = pzboost.balance_infodicts(raw_infodicts, args.ibin, args.nchunk, args.ichunk)
+        if args.run_missing:
+            pnames = [info["pname"] for info in infodicts]
+            fnames, haspairs = pzboost.check_pwsum_files(pnames)
+            infodicts = infodicts[np.invert(haspairs)]
         pzboost.multi_pwsum_run(infodicts, nprocess=paths.params['nprocess'])
 
     if not args.norands:
@@ -52,6 +57,10 @@ if __name__ == "__main__":
                                                  force_rbin=args.force_rbin)
 
         infodicts = pzboost.balance_infodicts(raw_infodicts, args.ibin, args.nchunk, args.ichunk)
+        if args.run_missing:
+            pnames = [info["pname"] for info in infodicts]
+            fnames, haspairs = pzboost.check_pwsum_files(pnames)
+            infodicts = infodicts[np.invert(haspairs)]
         pzboost.multi_pwsum_run(infodicts, nprocess=paths.params['nprocess'])
 
 

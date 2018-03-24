@@ -312,9 +312,9 @@ def calc_pwsum(pscat, pdf_paths, pdfid='INDEX', source_id="source_id", force_zce
     return pwsum, wsum, zcens, n_obj
 
 
-def check_pwsum_files(pnames, npatch):
+def check_pwsum_files(pnames):
     """Tests wether the JK patch has a PDF extracted and saved"""
-    has_pairsfile = np.zeros(npatch, dtype=bool)
+    has_pairsfile = np.zeros(len(pnames), dtype=bool)
     fnames = []
     for pid, pname in enumerate(pnames):
         fname = pname.replace('.dat', pwsum_suffix)
@@ -347,7 +347,7 @@ def combine_pwsums(infodicts):
     if "fullpars" in infodicts[0].keys() and infodicts[0]["fullpars"] is not None:
         fullpars.update(infodicts[0]["fullpars"])
 
-    fnames, has_pairsfile = check_pwsum_files(pnames, npatch)
+    fnames, has_pairsfile = check_pwsum_files(pnames)
 
     zcens = _check_zcens(fnames, has_pairsfile)
     nrbins = paths.params['radial_bins']['nbin']
