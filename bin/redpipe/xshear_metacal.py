@@ -24,6 +24,7 @@ parser.add_argument('--noclust', action="store_true")
 parser.add_argument('--norands', action="store_true")
 parser.add_argument('--params', type=str)
 
+parser.add_argument("--metachunk", type=int, default=0)
 parser.add_argument("--nchunk", type=int, default=1)
 parser.add_argument("--ichunk", type=int, default=0)
 
@@ -42,7 +43,7 @@ if __name__ == '__main__':
 
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
 
-    if args.ichunk == 0 or args.runall:
+    if args.metachunk == 0 or args.runall:
         print xpath
         xwrap.write_custom_xconf(xpath, xsettings=xwrap.get_main_source_settings())
 
@@ -70,7 +71,7 @@ if __name__ == '__main__':
 
     # this is the sheared computation with flags_select_*
     for i, tag in enumerate(xwrap.sheared_tags):
-        if i == (args.ichunk - 1) or args.runall:
+        if i == (args.metachunk - 1) or args.runall:
             sheared_xconfig_fname = xpath.replace("xconfig", "xconfig" + tag)
             print sheared_xconfig_fname
             xwrap.write_custom_xconf(sheared_xconfig_fname, xsettings=xwrap.sheared_source_settings)
