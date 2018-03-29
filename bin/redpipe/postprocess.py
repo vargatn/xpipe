@@ -62,7 +62,6 @@ if __name__ == '__main__':
         resroot = paths.dirpaths["results"] + "/" +\
                   paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["lens_prefix"] + bin_tag
         write_profile(clust, resroot)
-        clusts.append(clust)
 
         if not args.norands:
             rands_infos = xwrap.create_infodict(rlist_jk[i])
@@ -76,7 +75,6 @@ if __name__ == '__main__':
             resroot = paths.dirpaths["results"] + "/" + \
                       paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["rand_prefix"] + bin_tag
             write_profile(rand, resroot)
-            rands.append(rand)
 
             # calculating subtracted profile
             resroot = paths.dirpaths["results"] + "/" + \
@@ -86,7 +84,15 @@ if __name__ == '__main__':
             prof3.composite(rand, operation="-")
             write_profile(prof3, resroot)
 
+            rand.drop_data()
+            prof3.drop_data()
+
+            rands.append(rand)
             subtrs.append(prof3)
+        
+        clust.drop_data()
+        clusts.append(clust)
+
 
     print "calculating cross-covariance:"
     ccov_t, ccov_x = shearops.stacked_pcov(clusts)
