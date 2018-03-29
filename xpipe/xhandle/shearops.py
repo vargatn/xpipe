@@ -690,7 +690,7 @@ def stacked_pcov(plist):
     return supercov_t, supercov_x
 
 
-def process_profile(fnames, metanames=None, labels=None):
+def process_profile(fnames, ismeta=True, labels=None):
     """
     Extracts StackedProfileContainer from xshear output
 
@@ -698,8 +698,8 @@ def process_profile(fnames, metanames=None, labels=None):
     ----------
     fnames : list of str
         filenames to be read (without metatags)
-    metanames : list
-        fnames appended by the :code:`sheared_tags`
+    ismeta : bool
+        whether to include METACALIBRATION files with :code:`sheared_tags`
     labels : list
         JK-labels for each entry in the lens files (in the order they are written to disk)
 
@@ -713,9 +713,9 @@ def process_profile(fnames, metanames=None, labels=None):
     if type(fnames) is str or len(fnames) == 0:
         if type(fnames) is not str:
             fnames = fnames[0]
-        cinfo, cdata, sheared_data = read_single_bin(fnames, metaname=metanames)
+        cinfo, cdata, sheared_data = read_single_bin(fnames, ismeta)
     else:
-        cinfo, cdata, sheared_data, labels = read_multiple_bin(fnames, metanames=metanames)
+        cinfo, cdata, sheared_data, labels = read_multiple_bin(fnames, ismeta)
 
     ncens = len(fnames)
 

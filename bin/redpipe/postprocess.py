@@ -14,7 +14,7 @@ import xpipe.xhandle.shearops as shearops
 
 
 parser = argparse.ArgumentParser(description='postprocesses xshear output')
-parser.add_argument('--nometa', action="store_true", default=False)
+parser.add_argument('--nometa', action="store_false", default=True)
 parser.add_argument('--npatch', default="auto")
 parser.add_argument('--params', type=str)
 parser.add_argument('--calibs', action="store_true", default=False)
@@ -42,6 +42,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     paths.update_params(args.params)
 
+    ismeta = args
+
     clusts = []
     rands = []
     subtrs = []
@@ -54,10 +56,10 @@ if __name__ == '__main__':
 
         bin_tag = clust_files[0].split("_" + paths.params["lens_prefix"])[1].split("_patch")[0]
 
-        metanames = None
-        if not args.nometa:
-            metanames = xwrap.get_metanames(clust_files)
-        clust = shearops.process_profile(clust_files, metanames=metanames)
+        # metanames = None
+        # if not args.nometa:
+        #     metanames = xwrap.get_metanames(clust_files)
+        clust = shearops.process_profile(clust_files, ismeta=args.nometa)
 
         resroot = paths.dirpaths["results"] + "/" +\
                   paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["lens_prefix"] + bin_tag
@@ -70,7 +72,7 @@ if __name__ == '__main__':
             metanames = None
             if not args.nometa:
                 metanames = xwrap.get_metanames(rands_files)
-            rand = shearops.process_profile(rands_files, metanames=metanames)
+            rand = shearops.process_profile(rands_files, ismeta=args.nometa)
 
             resroot = paths.dirpaths["results"] + "/" + \
                       paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["rand_prefix"] + bin_tag
@@ -89,7 +91,7 @@ if __name__ == '__main__':
 
             rands.append(rand)
             subtrs.append(prof3)
-        
+
         clust.drop_data()
         clusts.append(clust)
 

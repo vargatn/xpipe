@@ -275,7 +275,7 @@ def read_multiple_sheared_raw(fnames):
 ###################################################################
 # DATA LOADERS
 
-def read_single_bin(fname, metaname=None):
+def read_single_bin(fname, ismeta=True):
     """
     Reads and interprets xshear output from a single file
 
@@ -287,8 +287,8 @@ def read_single_bin(fname, metaname=None):
     ----------
     fname : str
         full path to output file
-    metaname : str
-        full base path to sheared output file
+    ismeta : bool
+        whether to include METACALIBRATION sheared output files
 
     Returns
     -------
@@ -301,15 +301,15 @@ def read_single_bin(fname, metaname=None):
     (info, data, tmp) = xread(raw_main)
     sheared_data = None
 
-    if metaname:
-        raw_sheared = read_sheared_raw(metaname)
+    if ismeta:
+        raw_sheared = read_sheared_raw(fname)
         sheared_data = [xread(raw_data)[1]
                         for raw_data in raw_sheared]
 
     return info, data, sheared_data
 
 
-def read_multiple_bin(fnames, metanames=None):
+def read_multiple_bin(fnames, ismeta=True):
     """
     Reads and interprets xshear output from many smaller files
 
@@ -323,8 +323,8 @@ def read_multiple_bin(fnames, metanames=None):
     ----------
     fname : str
         full path to output file
-    metaname : str
-        full base path to sheared output file
+    ismeta : bool
+        whether to include METACALIBRATION sheared output files
 
     Returns
     -------
@@ -337,8 +337,8 @@ def read_multiple_bin(fnames, metanames=None):
     (cinfo, cdata, clabels) = xpatches(raw_main)
 
     sheared_data = None
-    if metanames:
-        raw_sheared = read_multiple_sheared_raw(metanames)
+    if ismeta:
+        raw_sheared = read_multiple_sheared_raw(fnames)
         sheared_data = [xpatches(raw_data)[1]
                         for raw_data in raw_sheared]
 
