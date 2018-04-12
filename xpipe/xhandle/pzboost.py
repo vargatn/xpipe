@@ -785,7 +785,7 @@ class PDFContainer(object):
             rbmax = force_rbmax
 
         for ipatch in np.arange(self.npatch):
-            print "processing patch", ipatch
+            #print "processing patch", ipatch
             sbins = np.nonzero(self.nsources[:, ipatch])[0]
 
             # these are the radial bin indices which we actually want to use in the Boost factor estimation
@@ -864,7 +864,12 @@ class PDFContainer(object):
         self.amps_err = self.point_err[2:]
         self.amps_cov = self.point_cov[2:, 2:]
 
+
+        # print self.amps
+        # print np.where(self.amps != BADVAL)[0]
         hasamp = np.where(self.amps != BADVAL)[0]
+        # print hasamp
+        # print self.rcens
         self.boost_rvals = self.rcens[hasamp]
         self.boost = 1. + self.amps[hasamp]
         self.boost_err = self.amps_err[hasamp]

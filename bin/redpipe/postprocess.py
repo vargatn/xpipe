@@ -42,7 +42,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     paths.update_params(args.params)
 
-    ismeta = args
+    ccont = xwrap.get_calib_cont()
 
     clusts = []
     rands = []
@@ -65,13 +65,16 @@ if __name__ == '__main__':
                   paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["lens_prefix"] + bin_tag
         write_profile(clust, resroot)
 
+        ccont = xwrap.append_scrit_inv(ccont, clust)
+
+
         if not args.norands:
             rands_infos = xwrap.create_infodict(rlist_jk[i])
-            rands_files = [info["outfile"] for info in clust_infos]
+            rands_files = [info["outfile"] for info in rands_infos]
 
-            metanames = None
-            if not args.nometa:
-                metanames = xwrap.get_metanames(rands_files)
+            # metanames = None
+            # if not args.nometa:
+            #     metanames = xwrap.get_metanames(rands_files)
             rand = shearops.process_profile(rands_files, ismeta=args.nometa)
 
             resroot = paths.dirpaths["results"] + "/" + \
@@ -94,6 +97,14 @@ if __name__ == '__main__':
 
         clust.drop_data()
         clusts.append(clust)
+
+    resroot = paths.dirpaths['results'] + '/' + paths.params["clust_prefix"] + paths.params["calibs_log"]
+
+    bin_vals = []
+    for i in np.arange(3):
+        for j in np.arange(7):
+            bin_vals.append((j, i))
+    xwrap.write_calib_cont(resroot, ccont, bin_vals)
 
 
     print "calculating cross-covariance:"

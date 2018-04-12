@@ -3,6 +3,7 @@ Handles calling xshear with multiprocessing (OpenMP-style single node calculatio
 """
 
 import os
+import copy
 import numpy as np
 import subprocess as sp
 import multiprocessing as mp
@@ -737,4 +738,60 @@ def multi_xrun(infodicts, nprocess=1):
     else:
         pool.close()
         pool.join()
+
+
+###############################################################
+
+#TODO document this!
+
+def get_calib_cont():
+    cont = OrderedDict([
+        ("scrit_inv", []),
+        ("scrit_inv_err", []),
+        ("zmean_clust", []),
+        ("zmean_rands", []),
+        ("delta_clust", []),
+        ("delta_clust_err", []),
+        ("delta_rands", []),
+        ("delta_rands_err", []),
+    ])
+    return cont
+
+def export_scrit_inv(prof):
+    """Exports the Sigma_crit inverse from a profile container"""
+    refprof = copy.deepcopy(prof)
+    refprof.ismeta = False
+    refprof.dst_nom = 6
+    refprof.dsx_nom = 7
+    refprof.dst_denom = 8
+    refprof.dsx_denom = 9
+    refprof.prof_maker()
+
+    scrit_inv = refprof.dst[-1]
+    scrit_inv_err = refprof.dst_err[-1]
+    return scrit_inv, scrit_inv_err
+
+def append_scrit_inv(dcont, prof):
+    scrit_inv, scrit_inv_err = export_scrit_inv(prof)
+    dcont["scrit_inv"].append(scrit_inv)
+    dcont["scrit_inv_err"].append(scrit_inv_err)
+    return dcont
+
+
+def write_calib_cont(resname, ccont, bin_vals):
+
+    calib_params = np.ones((len(bin_vals), 10)) * BADVAL
+    header = ("lambda_bin\t z_bin\t"
+              " sigma_crit_inv [pc^2 / M_\odot]\t sigma_crit_inv_err [pc^2 / M_\odot]"
+              " zmean_clust\t zmean_rands\t"
+              " delta_clust\t delta_clust_err\t delta_rands\t delta_rands_err\t")
+
+    calib_params[:, :2] = bin_vals
+    for i, key in enumerate(ccont.keys()):
+        print key
+        if ccont[key]:
+            calib_params[:, 2 + i] = ccont[key]
+
+    fmt = ["%d", ] * 2 + ["%.12f"] * 8
+    np.savetxt(resname, calib_params, fmt=fmt, header=header)
 
