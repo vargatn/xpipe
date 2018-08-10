@@ -312,3 +312,13 @@ tools.selector
     xpipe.tools.selector.matchdd
     xpipe.tools.selector.partition
     xpipe.tools.selector.safedivide
+
+
+example function
+""""""""""""""""
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.xhandle.shearops.olivers_mock_function
+

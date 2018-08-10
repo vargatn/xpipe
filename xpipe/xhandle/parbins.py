@@ -824,8 +824,10 @@ class XIO(object):
     def save_rands_jk(self):
         """writes random points to file for each JK patch in xshear style"""
         rind = self.randoms['sinds'][self.ind]
+        ids = self.randoms['id'][rind][self.idraw]
         ra = self.randoms['ra'][rind][self.idraw]
         dec = self.randoms['dec'][rind][self.idraw]
+        zs = self.randoms['z'][rind][self.idraw]
 
         if self.centers is not None:
             jkinds, jkninds, labels = assign_jk_labels(ra, dec, self._bin_jk_centers)
@@ -836,8 +838,7 @@ class XIO(object):
             froot = self.rlist[self.ind].replace('.dat', '_patch' + str(label) + '.dat')
             fname = self.dpath + "/" + froot
             self.rlist_jk.append(froot)
-            makecat(fname, self.randoms["id"][rind][jkind], self.randoms["ra"][rind][jkind],
-                    self.randoms["dec"][rind][jkind], self.randoms["z"][rind][jkind])
+            makecat(fname, ids[jkind], ra[jkind], dec[jkind], zs[jkind])
 
     def loop_bins(self, norands=False, match=True):
         """

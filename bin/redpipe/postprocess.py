@@ -23,6 +23,21 @@ parser.add_argument('--norands', action="store_true", default=False)
 # TODO update with intuitive source bin detection, and check with a proper example
 
 
+def export_scrit_inv(prof):
+    """Exports the Sigma_crit inverse from a profile container"""
+    refprof = copy.deepcopy(prof)
+    refprof.ismeta = False
+    refprof.dst_nom = 6
+    refprof.dsx_nom = 7
+    refprof.dst_denom = 8
+    refprof.dsx_denom = 9
+    refprof.prof_maker()
+
+    scrit_inv = refprof.dst[-1]
+    scrit_inv_err = refprof.dst_err[-1]
+    return scrit_inv, scrit_inv_err
+
+
 def write_profile(prof, path):
     """saves DeltaSigma and covariance in text format"""
 
@@ -98,13 +113,12 @@ if __name__ == '__main__':
         clust.drop_data()
         clusts.append(clust)
 
-    resroot = paths.dirpaths['results'] + '/' + paths.params["clust_prefix"] + paths.params["calibs_log"]
-
-    bin_vals = []
-    for i in np.arange(3):
-        for j in np.arange(7):
-            bin_vals.append((j, i))
-    xwrap.write_calib_cont(resroot, ccont, bin_vals)
+    # resroot = paths.dirpaths['results'] + '/' + paths.params["lens_prefix"] + paths.params["calibs_log"]
+#    bin_vals = []
+#    for i in np.arange(3):
+#        for j in np.arange(7):
+#            bin_vals.append((j, i))
+# xwrap.write_calib_cont(resroot, ccont, bin_vals)
 
 
     print "calculating cross-covariance:"

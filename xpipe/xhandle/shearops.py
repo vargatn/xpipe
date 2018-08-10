@@ -725,3 +725,31 @@ def process_profile(fnames, ismeta=True, labels=None):
     prof.prof_maker()
 
     return prof
+
+
+def olivers_mock_function(a, b, c):
+    """
+    This is a one line description
+
+
+    This is a multi line descrption of what this is::
+
+        \sum_a = b \cdot c
+
+
+    Parameters
+    ----------
+    a : int
+        index
+    b : float
+        exponent of the expression
+    c : np.ndarray
+        dataset
+
+    Returns
+    -------
+    dict
+        The output
+
+    """
+    pass

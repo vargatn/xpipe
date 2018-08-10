@@ -1,0 +1,15 @@
+###################################
+#   input file aliases
+###################################
+
+local:
+  # shear catalogs in xshear style
+  shearcat:
+    default: default.dat
+    metacal: shuf_y1a1-unblind-v2-mcal_zmean-meta_zmc-mof.dat
+
+  # redmapper catalogs
+  lenscat:
+    y1clust:
+      lens: y1a1_gold_1.0.3-d10-mof-001d_run_redmapper_v6.4.17-vlim_lgt5_desformat_catalog.fit
+      rand: y1a1_gold_1.0.3_wide+d10-mof-001d_run_redmapper_v6.4.17-2_randcat_z0.10-0.95_lgt005_vl02.fit
