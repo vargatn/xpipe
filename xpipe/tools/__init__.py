@@ -1,5 +1,5 @@
-import catalogs
-import magtools
-import selector
+from . import catalogs
+#import magtools
+from . import selector
 
 

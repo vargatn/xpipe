@@ -1,2 +1,2 @@
-import ioshear
-import shearops
+from . import ioshear
+from . import shearops
