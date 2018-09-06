@@ -7,7 +7,7 @@ run 5 times in total:
  - 4 times to calculate inputs for selection responses
 
 """
-
+from __future__ import print_function, division
 import argparse
 import numpy as np
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
 
     if args.metachunk == 0 or args.runall:
-        print xpath
+        print(xpath)
         xwrap.write_custom_xconf(xpath, xsettings=xwrap.get_main_source_settings())
 
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     for i, tag in enumerate(xwrap.sheared_tags):
         if i == (args.metachunk - 1) or args.runall:
             sheared_xconfig_fname = xpath.replace("xconfig", "xconfig" + tag)
-            print sheared_xconfig_fname
+            print(sheared_xconfig_fname)
             xwrap.write_custom_xconf(sheared_xconfig_fname, xsettings=xwrap.sheared_source_settings)
 
             if not args.noclust:

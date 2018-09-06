@@ -2,6 +2,7 @@
 Extracts P(z) decomposition boost factors from pdf files
 """
 
+from __future__ import print_function, division
 import numpy as np
 import pickle
 import argparse
@@ -37,7 +38,7 @@ def get_bname(pnames):
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    print "Starting Boost factor calculation in *full* mode"
+    print("Starting Boost factor calculation in *full* mode")
 
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
 
@@ -46,7 +47,7 @@ if __name__ == "__main__":
     for i, pnames in enumerate(pairs_files):
 
         bname = get_bname(pnames)
-        print "processing", bname
+        print("processing", bname)
 
         bcont = pzboost.PDFContainer.from_file(bname)
         bcont.decomp_gauss(refprof=paths.params['pzpars']['boost']['refprof'],
@@ -57,15 +58,15 @@ if __name__ == "__main__":
         bpath = (bname.split("/")[-1].split("_pzcont")[0] + "_" +
                  paths.params['pzpars']["full"]['tag'] + '_boostdict' + args.tag + '.p')
 
-        print 'saving '
-        print bpath
+        print('saving ')
+        print(bpath)
         pickle.dump(boostdict, open(bpath, 'wb'))
 
         respath = (bname.split("/")[-1].split("_pzcont")[0] + "_" +
                    paths.params['pzpars']["full"]['tag'] + '_boost' + args.tag + '.dat')
 
         write_pz_boost(boostdict,  respath)
-        print respath
-        print 'finished'
+        print(respath)
+        print('finished')
 
 

@@ -4,6 +4,7 @@ Source pdf-container and boost factor creation
 The philosophy for decomposition is that it is done for each JK patch independently...
 """
 
+from __future__ import print_function, division
 import os
 import scipy.optimize as optimize
 import numpy as np
@@ -127,7 +128,7 @@ def multi_pwsum_run(infodicts, nprocess=1):
     if nprocess > len(infodicts):
         nprocess = len(infodicts)
 
-    print 'starting PDF extraction in ' + str(nprocess) + ' processes'
+    print('starting PDF extraction in ' + str(nprocess) + ' processes')
     fparchunks = sl.partition(infodicts, nprocess)
     pool = mp.Pool(processes=nprocess)
     pp = pool.map_async(call_pwsum_chunk, fparchunks)
@@ -135,7 +136,7 @@ def multi_pwsum_run(infodicts, nprocess=1):
     try:
         pp.get(86400)  # apparently this counters a bug in the exception passing in python.subprocess...
     except KeyboardInterrupt:
-        print "Caught KeyboardInterrupt, terminating workers"
+        print("Caught KeyboardInterrupt, terminating workers")
         pool.terminate()
         pool.join()
     else:
@@ -216,7 +217,7 @@ def extract_pwsum(infodict):
     fbase = os.path.split(fname)[1].split('_result')[0]
     force_rbin = infodict['force_rbin']
     if os.path.isfile(fname):
-        print "starting", fname
+        print("starting", fname)
 
         raw_data = np.loadtxt(fname, dtype=pcols)
         scat = pd.DataFrame.from_records(raw_data)
@@ -232,7 +233,7 @@ def extract_pwsum(infodict):
         # select rbin subsets
         for rbval in rbvals:
             if force_rbin is None or rbval == force_rbin:
-                print fbase + ' rbin ' + str(rbval)
+                print(fbase + ' rbin ' + str(rbval))
                 rsub = scat.query('rbin == ' + str(rbval))[:5000]
                 pwsum, wsum, zcens, nobj = calc_pwsum(rsub, pdf_paths, pdfid=infodict['pdfid'],
                                                           source_id=infodict['source_id'],
@@ -245,9 +246,9 @@ def extract_pwsum(infodict):
         if len(rbins):
             np.savez(oname, pwsums=pwsums, wsums=wsums, rbvals=rbvals,
                      zcens=zcens, nobjs=nobjs)
-            print 'written ' + oname
+            print('written ' + oname)
     else:
-        print "no such file:", fname
+        print("no such file:", fname)
 
 
 def calc_pwsum(pscat, pdf_paths, pdfid='INDEX', source_id="source_id", force_zcens=None):
@@ -359,7 +360,7 @@ def combine_pwsums(infodicts):
 
     for pid in np.arange(npatch):
         if has_pairsfile[pid]:
-            print "qbin", bin_vals[pid], "processing patch", pid
+            print("qbin", bin_vals[pid], "processing patch", pid)
             for i, fname in enumerate(fnames):
                 if has_pairsfile[i] and i != pid:
                     zdata = dict(np.load(fname))
@@ -381,7 +382,7 @@ def combine_pwsums(infodicts):
     if "_patch" in root_name:
         root_name = root_name.split("_patch")[0]
     bname = root_name + raw_pdf_tag + fullpars['tag'] + '.p'
-    print bname
+    print(bname)
 
     pickle.dump(bdict, open(bname, 'wb'))
 
@@ -715,7 +716,7 @@ class PDFContainer(object):
         psub = np.zeros(len(self.zcens))
         # making sure that this JK-patch *has* sources for this radial bin
         if self.nsources[rbin][pid]:
-            print self.verbose_prefix + ' rbin: ' + str(rbin) + ' patch: ' + str(pid)
+            print(self.verbose_prefix + ' rbin: ' + str(rbin) + ' patch: ' + str(pid))
             psub = self._calc_pdf_patch_hist(rbin, pid)
         return psub
 

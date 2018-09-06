@@ -1,6 +1,9 @@
 """
 # TODO add documentation
 """
+
+from __future__ import print_function, division
+
 import os
 
 import fitsio as fio
@@ -750,7 +753,7 @@ class XIO(object):
         makecat(self.dpath + "/" + self.flist[self.ind],
                         self.lenses['id'][sind], self.lenses['ra'][sind],
                         self.lenses['dec'][sind], self.lenses['z'][sind])
-        print 'saved ' + self.flist[self.ind]
+        print('saved ' + self.flist[self.ind])
 
     def save_clust_jk(self):
         """writes cluster lens file for each JK patch in xshear style"""
@@ -819,7 +822,7 @@ class XIO(object):
         makecat(self.dpath + "/" + self.rlist[self.ind],
                         self.randoms['id'][rind][self.idraw], self.randoms['ra'][rind][self.idraw],
                         self.randoms['dec'][rind][self.idraw], self.randoms['z'][rind][self.idraw])
-        print 'saved ' + self.rlist[self.ind]
+        print('saved ' + self.rlist[self.ind])
 
     def save_rands_jk(self):
         """writes random points to file for each JK patch in xshear style"""

@@ -1,7 +1,7 @@
 """
 Loads project path from user config files
 """
-
+from __future__ import print_function, division
 import os
 import yaml
 import glob
@@ -56,13 +56,13 @@ def print_mode(params):
     if params['mode'] == 'full':
         _devmode = False
 
-    print '\n***********************\n'
+    print('\n***********************\n')
     if _devmode:
-        print 'running in test / development mode'
+        print('running in test / development mode')
     else:
-        print 'running in full mode'
+        print('running in full mode')
 
-    print '\n***********************\n'
+    print('\n***********************\n')
 
 
 ###################################################################
@@ -140,7 +140,7 @@ def get_fullpaths(params, project_path, default_inputs=True):
 def use_custom_params(path):
     global params, has_custom_specified
     if os.path.isfile(path):
-        print 'updating params from: ' + path
+        print('updating params from: ' + path)
         tmp_yaml = read_yaml(path)
         params.update(tmp_yaml)
         has_custom_specified = "custom_params_file" in tmp_yaml.keys()
@@ -219,7 +219,7 @@ project_path = get_poject_path(user_project_file)
 
 if project_path is not None:
     # read parameter bins from config file
-    print "reading DEFAULTS from default_params.yml"
+    print("reading DEFAULTS from default_params.yml")
 
     default_param_path = project_path + 'settings/default_params.yml'
     params = read_yaml(default_param_path)

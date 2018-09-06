@@ -1,7 +1,7 @@
 """
 Handles calling xshear with multiprocessing (OpenMP-style single node calculations)
 """
-
+from __future__ import print_function, division
 import os
 import copy
 import numpy as np
@@ -382,13 +382,13 @@ class CatRotator(object):
 
     def rotate(self):
         """Perform a random rotation on the shear catalog"""
-        print '    starting reading'
+        print('    starting reading')
         self.readcat()
-        print '    rotating with seed = ' + str(self.seed)
+        print('    rotating with seed = ' + str(self.seed))
         self._rotcat()
-        print '    writing...'
+        print('    writing...')
         self.writecat()
-        print '    finished'
+        print('    finished')
 
 
 def single_rotate(flist, seed_rot, metasel=False, head=False):
@@ -409,28 +409,28 @@ def single_rotate(flist, seed_rot, metasel=False, head=False):
     """
     #"""runs one single rotation of the source catalog with METACAL SELECTION RESPONSES"""
 
-    print "    writing xshear input"
+    print("    writing xshear input")
     xpath = paths.dirpaths["xin"] + "/" + paths.params["tag"] + \
             "xconfig_rot_seed" + str(seed_rot) + ".cfg"
     write_custom_xconf(xpath, xsettings=get_main_source_settings_nopairs())
 
-    print '    creating main catalog'
+    print('    creating main catalog')
     sname = paths.fullpaths[paths.params['shear_to_use']]
     cr = CatRotator(sname, seed=seed_rot)
     cr.rotate()
-    print '    running measurement'
+    print('    running measurement')
     clust_infos = create_infodict(flist, pairs=False, head=head,
                                   rotate=True, seed=seed_rot, shape_path=cr.oname,
                                   xconfig=xpath)
 
     multi_xrun(clust_infos, nprocess=paths.params['nprocess'])
-    print '    finished...'
-    print '    removing catalog'
+    print('    finished...')
+    print('    removing catalog')
     cr.rmcat()
 
     # starting runs for metacal selection responses
     if metasel:
-        print '    creating sheared catalogs'
+        print('    creating sheared catalogs')
         for tag in sheared_tags:
             xpath_sheared = paths.dirpaths["xin"] + "/" + paths.params["tag"] + \
                             "xconfig" + tag + "_rot_seed" + str(seed_rot) + ".cfg"
@@ -439,13 +439,13 @@ def single_rotate(flist, seed_rot, metasel=False, head=False):
             sname = paths.fullpaths[paths.params['shear_to_use']].replace(".dat", tag + ".dat")
             cr = CatRotator(sname, seed=seed_rot)
             cr.rotate()
-            print '    running sheared measurement', tag
+            print('    running sheared measurement', tag)
             clust_infos = create_infodict(flist, pairs=False, head=head,
                                           rotate=True, seed=seed_rot, shape_path=cr.oname, metatag=tag,
                                           xconfig=xpath_sheared)
             multi_xrun(clust_infos, nprocess=paths.params['nprocess'])
-            print '    finished...'
-            print '    removing catalog'
+            print('    finished...')
+            print('    removing catalog')
             cr.rmcat()
 
 
@@ -472,7 +472,7 @@ def serial_rotate(flist, metasel=False, nrot=20, head=False, seed_master=5):
     seed_rots = get_rot_seeds(nrot=nrot, seed_master=seed_master)
 
     for i, seed_rot in enumerate(seed_rots):
-        print 'rotation ', i
+        print('rotation ', i)
         single_rotate(flist, seed_rot, metasel=metasel, head=head)
 
 
@@ -501,9 +501,9 @@ def chunkwise_rotate(flist, metasel=False, nrot=20, nchunks=1, ichunk=0, head=Fa
     seed_rots = get_rot_seeds(nrot=nrot, seed_master=seed_master)
     seed_chunks = partition(seed_rots, nchunks)
 
-    print 'using seeds: ', seed_chunks[ichunk]
+    print('using seeds: ', seed_chunks[ichunk])
     for i, seed_rot in enumerate(seed_chunks[ichunk]):
-        print 'rotation ', i
+        print('rotation ', i)
         single_rotate(flist, seed_rot, metasel=metasel, head=head)
 
 
@@ -545,7 +545,7 @@ def extract_pairs_bins(infiles, jk=True):
         pairs_files = [info["pairsfile"] for info in clust_info]
 
         bin_vals = np.array([name.split("_qbin-")[1].split(".dat")[0].split("-") for name in infiles], dtype=int)
-    print bin_vals
+    print(bin_vals)
     return pairs_files, np.array(bin_vals)
 
 
@@ -673,12 +673,12 @@ def call_xshear(infodict):
         xconfig = infodict['xconfig']
     else:
         xconfig = paths.fullpaths['xconfig']
-    print xconfig
+    print(xconfig)
 
     cmd2 = paths.fullpaths['xpath'] + ' ' + xconfig + ' ' +\
            infile + ' ' + pairsfile
 
-    print 'processing ' + os.path.split(infile)[1] + ' with ' + os.path.split(shape_path)[1]
+    print('processing ' + os.path.split(infile)[1] + ' with ' + os.path.split(shape_path)[1])
 
     try:
         rfile = open(outfile, 'w+')
@@ -692,7 +692,7 @@ def call_xshear(infodict):
 
         rfile.close()
         lfile.close()
-        print 'finished: ' + os.path.split(outfile)[1]
+        print('finished: ' + os.path.split(outfile)[1])
     except KeyboardInterrupt:
         raise KeyboardInterrupt
 
@@ -725,14 +725,14 @@ def multi_xrun(infodicts, nprocess=1):
     if nprocess > len(infodicts):
         nprocess = len(infodicts)
 
-    print 'starting xshear calculations in ' + str(nprocess) + ' processes'
+    print('starting xshear calculations in ' + str(nprocess) + ' processes')
     fparchunks = partition(infodicts, nprocess)
     pool = mp.Pool(processes=nprocess)
     try:
         pp = pool.map_async(call_chunks, fparchunks)
         pp.get(86400)  # apparently this counters a bug in the exception passing in python.subprocess...
     except KeyboardInterrupt:
-        print "Caught KeyboardInterrupt, terminating workers"
+        print("Caught KeyboardInterrupt, terminating workers")
         pool.terminate()
         pool.join()
     else:
@@ -788,7 +788,7 @@ def write_calib_cont(resname, ccont, bin_vals):
 
     calib_params[:, :2] = bin_vals
     for i, key in enumerate(ccont.keys()):
-        print key
+        print(key)
         if ccont[key]:
             calib_params[:, 2 + i] = ccont[key]
 

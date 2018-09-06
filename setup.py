@@ -7,5 +7,5 @@ setup(name="xpipe",
       dependency_links=['http://github.com/user/repo/tarball/master#egg=package-1.0'],
       author="Tamas Norbert Varga",
       author_email="T.Varga@physik.lmu.de",
-      version="0.4")
+      version="0.45")
 

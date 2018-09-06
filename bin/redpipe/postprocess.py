@@ -1,7 +1,7 @@
 """
 Collects xshear output files into DeltaSigma profiles
 """
-
+from __future__ import print_function, division
 import argparse
 import copy
 import numpy as np
@@ -45,7 +45,7 @@ def write_profile(prof, path):
     profheader = "R [Mpc]\tDeltaSigma_t [M_sun / pc^2]\tDeltaSigma_t_err [M_sun / pc^2]\tDeltaSigma_x [M_sun / pc^2]\tDeltaSigma_x_err [M_sun / pc^2]"
     res = np.vstack((prof.rr, prof.dst, prof.dst_err, prof.dsx, prof.dsx_err)).T
     fname = path + "_profile.dat"
-    print "saving:", fname
+    print("saving:", fname)
     np.savetxt(fname, res, header=profheader)
 
     # Saving covariance
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     subtrs = []
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
     for i, clust_name in enumerate(flist_jk):
-        print "processing bin", i
+        print("processing bin", i)
 
         clust_infos = xwrap.create_infodict(clust_name)
         clust_files = [info["outfile"] for info in clust_infos]
@@ -121,7 +121,7 @@ if __name__ == '__main__':
 # xwrap.write_calib_cont(resroot, ccont, bin_vals)
 
 
-    print "calculating cross-covariance:"
+    print("calculating cross-covariance:")
     ccov_t, ccov_x = shearops.stacked_pcov(clusts)
     resroot = paths.dirpaths["results"] + "/" + \
               paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["lens_prefix"] + "_crosscov_dst.dat"
