@@ -6,7 +6,7 @@ shear and mass profiles in wide area lensing surveys such as DES. Features inclu
 
 * Automated pipeline for tangential shear and deltasigma profiles
 * Object-oriented API for lensing related measurements
-* Python wrapper for Erin Sheldon's xshear_.
+* Python wrapper for Erin Sheldon's [xshear](https://github.com/esheldon/xshear).
 
 # Installation and Usage
 
