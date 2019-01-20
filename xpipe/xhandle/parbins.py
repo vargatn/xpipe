@@ -335,8 +335,11 @@ def load_randcat(params=None, fullpaths=None, which=None):
 
     randkey = params['randkey']
 
-    w = randcat[randkey['w']]
     ra = randcat[randkey['ra']]
+    if 'w' in randkey.keys():
+        w = randcat[randkey['w']]
+    else:
+        w = np.ones(ra.shape)
     mira = ra < 0.
     ra[mira] = ra[mira] + 360.
 
@@ -353,7 +356,7 @@ def load_randcat(params=None, fullpaths=None, which=None):
         select = np.ones(len(ra), dtype=bool)
 
     # number of parameter columns
-    nq = len(randkey.keys()) - 4
+    nq = len(randkey.keys()) - 3
     if "jkey" in randkey.keys():
         nq -= 1
     qlist = np.zeros(shape=(len(ra), nq))
@@ -484,7 +487,7 @@ def prepare_lenses(bin_settings=None, params=None, fullpaths=None):
             arr[sind] = True
             sinds.append(arr)
 
-        data.update({"sinds": _sinds})
+        data.update({"sinds": sinds})
         data["qlist"] = None
         data["plpairs"] = None
         data.update({"bounds": bounds})
@@ -580,7 +583,7 @@ def prepare_random(bin_settings=None, params=None, fullpaths=None):
         # preparing individual datasets
         for i, lpth in enumerate(randpaths.flatten()):
             which = np.unravel_index(i, dims=randpaths.shape)
-            _data, _fullcat = load_lenscat(which=which)
+            _data, _fullcat = load_randcat(which=which)
             datas.append(_data)
             fullcats.append(_fullcat)
 
@@ -602,14 +605,14 @@ def prepare_random(bin_settings=None, params=None, fullpaths=None):
 
         data.update({"fullcat": np.concatenate(fullcats)})
 
-        # reformatting sinds into normal boolean format
+    #     # reformatting sinds into normal boolean format
         sinds = []
         for sind in _sinds:
             arr = np.zeros(len(data["id"]), dtype=bool)
             arr[sind] = True
             sinds.append(arr)
 
-        data.update({"sinds": _sinds})
+        data.update({"sinds": sinds})
         data["qlist"] = None
         data["plpairs"] = None
         data.update({"bounds": bounds})
@@ -800,12 +803,17 @@ class XIO(object):
         """
 
         rind = self.randoms['sinds'][self.ind]
-        pars = self.randoms["qlist"][rind]
         sind = self.lenses['sinds'][self.ind]
-        refpars = self.lenses["qlist"][sind]
+
+        if self.randoms["qlist"] is not None:
+            pars = self.randoms["qlist"][rind]
+            refpars = self.lenses["qlist"][sind]
+        else:
+            pars = None
+            refpars = None
 
         rw = self.randoms['w'][rind]
-        if match:
+        if self.randoms["qlist"] is not None and match:
             rw = matchdd(pars, refpars, win=rw)
         prw = rw / rw.sum()
 
