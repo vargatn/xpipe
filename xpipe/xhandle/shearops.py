@@ -6,6 +6,7 @@ from __future__ import print_function, division
 import math
 
 import numpy as np
+import pandas as pd
 
 from .ioshear import read_single_bin, read_multiple_bin
 from .xwrap import sheared_tags
@@ -691,7 +692,7 @@ def stacked_pcov(plist):
     return supercov_t, supercov_x
 
 
-def process_profile(fnames, ismeta=True, labels=None):
+def process_profile(fnames, ismeta=True, labels=None, weights=None):
     """
     Extracts StackedProfileContainer from xshear output
 
@@ -723,9 +724,42 @@ def process_profile(fnames, ismeta=True, labels=None):
     prof = StackedProfileContainer(cinfo, cdata, labels, ncens,
                                    metadata=sheared_data,
                                    metatags=sheared_tags)
-    prof.prof_maker()
+
+    # print(cinfo[:, 0 ], weights[:, 0])
+    # if weights is not None:
+    #     weights = extract_weights(cinfo, weights)
+
+    prof.prof_maker(weights=weights)
 
     return prof
+
+
+def extract_weights(info, weights):
+    """
+    # TODO write documentation for this
+
+    Parameters
+    ----------
+    info
+    weights
+
+    Returns
+    -------
+
+    """
+
+    itab = pd.DataFrame()
+    itab["index_0"] = info[:, 0]
+
+    wtab = pd.DataFrame()
+    wtab["index_1"] = weights[:, 0]
+    wtab["weight"] = weights[:, 1]
+
+    tab = pd.merge(itab, wtab, how="left", left_on="index_0", right_on="index_1")
+
+    return tab["weight"].values
+
+
 
 
 def olivers_mock_function(a, b, c):

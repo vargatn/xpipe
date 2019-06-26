@@ -10,16 +10,13 @@ import numpy as np
 
 import xpipe.paths as paths
 import xpipe.xhandle.parbins as parbins
-import xpipe.xhandle.xwrap as xwrap
-import xpipe.xhandle.shearops as shearops
 import xpipe.xhandle.blinding as blinding
 
 parser = argparse.ArgumentParser(description='postprocesses xshear output')
 parser.add_argument('--params', type=str)
-parser.add_argument('--norename', action="store_false", default=True)
 
-
-LWB_BLIND_SEED = 8472
+#LWB_BLIND_SEED = 8472
+LWB_BLIND_SEED = 8473
 blinder = blinding.BlindLWB(seed=LWB_BLIND_SEED)
 
 if __name__ == '__main__':
@@ -37,7 +34,7 @@ if __name__ == '__main__':
         full_main_name = paths.fullpaths["lwb"]["lens"].flatten()[i]
         tmp, main_name =  os.path.split(full_main_name)
         oname_root = paths.dirpaths["results"] + "/"  + paths.params["tag"] + "/" +\
-                     main_name.replace(".fits", "_subtracted_unweighted_blind")
+                     main_name.replace(".fits", "_subtracted_wsys_blind")
 
         subtr_prof = np.loadtxt(resroot + "_profile.dat")
         subtr_dst_cov = np.loadtxt(resroot + "_dst_cov.dat")

@@ -795,3 +795,20 @@ def write_calib_cont(resname, ccont, bin_vals):
     fmt = ["%d", ] * 2 + ["%.12f"] * 8
     np.savetxt(resname, calib_params, fmt=fmt, header=header)
 
+
+"""
+dat = pickle.load(open("/home/moon/vargatn/DES/Y3_WORK/xpipe/bin/redpipe/ccont.p", "rb"))
+header = ("z_bin\t sigma_crit_inv [pc^2 / M_\odot]\t sigma_crit_inv_err [pc^2 / M_\odot]")
+fmt = ["%d", ] + ["%.12f"] * 2
+
+BADVAL = -9999
+calib_params = np.ones((3, 3)) * BADVAL
+
+calib_params[:, 0] = [0, 1, 2]
+calib_params[:, 1] = dat["scrit_inv"]
+calib_params[:, 2] = dat["scrit_inv_err"]
+
+np.savetxt("mustar_newcut_scritinv.dat", calib_params, fmt=fmt, header=header)
+"""
+
+

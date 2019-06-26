@@ -5,6 +5,7 @@ from __future__ import print_function, division
 import argparse
 import copy
 import numpy as np
+import fitsio as fio
 
 import xpipe.paths as paths
 import xpipe.xhandle.parbins as parbins
@@ -19,6 +20,7 @@ parser.add_argument('--npatch', default="auto")
 parser.add_argument('--params', type=str)
 parser.add_argument('--calibs', action="store_true", default=False)
 parser.add_argument('--norands', action="store_true", default=False)
+parser.add_argument('--lensweight', action="store_true", default=False)
 
 # TODO update with intuitive source bin detection, and check with a proper example
 
@@ -57,7 +59,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     paths.update_params(args.params)
 
-    ccont = xwrap.get_calib_cont()
+    if args.calibs:
+        ccont = xwrap.get_calib_cont()
 
     clusts = []
     rands = []
@@ -69,18 +72,33 @@ if __name__ == '__main__':
         clust_infos = xwrap.create_infodict(clust_name)
         clust_files = [info["outfile"] for info in clust_infos]
 
+        weights = None
+        if args.lensweight:
+            lens_files = [info["infile"] for info in clust_infos]
+            _files = []
+            for fname in lens_files:
+                _fl = np.loadtxt(fname)
+                # print(_fl.shape)
+                _files.append(_fl)
+            _files = np.vstack(_files)
+            # print(_files.shape)
+            # weights = np.stack((_files[:, 0], _files[:, 3]), axis=0).T
+            weights = _files[:, 3]
+            print(weights)
+            print(weights.mean())
+            raise SyntaxError()
+            # print(weights.shape)
+
         bin_tag = clust_files[0].split("_" + paths.params["lens_prefix"])[1].split("_patch")[0]
 
-        # metanames = None
-        # if not args.nometa:
-        #     metanames = xwrap.get_metanames(clust_files)
-        clust = shearops.process_profile(clust_files, ismeta=args.nometa)
+        clust = shearops.process_profile(clust_files, ismeta=args.nometa, weights=weights)
 
         resroot = paths.dirpaths["results"] + "/" +\
                   paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["lens_prefix"] + bin_tag
         write_profile(clust, resroot)
 
-        ccont = xwrap.append_scrit_inv(ccont, clust)
+        if args.calibs:
+            ccont = xwrap.append_scrit_inv(ccont, clust)
 
 
         if not args.norands:
@@ -113,12 +131,15 @@ if __name__ == '__main__':
         clust.drop_data()
         clusts.append(clust)
 
-    # resroot = paths.dirpaths['results'] + '/' + paths.params["lens_prefix"] + paths.params["calibs_log"]
-#    bin_vals = []
-#    for i in np.arange(3):
-#        for j in np.arange(7):
-#            bin_vals.append((j, i))
-# xwrap.write_calib_cont(resroot, ccont, bin_vals)
+    if args.calibs:
+        resroot = paths.dirpaths['results'] + '/' + paths.params["lens_prefix"] + "_calibs.log"# paths.params["calibs_log"]
+        bin_vals = []
+        for i in np.arange(3):
+           for j in np.arange(7):
+               bin_vals.append((j, i))
+        import pickle
+        pickle.dump(ccont, open("ccont.p", "wb"))
+        xwrap.write_calib_cont(resroot, ccont, bin_vals)
 
 
     print("calculating cross-covariance:")

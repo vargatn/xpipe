@@ -13,8 +13,8 @@ import xpipe.xhandle.parbins as parbins
 
 
 parser = argparse.ArgumentParser(description='Extract distributions from xshear output')
-parser.add_argument('--ichunk', type=int, default=None)
-parser.add_argument('--nchunk', type=int, default=None)
+parser.add_argument('--ichunk', type=int, default=0)
+parser.add_argument('--nchunk', type=int, default=1)
 parser.add_argument('--ibin', type=int, default=None)
 parser.add_argument('--noclust', action="store_true", default=False)
 parser.add_argument('--norands', action="store_true", default=False)
