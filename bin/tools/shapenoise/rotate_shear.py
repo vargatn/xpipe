@@ -14,12 +14,14 @@ import xpipe.xhandle.parbins as parbins
 
 
 parser = argparse.ArgumentParser(description='Runs xshear with the rotated sources mode')
-parser.add_argument('--wconfig', action="store_true", default=False)
 parser.add_argument('--head', action="store_true", default=False)
 parser.add_argument('--nchunks', type=int)
 parser.add_argument('--ichunk', type=int)
 parser.add_argument('--params', type=str)
 parser.add_argument('--nometa', action="store_false", default=True)
+parser.add_argument('--noclust', action="store_true")
+parser.add_argument('--norands', action="store_true")
+
 
 
 if __name__ == '__main__':
@@ -32,7 +34,11 @@ if __name__ == '__main__':
     # reading lists for bins
     print("starting rotations...")
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
-    alist = flist #+ rlist
+    alist = []
+    if not args.noclust:
+        alist += flist
+    if not args.noclust:
+        alist += rlist
 
     if args.nchunks is not None and args.nchunks > 0 and args.ichunk is not None:
         print('chunkwise rotation')

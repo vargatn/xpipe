@@ -410,8 +410,8 @@ def single_rotate(flist, seed_rot, metasel=False, head=False):
     #"""runs one single rotation of the source catalog with METACAL SELECTION RESPONSES"""
 
     print("    writing xshear input")
-    xpath = paths.dirpaths["xin"] + "/" + paths.params["tag"] + \
-            "xconfig_rot_seed" + str(seed_rot) + ".cfg"
+    xpath = paths.dirpaths["xin"] + "/" + paths.params["tag"] + "/" + paths.params["tag"] + \
+            "_xconfig_rot_seed" + str(seed_rot) + ".cfg"
     write_custom_xconf(xpath, xsettings=get_main_source_settings_nopairs())
 
     print('    creating main catalog')
