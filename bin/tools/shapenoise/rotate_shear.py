@@ -29,8 +29,6 @@ if __name__ == '__main__':
     paths.update_params(args.params)
     print("starting calculation")
 
-    ismeta = np.invert(args.nometa)
-
     # reading lists for bins
     print("starting rotations...")
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
@@ -43,11 +41,11 @@ if __name__ == '__main__':
     if args.nchunks is not None and args.nchunks > 0 and args.ichunk is not None:
         print('chunkwise rotation')
         print('calculating rotated shear for ' + str(args.ichunk) + '/' + str(args.nchunks) + ' chunk')
-        xwrap.chunkwise_rotate(alist, metasel=ismeta, nrot=paths.params['shear_nrot'],
+        xwrap.chunkwise_rotate(alist, metasel=args.nometa, nrot=paths.params['shear_nrot'],
                                nchunks=args.nchunks, ichunk=args.ichunk,
                                head=args.head, seed_master=paths.params["seeds"]['shear_seed_master'])
     else:
         print('serial rotation')
-        xwrap.serial_rotate(alist, metasel=ismeta, nrot=paths.params['shear_nrot'], head=args.head,
+        xwrap.serial_rotate(alist, metasel=args.nometa, nrot=paths.params['shear_nrot'], head=args.head,
                             seed_master=paths.params["seeds"]['shear_seed_master'])
 
