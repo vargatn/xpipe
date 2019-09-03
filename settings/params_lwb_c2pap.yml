@@ -1,0 +1,165 @@
+######################################################
+#  Default Parameter bins for Y1 analysis
+#
+#  The values defined here are loaded into
+#  xpipe.paths.params
+#
+#  LOAD ORDER:
+#  -------------------------
+#  1) default_params.yml
+#  2) looks for params.yml
+#  3) tries to read "custom_params_file" from params.yml
+#
+#  from this point the load is recursive, e.g. param
+#  files are loaded as long as there is a valid
+#  custom params file defined in the last loaded
+#  config
+#
+######################################################
+
+# If you want to use an other parameter file, then
+# specify it here. It must be in the same directory
+# custom_params_file: params_y3rm_meta.yml
+
+# if False: uses default project_path + /data
+custom_data_path: /gpfs/scratch/pr92qe/di49quq/data3
+pdf_paths: '/gpfs/scratch/pr92qe/di49quq/Y1_PDF/'
+
+######################################################
+
+# The pipeline supports two modes: full and dev
+# This is primarily used in setting up the input files
+# for the measurement. E.g. you can define two binning
+# schemes: one really complex for full, and a simple
+# which is expected to run much faster for dev
+mode: full
+
+# prefix for all files (with NO trailing "_")
+tag: lwb_190320_v4
+
+# reduced, lensfit, metacal
+shear_style: metacal
+
+# aliases for catalogs defined in default_inputs.yml
+shear_to_use: metacal_lwb
+cat_to_use: lwb
+
+# parameter bins
+param_bins_full: auto
+
+param_bins_dev: auto
+
+# number of processes (cores) to use in calculations
+nprocess: 24
+
+# maximum number of Jackknife regions to use in resampling
+# actual number is max(n_lens, njk_max)
+njk_max: 100
+
+# number of random points to use
+nrandoms:
+  full: -1
+  dev: -1
+
+# random seed for choosing the random points
+seeds:
+  random_seed: 5
+  shear_seed_master: 10
+
+headsize: 5000000
+source_bins_to_use: [0,]
+
+######################################################
+# Here define parameters for XSHEAR config
+
+# cosmology parameters:
+cosmo_params:
+  H0: 70.
+  Om0: 0.3
+
+# logarithmic (base 10) radial bins from rmin to rmax
+# units: Mpc, comoving_mpc or arcmin
+radial_bins:
+  nbin: 10
+  rmin: 0.05
+  rmax: 10
+  units: Mpc
+
+# source weight style
+# "optimal" for DeltaSigma, or "uniform" for shear
+weight_style: "optimal"
+
+# source-lens pair logging
+pairlog:
+ pairlog_rmin: 0
+ pairlog_rmax: 15
+ pairlog_nmax: 20000
+
+shear_nrot: 1000
+
+######################################################
+# aliases for catolog parameters
+
+lensweight: wsys
+
+lenskey:
+  id: index
+  ra: ra
+  dec: dec
+  z: z
+
+randkey:
+  ra: ra
+  dec: dec
+  z: z
+
+######################################################
+# file prefixes and suffixes
+
+lens_prefix: lwb-lens
+rand_prefix: lwb-rand
+subtr_prefix: lwb-subtr
+
+######################################################
+# DES fields with rectangular boundary in radec
+
+# as defined below
+fields_to_use: ['s82']
+
+fields:
+  spt:
+    dec_top: -30.
+    dec_bottom: -60.
+    ra_left: 0.
+    ra_right: 360.
+  s82:
+    dec_top: 10.
+    dec_bottom: -10.
+    ra_left: 300.
+    ra_right: 10.
+  d04:
+    dec_top: 10.
+    dec_bottom: -30.
+    ra_left: 10.
+    ra_right: 250.
+
+######################################################
+# boost factor p(z) params
+
+pzpars:
+  hist:
+    nbin: 15
+    zmin: 0.0
+    zmax: 3.0
+    tag: "zhist"
+  full:
+    tag: "zpdf"
+  boost:
+    rbmin: 3
+    rbmax: 13
+
+
+
+
+
+
