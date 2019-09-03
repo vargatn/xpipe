@@ -14,7 +14,7 @@
 #@ resources = ConsumableCpus(10)
 #
 #@ job_name = eos-$(jobid)
-#@ initialdir = $(home)/DES_Y1A1_cluster/deswlwg-y1redmapper/pipeline/bin/tools/shapenoise/
+#@ initialdir = $(home)/xpipe/bin/tools/shapenoise/
 #
 ### Want to keep logs in the project directory. Try `echo $WORK` to see your directory
 ### Use $jobid to have separate logs for each run.
@@ -28,7 +28,7 @@ echo NCHUNK ICHUNK
 
 py=/home/hpc/pr92qe/di49quq/anaconda3/envs/py35/bin/python
 #source activate py27
-$py rotcalc.py --nchunks NCHUNK --ichunk ICHUNK
+$py rotate_shear.py --nchunk NCHUNK --ichunk ICHUNK
 
 
 
