@@ -5,6 +5,7 @@ from __future__ import print_function, division
 import argparse
 import copy
 import numpy as np
+import pandas as pd
 import fitsio as fio
 
 import xpipe.paths as paths
@@ -40,21 +41,6 @@ def export_scrit_inv(prof):
     return scrit_inv, scrit_inv_err
 
 
-def write_profile(prof, path):
-    """saves DeltaSigma and covariance in text format"""
-
-    # Saving profile
-    profheader = "R [Mpc]\tDeltaSigma_t [M_sun / pc^2]\tDeltaSigma_t_err [M_sun / pc^2]\tDeltaSigma_x [M_sun / pc^2]\tDeltaSigma_x_err [M_sun / pc^2]"
-    res = np.vstack((prof.rr, prof.dst, prof.dst_err, prof.dsx, prof.dsx_err)).T
-    fname = path + "_profile.dat"
-    print("saving:", fname)
-    np.savetxt(fname, res, header=profheader)
-
-    # Saving covariance
-    np.savetxt(path + "_dst_cov.dat", prof.dst_cov)
-    np.savetxt(path + "_dsx_cov.dat", prof.dsx_cov)
-
-
 if __name__ == '__main__':
     args = parser.parse_args()
     paths.update_params(args.params)
@@ -74,20 +60,7 @@ if __name__ == '__main__':
 
         weights = None
         if args.lensweight:
-            lens_files = [info["infile"] for info in clust_infos]
-            _files = []
-            for fname in lens_files:
-                _fl = np.loadtxt(fname)
-                # print(_fl.shape)
-                _files.append(_fl)
-            _files = np.vstack(_files)
-            # print(_files.shape)
-            # weights = np.stack((_files[:, 0], _files[:, 3]), axis=0).T
-            weights = _files[:, 3]
-            print(weights)
-            print(weights.mean())
-            raise SyntaxError()
-            # print(weights.shape)
+            weights = shearops.load_weights(i)
 
         bin_tag = clust_files[0].split("_" + paths.params["lens_prefix"])[1].split("_patch")[0]
 
@@ -95,7 +68,7 @@ if __name__ == '__main__':
 
         resroot = paths.dirpaths["results"] + "/" +\
                   paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["lens_prefix"] + bin_tag
-        write_profile(clust, resroot)
+        xwrap.write_profile(clust, resroot)
 
         if args.calibs:
             ccont = xwrap.append_scrit_inv(ccont, clust)
@@ -105,14 +78,11 @@ if __name__ == '__main__':
             rands_infos = xwrap.create_infodict(rlist_jk[i])
             rands_files = [info["outfile"] for info in rands_infos]
 
-            # metanames = None
-            # if not args.nometa:
-            #     metanames = xwrap.get_metanames(rands_files)
             rand = shearops.process_profile(rands_files, ismeta=args.nometa)
 
             resroot = paths.dirpaths["results"] + "/" + \
                       paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["rand_prefix"] + bin_tag
-            write_profile(rand, resroot)
+            xwrap.write_profile(rand, resroot)
 
             # calculating subtracted profile
             resroot = paths.dirpaths["results"] + "/" + \
@@ -120,7 +90,7 @@ if __name__ == '__main__':
 
             prof3 = copy.deepcopy(clust)
             prof3.composite(rand, operation="-")
-            write_profile(prof3, resroot)
+            xwrap.write_profile(prof3, resroot)
 
             rand.drop_data()
             prof3.drop_data()
@@ -134,12 +104,13 @@ if __name__ == '__main__':
     if args.calibs:
         resroot = paths.dirpaths['results'] + '/' + paths.params["lens_prefix"] + "_calibs.log"# paths.params["calibs_log"]
         bin_vals = []
-        for i in np.arange(3):
-           for j in np.arange(7):
-               bin_vals.append((j, i))
-        import pickle
-        pickle.dump(ccont, open("ccont.p", "wb"))
-        xwrap.write_calib_cont(resroot, ccont, bin_vals)
+        print(ccont)
+#        for i in np.arange(3):
+#           for j in np.arange(7):
+#               bin_vals.append((j, i))
+#        import pickle
+#        pickle.dump(ccont, open("ccont.p", "wb"))
+#        xwrap.write_calib_cont(resroot, ccont, bin_vals)
 
 
     print("calculating cross-covariance:")

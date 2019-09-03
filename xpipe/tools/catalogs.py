@@ -4,6 +4,7 @@ Handles Fits -> Pandas transformations for tables with multidimensional "columns
 
 import numpy as np
 import pandas as pd
+import sys
 
 
 def to_pandas(recarr):
@@ -102,3 +103,22 @@ def flat_copy(recarr):
             newarr[newtype[j][0]] = recarr[oldnames[i]]
             j += 1
     return newarr
+
+
+def match_endian(arr):
+    valid_endians = ["<", ">"]
+    endians = {
+        "little": "<",
+        "big": ">"
+    }
+    native_byteorder = endians[sys.byteorder]
+    array_byteorder = arr.dtype.byteorder
+
+    if len(arr.shape) != 1:
+        raise TypeError("only 1D arrays are applicable for this method")
+
+    if (array_byteorder in valid_endians) and native_byteorder != array_byteorder:
+        result = arr.newbyteorder().byteswap()
+    else:
+        result = arr
+    return result

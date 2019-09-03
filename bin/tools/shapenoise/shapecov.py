@@ -1,6 +1,8 @@
 """
 """
 
+from __future__ import print_function
+
 import copy
 import numpy as np
 import argparse
@@ -10,13 +12,22 @@ import xpipe.tools.selector as sl
 
 import xpipe.paths as paths
 import xpipe.xhandle.xwrap as xwrap
+import xpipe.xhandle.parbins as parbins
 
 
 parser = argparse.ArgumentParser(description='Process rotated shape results')
 parser.add_argument('--ichunk', type=int)
 parser.add_argument('--nchunk', type=int)
 parser.add_argument('--params', type=str)
+parser.add_argument('--lensweight', action="store_true", default=False)
 
+
+def read_pos(flist, root_path):
+    poss = []
+    for fname in flist:
+        name = root_path + fname
+        poss.append(np.loadtxt(name)[:, 1:3])
+    return poss
 
 dev_tag = ''
 ismeta=True
@@ -28,67 +39,63 @@ if __name__ == '__main__':
     paths.update_params(args.params)
 
     seed_rots = xwrap.get_rot_seeds(nrot=paths.params['shear_nrot'],
-                                    seed_master=paths.params['shear_seed_master'])
+                                    seed_master=paths.params["seeds"]['shear_seed_master'])
+
     seeds_to_use = seed_rots
     if args.nchunk is not None and args.ichunk is not None:
         seeds_to_use = sl.partition(seed_rots, args.nchunk)
         seeds_to_use = seeds_to_use[args.ichunk]
 
-    ledges, zedges, nrandoms = paths.get_bin_settings(paths.params, devmode=paths.devmode)
+    flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
 
-    with open(paths.fullpaths['flist']) as file:
-        flist = file.read().splitlines()
-    cpos = xwrap.read_clust_pos(flist)
+    xinroot = paths.dirpaths["xin"] + "/" + paths.params["tag"] + "/"
+    cpos = read_pos(flist, xinroot)
+    rpos = read_pos(rlist, xinroot)
 
-    with open(paths.fullpaths['rlist']) as file:
-        rlist = file.read().splitlines()
-    rpos = xwrap.read_clust_pos(rlist)
-
-    clust_names, rand_names, bin_vals = xwrap.get_result_files(ledges, zedges, npatch=None)
-    clust_names_patch, rand_names_patch, bin_vals = xwrap.get_result_files(ledges, zedges, npatch="auto")
     for s, seed in enumerate(seeds_to_use):
-        # read xshear output files
-        for i, (clust_name, rand_name) in enumerate(zip(clust_names, rand_names)):
-            print "processing bin", i, "with seed", seed, "which is step", s, "out of", len(seeds_to_use) - 1
-            tag = "_seed" + str(seed)
+        clust_infos = xwrap.create_infodict(flist, seed=seed, rotate=True)
+        rands_infos = xwrap.create_infodict(rlist, seed=seed, rotate=True)
+        for i, (cinfo, rinfo) in enumerate(zip(clust_infos, rands_infos)):
 
-            center_name = paths.dirpaths['xin'] + '/' + paths.params["tag"] + "jkcens" +\
-                '_l' + str(bin_vals[i][0]) + '_z' + str(bin_vals[i][1]) + '.dat'
-            centers = np.loadtxt(center_name)
+
+            # postprocessing clusters
+            clust_file = cinfo["outfile"]
+
+            bin_tag = "_qbin" + clust_file.split("/")[-1].split("qbin")[1].split("_")[0]
+            jkname = paths.dirpaths["xin"] + "/" + paths.params["tag"] + "/" + paths.params["tag"] +\
+                     "_jkcens" + bin_tag + ".dat"
+
+            centers = np.loadtxt(jkname)
             ncens = len(centers)
+            clust_labels = parbins.assign_jk_labels(cpos[i][:, 0], cpos[i][:, 1], centers)[-1]
 
-            # processing clusters
-            clust_labels = shearops.get_labels(cpos[i], centers)[0]
-            rot_clust_name = clust_name[0].split('_result.dat')[0] + '_seed' + str(seed) + '_result.dat'
-            clust = xwrap.process_profile(rot_clust_name, bin_vals[i],
-                                          prefix=paths.clust_prefix, labels=clust_labels,
-                                          shapemix=True, fnames_fallback=clust_names_patch[i],
-                                          ismeta=ismeta, ncens=ncens, no_metaseed=no_metaseed)
+            weights = None
+            if args.lensweight:
+                weights = shearops.load_weights(i)
 
-
-            resroot = paths.dirpaths['results'] + '/' + paths.clust_prefix + dev_tag + \
-                      '_l' + str(bin_vals[i][0]) + '_z' + str(bin_vals[i][1]) + '_seed' + str(seed)
-            print resroot
+            clust = shearops.process_profile(clust_file, ismeta=ismeta, labels=clust_labels, weights=weights)
+            resroot = paths.dirpaths["results"] + "/" + \
+                      paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["lens_prefix"] + bin_tag +\
+                      "_seed" + str(seed)
+            print(resroot)
             xwrap.write_profile(clust, resroot)
 
-            # processing clusters
-            rand_labels = shearops.get_labels(rpos[i], centers)[0]
-            rot_rand_name = rand_name[0].split('_result.dat')[0] + '_seed' + str(seed) + '_result.dat'
-            rand = xwrap.process_profile(rot_rand_name, bin_vals[i],
-                                         prefix=paths.rand_prefix, labels=rand_labels,
-                                         shapemix=True, fnames_fallback=rand_names_patch[i],
-                                         ismeta=ismeta, ncens=ncens, no_metaseed=no_metaseed)
 
+            # postprocessing randoms
+            rands_file = rinfo["outfile"]
 
-            resroot = paths.dirpaths['results'] + '/' + paths.rand_prefix + dev_tag + \
-                      '_l' + str(bin_vals[i][0]) + '_z' + str(bin_vals[i][1]) + '_seed' + str(seed)
-            print resroot
+            tag = "_qbin" + clust_file.split("/")[-1].split("qbin")[1].split("_")[0]
+            rands_labels = parbins.assign_jk_labels(rpos[i][:, 0], rpos[i][:, 1], centers)[-1]
+            rand = shearops.process_profile(rands_file, ismeta=ismeta, labels=clust_labels, weights=weights)
+            resroot = paths.dirpaths["results"] + "/" + \
+                      paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["rand_prefix"] + bin_tag + \
+                      "_seed" + str(seed)
             xwrap.write_profile(rand, resroot)
 
             prof3 = copy.deepcopy(clust)
             prof3.composite(rand, operation="-")
-
-            resroot = paths.dirpaths['results'] + '/' + paths.subtr_prefix + dev_tag + \
-                      '_l' + str(bin_vals[i][0]) + '_z' + str(bin_vals[i][1]) + '_seed' + str(seed)
-            print resroot
+            resroot = paths.dirpaths["results"] + "/" + \
+                      paths.params["tag"] + "/" + paths.params["tag"] + "_" + paths.params["subtr_prefix"] + bin_tag +\
+                      "_seed" + str(seed)
+            print(resroot)
             xwrap.write_profile(prof3, resroot)

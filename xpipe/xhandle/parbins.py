@@ -758,6 +758,9 @@ class XIO(object):
                         self.lenses['dec'][sind], self.lenses['z'][sind])
         print('saved ' + self.flist[self.ind])
 
+        fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), self.lenses["fullcat"][sind], clobber=True)
+
+
     def save_clust_jk(self):
         """writes cluster lens file for each JK patch in xshear style"""
         sind = self.lenses["sinds"][self.ind]
@@ -776,9 +779,13 @@ class XIO(object):
             jkinds, jkninds, labels = extract_jk_labels(self.lenses["jk"][sind])
 
         # write data table of selected clusters along with the assigned Jackknife IDs
-        # ftab = to_pandas(self.lenses["fullcat"][sind])
-        # ftab["JK_ID"] = labels
-        # fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), ftab.to_records(), clobber=True)
+        # try:
+        #     ftab = to_pandas(self.lenses["fullcat"][sind])
+        #     ftab["JK_ID"] = labels
+        #     fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), ftab.to_records(), clobber=True)
+        # except:
+        #     print("cannot save JK_ID to file...")
+        #     fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), self.lenses["fullcat"][sind], clobber=True)
 
         for label, jkind in enumerate(jkinds):
             froot = self.flist[self.ind].replace('.dat', '_patch' + str(label) + '.dat')

@@ -5,11 +5,15 @@ Postprocess XSHEAR output
 from __future__ import print_function, division
 import math
 
+import fitsio as fio
 import numpy as np
 import pandas as pd
+import sys
 
 from .ioshear import read_single_bin, read_multiple_bin
 from .xwrap import sheared_tags
+from ..paths import fullpaths, params
+from ..tools.catalogs import match_endian
 
 BADVAL = -9999.0
 
@@ -704,6 +708,8 @@ def process_profile(fnames, ismeta=True, labels=None, weights=None):
         whether to include METACALIBRATION files with :code:`sheared_tags`
     labels : list
         JK-labels for each entry in the lens files (in the order they are written to disk)
+    weights: list
+        weights to be applied to the lenses in calculating the average signal
 
     Returns
     -------
@@ -725,41 +731,28 @@ def process_profile(fnames, ismeta=True, labels=None, weights=None):
                                    metadata=sheared_data,
                                    metatags=sheared_tags)
 
-    # print(cinfo[:, 0 ], weights[:, 0])
-    # if weights is not None:
-    #     weights = extract_weights(cinfo, weights)
+    if weights is not None:
+        weights = extract_weights(cinfo, weights)
 
     prof.prof_maker(weights=weights)
 
     return prof
 
+def load_weights(ibin):
+    lenstab = fio.read(fullpaths[params["cat_to_use"]]["lens"].flatten()[ibin])
+    weights = pd.DataFrame()
+    weights["id"] = match_endian(lenstab[params["lenskey"]["id"]])
+    weights["ww"] = match_endian(lenstab[params["lensweight"]])
+    return weights
 
 def extract_weights(info, weights):
-    """
-    # TODO write documentation for this
-
-    Parameters
-    ----------
-    info
-    weights
-
-    Returns
-    -------
-
-    """
 
     itab = pd.DataFrame()
-    itab["index_0"] = info[:, 0]
+    itab["index_0"] = match_endian(info[:, 0])
 
-    wtab = pd.DataFrame()
-    wtab["index_1"] = weights[:, 0]
-    wtab["weight"] = weights[:, 1]
+    tab = pd.merge(itab, weights, how="left", left_on="index_0", right_on="id")
 
-    tab = pd.merge(itab, wtab, how="left", left_on="index_0", right_on="index_1")
-
-    return tab["weight"].values
-
-
+    return tab["ww"].values
 
 
 def olivers_mock_function(a, b, c):

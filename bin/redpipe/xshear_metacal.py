@@ -42,7 +42,8 @@ if __name__ == '__main__':
             paths.params["tag"] + "_xconfig.cfg"
 
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
-
+    print(flist)
+    print(rlist)
     if args.metachunk == 0 or args.runall:
         print(xpath)
         xwrap.write_custom_xconf(xpath, xsettings=xwrap.get_main_source_settings())
