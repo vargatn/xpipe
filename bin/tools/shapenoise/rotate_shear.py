@@ -2,6 +2,10 @@
 Reads shear catalog and rotates shears randomly using full METACALIBRATION responses
 
 Be sure to run --wconfig first! only runs the measurement if --wconfig=False
+
+
+Useful command for IBM LOADLEVELER:
+llq | grep di49quq | awk '{print $1}' | xargs -L1 llhold -r
 """
 
 from __future__ import print_function
@@ -35,7 +39,7 @@ if __name__ == '__main__':
     alist = []
     if not args.noclust:
         alist += flist
-    if not args.noclust:
+    if not args.norands:
         alist += rlist
 
     if args.nchunks is not None and args.nchunks > 0 and args.ichunk is not None:

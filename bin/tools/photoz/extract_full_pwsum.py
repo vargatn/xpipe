@@ -21,6 +21,8 @@ parser.add_argument('--norands', action="store_true", default=False)
 parser.add_argument('--force_rbin', type=int, default=None)
 parser.add_argument('--pdfid', type=str, default="coadd_objects_id")
 parser.add_argument('--run_missing', action='store_true', default=False)
+parser.add_argument('--lensweight', action="store_true", default=False)
+
 
 
 force_zcens = np.linspace(0.01, 3.50, 350)
@@ -38,7 +40,8 @@ if __name__ == "__main__":
                                                  pdf_paths=paths.pdf_files,
                                                  pdfid=args.pdfid,
                                                  force_zcens=force_zcens,
-                                                 force_rbin=args.force_rbin)
+                                                 force_rbin=args.force_rbin,
+                                                 lensweights=args.lensweights)
 
         infodicts = pzboost.balance_infodicts(raw_infodicts, args.ibin, args.nchunk, args.ichunk)
         if args.run_missing:

@@ -35,7 +35,7 @@ pwsum_suffix = "_pwsum.npz"
 
 def create_infodicts(pairs_names, bin_vals=None, npatch=None, pdf_paths=None, force_zcens=None,
                      pdfid='coadd_objects_id', source_id="source_id", force_rbin=None,
-                     histpars=None, fullpars=None, boostpars=None):
+                     histpars=None, fullpars=None, boostpars=None, lensweigths=False):
     """
     Creates infodicts for extracting PDFs
 
@@ -134,7 +134,7 @@ def multi_pwsum_run(infodicts, nprocess=1):
     pp = pool.map_async(call_pwsum_chunk, fparchunks)
 
     try:
-        pp.get(86400)  # apparently this counters a bug in the exception passing in python.subprocess...
+        pp.get(86400 * 5)  # apparently this counters a bug in the exception passing in python.subprocess...
     except KeyboardInterrupt:
         print("Caught KeyboardInterrupt, terminating workers")
         pool.terminate()
