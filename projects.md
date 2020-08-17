@@ -1,7 +1,7 @@
 ---
 title: my title2
 layout: template
-filename: projets
+filename: projects
 --- 
 
 ## This is just a projects example page
