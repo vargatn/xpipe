@@ -1,3 +1,8 @@
+---
+title: my title2
+layout: template
+filename: projets
+--- 
 
 ## This is just a projects example page
 
