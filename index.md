@@ -4,7 +4,7 @@ layout: template
 filename: index
 --- 
 
-## Welcome to the XPIPE weak lensing toolset
+# Welcome to the XPIPE weak lensing toolset
 
 **xpipe** is a python package created to automate work with measuring and calibrating weak lensing
 shear and mass profiles in wide area lensing surveys such as DES. Features include:
@@ -13,7 +13,7 @@ shear and mass profiles in wide area lensing surveys such as DES. Features inclu
 * Object-oriented API for lensing related measurements
 * Python wrapper for Erin Sheldon's [xshear](https://github.com/esheldon/xshear).
 
-## Installation and Usage
+# Installation and Usage
 
 For detailed documentation see our page on [Read The Docs](http://xpipe.readthedocs.io/)
 
@@ -23,7 +23,7 @@ For detailed documentation see our page on [Read The Docs](http://xpipe.readthed
 * [API reference](https://xpipe.readthedocs.io/en/stable/api.html)
 
 
-## Contact
+# Contact
 
 In case of questions or if you would like to use parts of this pipeline in a publication, please contact me at
 
