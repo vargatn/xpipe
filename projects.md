@@ -1,5 +1,5 @@
 ---
-title: my title2
+title: Projects
 layout: template
 filename: projects
 --- 
@@ -8,6 +8,7 @@ filename: projects
 
 Project List goes here
 
-* 1
-* 2
-* 3
+* DES WL
+* DES WL Boost
+* Splashback
+* others
