@@ -1,6 +1,6 @@
 theme: jekyll-theme-cayman
 
 pages_to_render:
-  - index
-  - projects
-  - about
+  - index.md
+  - projects.md
+  - about.md
