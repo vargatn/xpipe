@@ -1,5 +1,5 @@
 theme: jekyll-theme-cayman
 
 pages:
-    - index.md
-    - projects.md
+  - index.md
+  - projects.md
