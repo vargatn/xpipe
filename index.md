@@ -1,8 +1,9 @@
 ---
-title: my title
+title: thistitle
 layout: template
 filename: index
 --- 
+
 
 ## Welcome to the XPIPE weak lensing toolset
 
