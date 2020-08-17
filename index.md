@@ -1,7 +1,7 @@
 ---
-title: XPIPE
-layout: default
-filename: index.md
+title: my title
+layout: template
+filename: index
 --- 
 
 ## Welcome to the XPIPE weak lensing toolset
