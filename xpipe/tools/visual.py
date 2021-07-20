@@ -5,6 +5,7 @@ Plotting and visualization
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
+import scipy.ndimage as ndimage
 
 
 def contprep(data, clevels=(0.68, 0.95), sample=5000, weights=None, **kwargs):
@@ -76,7 +77,7 @@ def conf1d(pval, grid, vals, res=500, etol=1e-2, **kwargs):
     return tcut, pvals[tind]
 
 
-def conf2d(pval, xxg, yyg, vals, res=500, etol=1e-2, **kwargs):
+def conf2d(pval, vals, res=500, etol=1e-2, **kwargs):
     """
     Calculates cutoff values for a given percentile for 2D distribution, Requires evenly spaced grid!
 
@@ -84,10 +85,10 @@ def conf2d(pval, xxg, yyg, vals, res=500, etol=1e-2, **kwargs):
     -----------
     pval : float
         probability to be contained within interval
-    xxg : np.array
-        grid for the first parameter
-    yyg : np.array
-        grid for the second parameter
+    # xxg : np.array
+    #     grid for the first parameter
+    # yyg : np.array
+    #     grid for the second parameter
     vals : np.array
         value of the p.d.f at given gridpoint
     res : float
@@ -99,15 +100,15 @@ def conf2d(pval, xxg, yyg, vals, res=500, etol=1e-2, **kwargs):
         cutoff value, actual percentile
     """
 
-    edge1 = xxg[0, :]
-    edge2 = yyg[:, 0]
-
-    area = np.mean(np.diff(edge1)) * np.mean(np.diff(edge2))
-    assert (np.sum(vals*area) - 1.) < etol, 'Incorrect normalization!!!'
-
+    # edge1 = xxg[0, :]
+    # edge2 = yyg[:, 0]
+    #
+    # area = np.mean(np.diff(edge1)) * np.mean(np.diff(edge2))
+    # assert (np.sum(vals*area) - 1.) < etol, 'Incorrect normalization!!!'
+    #
     mx = np.max(vals)
     tryvals = np.linspace(mx, 0.0, res)
-    pvals = np.array([np.sum(vals[np.where(vals > level)] * area)
+    pvals = np.array([np.sum(vals[np.where(vals > level)])
                       for level in tryvals])
 
     tind = np.argmin((pvals - pval)**2.)
@@ -203,9 +204,9 @@ def kde_smoother_2d(pararr, xlim=None, ylim=None, num=100, pad=0.1):
     return xx, yy, kvals
 
 
-def corner(par_names, pars, par_edges, figsize=(8, 8), color='black', fig=None,
-           axarr=None, mode="hist", cmap="gray_r", normed=True, fontsize=12,
-           tick_list=None, clevels=(0.68, 0.95), grid=True, weights=None, **kwargs):
+def corner(par_names, pars, par_edges, figsize=(6, 6), color='black', fig=None,
+           axarr=None, mode="contour", cmap="gray_r", normed=True, fontsize=12,
+           tick_list=None, clevels=(0.95, 0.68), grid=True, weights=None, lw=1, auto_transpose_pars=True, **kwargs):
     """
     Creates *NICE* corner plot (check if pars have the righ orientation, perhaps use pars.T)
 
@@ -265,6 +266,9 @@ def corner(par_names, pars, par_edges, figsize=(8, 8), color='black', fig=None,
         fig, axarr
 
     """
+    if auto_transpose_pars:
+        if pars.shape[0] > pars.shape[1]:
+            pars = pars.T
 
     npars = len(par_names)
     if fig is None and axarr is None:
@@ -293,7 +297,7 @@ def corner(par_names, pars, par_edges, figsize=(8, 8), color='black', fig=None,
         [ax.tick_params(labelsize=8) for ax in axarr.flatten()]
 
     [axarr[i, i].hist(pars[i], bins=par_edges[i], color=color,
-                      histtype='step', weights=weights, lw=2.0, normed=normed)
+                      histtype='step', weights=weights, lw=lw, density=normed)
      for i in range(len(pars))]
 
     if tick_list is not None:
@@ -313,20 +317,45 @@ def corner(par_names, pars, par_edges, figsize=(8, 8), color='black', fig=None,
             if mode == "hist":
                 counts, xedges, yedges, cax = ax.hist2d(pars[j], pars[i + 1],
                                                         bins=(par_edges[j], par_edges[i + 1]), cmap=cmap,
-                                                        normed=normed, weights=weights, **kwargs)
+                                                        density=normed, weights=weights, **kwargs)
                 ax.set_xlim((par_edges[j][0], par_edges[j][-1]))
                 ax.set_ylim((par_edges[i + 1][0], par_edges[i + 1][-1]))
 
             elif mode == "contour":
+                # xlim = (par_edges[j][0], par_edges[j][-1])
+                # ylim = (par_edges[i + 1][0], par_edges[i + 1][-1])
+                bins = (
+                    par_edges[j],
+                    par_edges[i + 1]
+                )
+                xcens = bins[0][:-1] + np.diff(bins[0]) / 2
+                ycens = bins[1][:-1] + np.diff(bins[1]) / 2
+                # print(xens.shape)
+                xx, yy = np.meshgrid(xcens, ycens)
+                xx = xx.T
+                yy = yy.T
 
-                params = np.vstack((pars[j], pars[i + 1])).T
-                xlim = (par_edges[j][0], par_edges[j][-1])
-                ylim = (par_edges[i + 1][0], par_edges[i + 1][-1])
-                # print(params.shape)
-                allgrid, tba = contprep(params, xlim=xlim, ylim=ylim, clevels=clevels, weights=weights, **kwargs)
-                # print(tba)
-                ax.contour(allgrid[0], allgrid[1], allgrid[2],
-                           levels=tba, colors=color)
+                # tmp = flat_samples
+
+                _counts = np.histogram2d(pars[j], pars[i + 1], bins=bins)[0]
+                counts = ndimage.gaussian_filter(_counts, sigma=1.0, order=0)
+                counts = counts / counts.sum()
+
+
+                levels = [conf2d(lev, counts)[0] for lev in clevels]
+                # print(levels)
+                # mx = counts.max()
+                ax.contour(xx, yy, counts, levels=levels,
+                                    linewidths=lw, colors=color, **kwargs)
+
+                # params = np.vstack((pars[j], pars[i + 1])).T
+                # xlim = (par_edges[j][0], par_edges[j][-1])
+                # ylim = (par_edges[i + 1][0], par_edges[i + 1][-1])
+                # # print(params.shape)
+                # allgrid, tba = contprep(params, xlim=xlim, ylim=ylim, clevels=clevels, weights=weights, **kwargs)
+                # # print(tba)
+                # ax.contour(allgrid[0], allgrid[1], allgrid[2],
+                #            levels=tba, colors=color)
                 # ax.contourf(allgrid[0], allgrid[1], allgrid[2],
                 #             levels=[tba[1], np.inf], colors=color, alpha=0.7)
 

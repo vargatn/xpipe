@@ -12,10 +12,14 @@ import fitsio as fio
 import pickle
 import multiprocessing as mp
 import pandas as pd
+import copy
+import h5py
 
 from ..tools import selector as sl
 from .. import paths
 from ..xhandle import shearops
+from .xwrap import create_infodict
+from ..tools.y3_sompz import sigma_crit_inv
 
 pcols = [('lens_id', 'i8'), ('source_id', 'i8'), ('rbin', 'i4'), ('source_weight', 'f8'), ('scinv', 'f8'),
          ('gsens_t', 'f8'), ('z_sample', 'f8')]
@@ -1051,3 +1055,146 @@ class BoostMixerRandRef(object):
         return diff.flatten()
 
 ###################################################################
+
+
+class SOMBoost(object):
+    def __init__(self, pzdata, flist_jk, pairs_to_load=None, which_cat="bpz"):
+
+        self.pzdata = pzdata
+        self.pairs_to_load = pairs_to_load
+        self.flist_jk = flist_jk
+
+        self._get_scritinv()
+
+        self._cat = self.pzdata.bpz
+        if which_cat == "dnf":
+            self._cat = self.pzdata.dnf
+
+    def _get_scritinv(self):
+        self.scritinv_tab = np.zeros(shape=(len(self.pzdata.zclust_grid), len(self.pzdata.zcens)))
+        for i, zclust in enumerate(self.pzdata.zclust_grid):
+            for j, zsource in enumerate(self.pzdata.zcens):
+                self.scritinv_tab[i,j] = sigma_crit_inv(zclust, zsource)
+
+    def get_pair_datas(self, pair_datas=None, pair_outpath=None):
+        if pair_outpath is not None:
+            self.pair_datas = self._calc_pair_datas(self.flist_jk, oname=pair_outpath)
+            pickle.dump(self.pair_datas, open(pair_outpath, "wb"))
+        elif self.pairs_to_load is not None:
+            self.pair_datas = pickle.load(open(self.pairs_to_load, "rb"))
+        elif pair_datas is not None:
+            self.pair_datas = pair_datas
+
+    def _calc_pair_datas(self, flist_jk, oname=None):
+        pair_datas = []
+        for j, clust_name in enumerate(flist_jk):
+            _pair_datas = []
+
+            for sbin in (2, 3):
+                print(j, sbin)
+                clust_infos = create_infodict(clust_name, pairs=True)
+                tabs = []
+                for i, tmp in  enumerate(clust_infos):
+                    print(j, sbin, i, end="\n")
+                    pair_name = tmp["outfile"].replace("_result.dat", "_bin" + str(sbin+1) + "_result_pairs.dat")
+                    try:
+                        tabs.append(pd.read_csv(pair_name, delim_whitespace=True, header=None, skiprows=1).values[:, (0, 1, 2, 3, 4)])
+                    except:
+                        pass
+
+                tabs = np.vstack(tabs)
+                table = pd.DataFrame(tabs, columns=("MEM_MATCH_ID", "ID", "SOMCELL", "RBIN", "W"))
+                match = pd.merge(table, self._cat, how="left", on="ID")
+                print("merged catalogs")
+                # if oname is not None:
+                #     fname = oname + "_part" + str(j) + ".h5"
+                #     print(fname)
+                #     match.to_hdf(fname, key="data")
+                _pair_datas.append(match)
+            pair_datas.append(_pair_datas)
+        return pair_datas
+
+    def _merge_weights(self, table, weights):
+        if weights is not None:
+            print("here")
+            res = pd.merge(weights, table, on="MEM_MATCH_ID", how="left")
+        else:
+         res = table
+        return res
+
+    def get_histograms(self, lens_weights=None, bins_to_use=np.linspace(4, 14, 11), **kwargs):
+        radials = [[val,] for val in bins_to_use]
+        self.zvals = []
+        self.wws = []
+        for i, clust_name in enumerate(self.flist_jk):
+            _zvals = []
+            _wws = []
+            for j, sbin in enumerate((2, 3)):
+                _tmp = self.pair_datas[i][j]
+                tmp = self._merge_weights(_tmp, lens_weights)
+                __zvals = []
+                __wws = []
+                for rad in radials:
+                    ii = np.zeros(len(tmp), dtype=bool)
+                    for r in rad:
+                        ii |= tmp["RBIN"] == r
+                        __zvals.append(tmp["ZMC"][ii].values)
+                        if lens_weights is not None:
+                            __wws.append(tmp["W"][ii].values * tmp["WEIGHT"][ii].values)
+                        else:
+                            __wws.append(tmp["W"][ii].values)
+
+                _zvals.append(__zvals)
+                _wws.append(__wws)
+            self.zvals.append(_zvals)
+            self.wws.append(_wws)
+
+    def prep_boost(self, pair_outpath=None, lens_weights=None, pair_datas=None, **kwargs):
+        self.get_pair_datas(pair_outpath=pair_outpath, pair_datas=pair_datas)
+
+        self.get_histograms(lens_weights=lens_weights, **kwargs)
+
+    def get_boost(self, npdf=10, mean_init=0.5, sigma_init=0.1, amp_init=0.5,
+                  mean_bounds=(0., np.inf), sigma_bounds=(0., 0.15), amp_bounds_single = (0., 1.)):
+
+        self.bounds = np.array([mean_bounds, sigma_bounds] + npdf * [amp_bounds_single,]).T
+        self.point_init = np.array([mean_init, sigma_init] + npdf * [amp_init,])
+
+        bins = np.linspace(0, 1.5, 40)
+        zcens = bins[:-1] + np.diff(bins) / 2.
+
+        self.boost_means  = []
+        self.boost_sigmas  = []
+        self.boost_amps = []
+        self.bmixers = []
+        for i in np.arange(len(self.flist_jk)):
+            _tmp0 = []
+            _tmp1 = []
+            _tmp2 = []
+            _tmp3 = []
+            for s in (0, 1):
+                print(i, s)
+                _zvals = self.zvals[i][s]
+                _wws = self.wws[i][s]
+
+                pdfarr = []
+                for r in np.arange(10):
+                    pdfarr.append(np.histogram(_zvals[r], bins=bins, weights=_wws[r], density=True)[0])
+                pdfarr = np.array(pdfarr)
+                refpdf = np.histogram(_zvals[-1], bins=bins, weights=_wws[-1], density=True)[0]
+                bmixer = BoostMixer(zcens, pdfarr, refpdf)
+                res = optimize.least_squares(bmixer, self.point_init, bounds=self.bounds)
+
+                mean, sigma = res['x'][:2]
+                amps = res['x'][2:]
+
+                _tmp0.append(mean)
+                _tmp1.append(sigma)
+                _tmp2.append(amps)
+                _tmp3.append(copy.deepcopy(bmixer))
+
+            self.boost_means.append(_tmp0)
+            self.boost_sigmas.append(_tmp1)
+            self.boost_amps.append(_tmp2)
+            self.bmixers.append(_tmp3)
+

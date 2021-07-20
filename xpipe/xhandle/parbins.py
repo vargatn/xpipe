@@ -355,8 +355,10 @@ def load_randcat(params=None, fullpaths=None, which=None):
     else:
         select = np.ones(len(ra), dtype=bool)
 
+    # print(randkey)
+    # print(len(randkey.keys())-4)
     # number of parameter columns
-    nq = len(randkey.keys()) - 3
+    nq = len(randkey.keys()) - 4
     if "jkey" in randkey.keys():
         nq -= 1
     qlist = np.zeros(shape=(len(ra), nq))
