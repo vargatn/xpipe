@@ -1124,6 +1124,7 @@ class SOMBoost(object):
 
     def get_histograms(self, lens_weights=None, bins_to_use=np.linspace(4, 14, 11), **kwargs):
         radials = [[val,] for val in bins_to_use]
+        print(radials)
         self.zvals = []
         self.wws = []
         for i, clust_name in enumerate(self.flist_jk):
@@ -1156,7 +1157,7 @@ class SOMBoost(object):
 
     def get_boost(self, npdf=10, mean_init=0.5, sigma_init=0.1, amp_init=0.5,
                   mean_bounds=(0., np.inf), sigma_bounds=(0., 0.15), amp_bounds_single = (0., 1.)):
-
+        """WARNING: TODO THis has some hardcoded values in it"""
         self.bounds = np.array([mean_bounds, sigma_bounds] + npdf * [amp_bounds_single,]).T
         self.point_init = np.array([mean_init, sigma_init] + npdf * [amp_init,])
 
@@ -1178,7 +1179,7 @@ class SOMBoost(object):
                 _wws = self.wws[i][s]
 
                 pdfarr = []
-                for r in np.arange(10):
+                for r in np.arange(npdf):
                     pdfarr.append(np.histogram(_zvals[r], bins=bins, weights=_wws[r], density=True)[0])
                 pdfarr = np.array(pdfarr)
                 refpdf = np.histogram(_zvals[-1], bins=bins, weights=_wws[-1], density=True)[0]

@@ -1,5 +1,6 @@
 """
 Divides the lens and random points catalog into bins by parameters (and JK regions)
+
 """
 
 import argparse

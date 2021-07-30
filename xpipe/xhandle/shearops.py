@@ -890,6 +890,7 @@ class AutoCalibrateProfile(object):
         iname = self.infos[0]["infile"].split("_patch")[0] + ".fits"
         _target = fio.read(iname)
         target = to_pandas(_target)
+        print(iname)
 
         tmp = pd.DataFrame()
         tmp[id_key] = self._profiles[0].info[:, 0]
@@ -910,27 +911,34 @@ class AutoCalibrateProfile(object):
             self.scinvs.append(self.pzcat.get_single_scinv(self.zmean, sbin=sbin))
         self.scinvs = np.array(self.scinvs)
 
-    def _combine_sbins(self):
+    def _combine_sbins(self, mfactor_sbins=None):
         _profiles = copy.deepcopy(self._profiles)
         for i, scinv in enumerate(self.scinvs):
             _profiles[i].multiply(scinv)
 
+
+        if mfactor_sbins is None:
+            mfactor_sbins = np.ones(len(self.scinvs))
         self.profile = _profiles[0]
+        self.profile.multiply(mfactor_sbins[0])
+
         for i in np.arange(len(_profiles) - 1):
-            self.profile.composite(_profiles[i + 1], operation="+")
+            tmp = _profiles[i + 1]
+            tmp.multiply(mfactor_sbins[i + 1])
+            self.profile.composite(tmp, operation="+")
 
         factor = 1. / np.sum(self.scinvs**2)
 
         self.profile.multiply(factor)
 
 
-    def get_profiles(self, **kwargs):
+    def get_profiles(self, mfactor_sbins=None, **kwargs):
 
         self._load_profiles(**kwargs)
         self._load_targets(**kwargs)
         # print(self.target.columns)
         self._get_scinvs(**kwargs)
-        self._combine_sbins()
+        self._combine_sbins(mfactor_sbins)
 
         # _profiles = copy.deepcopy(self._profiles)
         # for i, scinv in enumerate(self.scinvs):
@@ -964,14 +972,19 @@ class AutoCalibrateProfile(object):
         amp = sboost.boost_amps[0]
         tmps = []
         for i, _amp in enumerate(amp):
-            arr = np.concatenate((_amp, (0,)))
-            self._fcls.append(arr)
-            tmps.append(arr * self.scinvs[i])
+            # arr = np.concatenate((_amp, (0,)))
+            self._fcls.append(_amp)
+            tmps.append(_amp * self.scinvs[i])
 
 
         factor = 1. / self.scinvs.sum()
         self.fcl = np.sum(tmps, axis=0)  * factor
-
+        print(self.fcl.shape)
+        ln = len(self.dst) - len(self.fcl)
+        print(ln)
+        if ln > 0:
+            pad = np.zeros(len(self.dst) - len(self.fcl))
+            self.fcl = np.concatenate((self.fcl, pad))
         self.dst = self.dst * (self.fcl + 1)
 #         self.dst_err = self.dst_err * (self.fcl + 1)
 
