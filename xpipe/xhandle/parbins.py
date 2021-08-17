@@ -844,7 +844,7 @@ class XIO(object):
         fio.write(self.dpath + "/" + self.rlist[self.ind].replace('.dat', '.fits'), self.randoms["fullcat"][rind], clobber=True)
 
 
-def save_rands_jk(self):
+    def save_rands_jk(self):
         """writes random points to file for each JK patch in xshear style"""
         rind = self.randoms['sinds'][self.ind]
         ids = self.randoms['id'][rind][self.idraw]
