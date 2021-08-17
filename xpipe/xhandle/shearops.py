@@ -898,7 +898,7 @@ class AutoCalibrateProfile(object):
         self.target = pd.merge(tmp, target, how="left", on=id_key).reset_index(drop=True)
         self.target["WEIGHT"] = 1.
 
-        ww = np.ones(len(target))
+        ww = np.ones(len(self.target))
         if self.weights is not None:
             ww = self.weights
         self.target["WEIGHT"] = ww
