@@ -1058,11 +1058,12 @@ class BoostMixerRandRef(object):
 
 
 class SOMBoost(object):
-    def __init__(self, pzdata, flist_jk, pairs_to_load=None, which_cat="bpz"):
+    def __init__(self, pzdata, flist_jk, pairs_to_load=None, which_cat="bpz", sbins=(2, 3)):
 
         self.pzdata = pzdata
         self.pairs_to_load = pairs_to_load
         self.flist_jk = flist_jk
+        self.sbins = sbins
 
         self._get_scritinv()
 
@@ -1090,7 +1091,7 @@ class SOMBoost(object):
         for j, clust_name in enumerate(flist_jk):
             _pair_datas = []
 
-            for sbin in (2, 3):
+            for sbin in self.sbins:
                 print(j, sbin)
                 clust_infos = create_infodict(clust_name, pairs=True)
                 tabs = []
@@ -1130,7 +1131,7 @@ class SOMBoost(object):
         for i, clust_name in enumerate(self.flist_jk):
             _zvals = []
             _wws = []
-            for j, sbin in enumerate((2, 3)):
+            for j, sbin in enumerate(self.sbins):
                 _tmp = self.pair_datas[i][j]
                 tmp = self._merge_weights(_tmp, lens_weights)
                 __zvals = []
@@ -1173,7 +1174,7 @@ class SOMBoost(object):
             _tmp1 = []
             _tmp2 = []
             _tmp3 = []
-            for s in (0, 1):
+            for s, sbin in enumerate(self.sbins):
                 print(i, s)
                 _zvals = self.zvals[i][s]
                 _wws = self.wws[i][s]
