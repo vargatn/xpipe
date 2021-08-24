@@ -911,10 +911,10 @@ class AutoCalibrateProfile(object):
             self.scinvs.append(self.pzcat.get_single_scinv(self.zmean, sbin=sbin))
         self.scinvs = np.array(self.scinvs)
 
-    def _combine_sbins(self, mfactor_sbins=None):
+    def _combine_sbins(self, mfactor_sbins=None, weight_scrit_exponent=1):
         _profiles = copy.deepcopy(self._profiles)
         for i, scinv in enumerate(self.scinvs):
-            _profiles[i].multiply(scinv)
+            _profiles[i].multiply(scinv**weight_scrit_exponent)
 
 
         if mfactor_sbins is None:
@@ -927,7 +927,7 @@ class AutoCalibrateProfile(object):
             tmp.multiply(mfactor_sbins[i + 1])
             self.profile.composite(tmp, operation="+")
 
-        factor = 1. / np.sum(self.scinvs**2)
+        factor = 1. / np.sum(self.scinvs**(weight_scrit_exponent + 1))
 
         self.profile.multiply(factor)
 
@@ -952,6 +952,18 @@ class AutoCalibrateProfile(object):
         #
         # self.profile.multiply(factor)
 
+        self._scale_cut()
+
+    def composite(self, other, operation):
+
+        _profiles = copy.copy(self._profiles)
+        res = []
+        for i, prof in enumerate(_profiles):
+            prof.composite(other._profiles[i], operation)
+            res.append(prof)
+        self._profiles = res
+
+        self._combine_sbins()
         self._scale_cut()
 
     def _scale_cut(self):
