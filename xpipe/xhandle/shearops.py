@@ -997,8 +997,9 @@ class AutoCalibrateProfile(object):
         if ln > 0:
             pad = np.zeros(len(self.dst) - len(self.fcl))
             self.fcl = np.concatenate((self.fcl, pad))
-        self.dst = self.dst * (self.fcl + 1)
-#         self.dst_err = self.dst_err * (self.fcl + 1)
+        self.profile.multiply((self.fcl + 1)[:, np.newaxis])
+        self.dst = self.profile.dst
+        self.dst_err = self.profile.dst_err
 
     def to_profile(self):
         prof = ProfileContainer(self.rr, self.dst, self.dst_err, self.cov)
