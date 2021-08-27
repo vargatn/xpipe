@@ -880,6 +880,8 @@ class AutoCalibrateProfile(object):
             print("loading source bin", sbin)
             clust_files = [info["outfile"].replace("_result.dat", "_bin" + str(sbin + 1) + "_result.dat")
                            for info in self.infos]
+            # clust_files = [info["outfile"].replace("_result.dat", "_result.dat")
+            #                for info in self.infos]
             # print(clust_files)
             clust = process_profile(clust_files, ismeta=ismeta,
                                              weights=self.weights, weight_key=weight_key, id_key=id_key,

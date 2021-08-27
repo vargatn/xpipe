@@ -10,7 +10,7 @@ import fitsio
 main_file_path = "/e/ocean1/users/vargatn/DESY3/Y3_mastercat___UNBLIND___final_v1.1_12_22_20.h5"
 main_file = h5py.File(main_file_path, mode = 'r')
 fname_root = "/e/ocean1/users/vargatn/DES/DES_Y3A2_cluster/data/shearcat/"
-fname_prefix = "y3_mcal_sompz_v3_unblind"
+fname_prefix = "y3_mcal_sompz_v4_unblind"
 
 fmt = ['%d', '%d'] + 10 * ['%.6f']
 sheared_names = ["unsheared", "_1p", "_1m", "_2p", "_2m"]
@@ -28,9 +28,10 @@ for ibin, bin_name in enumerate(bin_names):
             _sheared_name = "_sheared" + sheared_name
             ztag = "sheared" + sheared_name
             _name = sheared_name
-
+        print(ztag)
         oname = fname_root + fname_prefix + "_" + bin_name + _name + ".dat"
-        print(oname)
+        #         print(oname)
+        print("index/"+select_names[ishear] + "_" + bin_name)
 
         index = main_file["index/"+select_names[ishear] + "_" + bin_name][:]
 
@@ -41,7 +42,7 @@ for ibin, bin_name in enumerate(bin_names):
         table["coadd_objects_id"] = _tmp[index]
         print("loaded coadd_id")
 
-        _tmp = main_file["catalog/sompz/" + ztag + "/cell_wide"][:]
+        _tmp = main_file["catalog/sompz/unsheared/cell_wide"][:]
         table["cell_id"] = _tmp[index]
         print("loaded cell_id")
 
@@ -52,25 +53,25 @@ for ibin, bin_name in enumerate(bin_names):
         print("loaded ra, dec")
 
         #         print("reading metacal unsheared")
-        _tmp = main_file["catalog/metacal/" + ztag + "/e_1"][:]
+        _tmp = main_file["catalog/metacal/unsheared/e_1"][:]
         table["e1"] = _tmp[index]
-        _tmp = main_file["catalog/metacal/" + ztag + "/e_2"][:]
+        _tmp = main_file["catalog/metacal/unsheared/e_2"][:]
         table["e2"] = _tmp[index]
         print("loaded, e1, e2")
         if ishear == 0:
-            _tmp = main_file["catalog/metacal/" + ztag + "/R11"][:]
+            _tmp = main_file["catalog/metacal/unsheared/R11"][:]
             table["R11"] = _tmp[index]
-            _tmp = main_file["catalog/metacal/" + ztag + "/R22"][:]
+            _tmp = main_file["catalog/metacal/unsheared/R22"][:]
             table["R22"] = _tmp[index]
             print("loaded, R11, R22")
             _R_12 = _tmp[index]
-            _tmp = main_file["catalog/metacal/" + ztag + "/R12"][:]
+            _tmp = main_file["catalog/metacal/unsheared/R12"][:]
             _R_21 = _tmp[index]
-            _tmp = main_file["catalog/metacal/" + ztag + "/R21"][:]
+            _tmp = main_file["catalog/metacal/unsheared/R21"][:]
             table["R12"] = (_R_12 + _R_21) / 2.
             print("loaded, R12, R21")
 
-        _tmp = main_file["catalog/metacal/" + ztag + "/weight"][:]
+        _tmp = main_file["catalog/metacal/unsheared/weight"][:]
         table["weight"] = _tmp[index]
 
         placeholder = np.ones(len(table)) * 1.5
