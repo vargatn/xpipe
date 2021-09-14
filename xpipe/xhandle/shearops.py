@@ -607,6 +607,7 @@ class StackedProfileContainer(object):
 
         # performs the multiplication
         self.dst_sub *= val
+        self.dsx_sub *= val
 
         # re calculates profiles
         self._profcalc()
@@ -906,11 +907,11 @@ class AutoCalibrateProfile(object):
         self.target["WEIGHT"] = ww
 
     def _get_scinvs(self, z_key="Z_LAMBDA", **kwargs):
-        self.zmean = np.average(self.target[z_key], weights=self.target["WEIGHT"])
+        zmean = np.average(self.target[z_key], weights=self.target["WEIGHT"])
 
         self.scinvs = []
         for sbin in self.sbins:
-            self.scinvs.append(self.pzcat.get_single_scinv(self.zmean, sbin=sbin))
+            self.scinvs.append(self.pzcat.get_single_scinv(zmean, sbin=sbin))
         self.scinvs = np.array(self.scinvs)
 
     def _combine_sbins(self, mfactor_sbins=None, weight_scrit_exponent=1):
@@ -934,12 +935,14 @@ class AutoCalibrateProfile(object):
         self.profile.multiply(factor)
 
 
-    def get_profiles(self, mfactor_sbins=None, **kwargs):
+    def get_profiles(self, scinvs=None, mfactor_sbins=None, **kwargs):
 
         self._load_profiles(**kwargs)
-        self._load_targets(**kwargs)
-        # print(self.target.columns)
-        self._get_scinvs(**kwargs)
+
+        self.scinvs = scinvs
+        if self.scinvs is None:
+            self._load_targets(**kwargs)
+            self._get_scinvs(**kwargs)
         self._combine_sbins(mfactor_sbins)
 
         # _profiles = copy.deepcopy(self._profiles)
