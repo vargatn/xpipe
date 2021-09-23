@@ -1000,11 +1000,13 @@ class AutoCalibrateProfile(object):
         ln = len(self.dst) - len(self.fcl)
         print(ln)
         if ln > 0:
-            pad = np.zeros(len(self.dst) - len(self.fcl))
+            pad = np.zeros(len(self.dst_sub.shape[0]) - len(self.fcl))
             self.fcl = np.concatenate((self.fcl, pad))
         self.profile.multiply((self.fcl + 1)[:, np.newaxis])
-        self.dst = self.profile.dst
-        self.dst_err = self.profile.dst_err
+        self._scale_cut()
+        # self.dst = self.profile.dst
+        # self.dst_err = self.profile.dst_err
+        # self.rr = self.profile.rr
 
     def to_profile(self):
         prof = ProfileContainer(self.rr, self.dst, self.dst_err, self.cov)

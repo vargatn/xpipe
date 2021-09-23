@@ -18,7 +18,7 @@ from ..xhandle import shearops
 default_cosmo = cosmology.FlatLambdaCDM(Om0=0.3, H0=70)
 
 
-def get_scales(prof, rmin=0.2, rmax=30):
+def get_scales(prof, rmin=0.1, rmax=100):
     rr = prof.rr
     ii = (rmin <= rr) & (rr < rmax)
     data = {
@@ -214,7 +214,7 @@ def do_mcmc(data, params, nstep=1000, nwalkers=16, prior=None):
 
 
 class log_prior(object):
-    def __init__(self, pmean, pcov):
+    def __init__(self, pmean=None, pcov=None):
         self.pmean = pmean
         self.pcov = pcov
         self.BADVAL = -99999
@@ -235,7 +235,7 @@ class log_prior(object):
 
 class QuintileExplorer(object):
     def __init__(self, src, flist, flist_jk, file_tag="autosplit_v1", pairs_to_load=None,
-                 z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID", **kwargs):
+                 z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID", npdf=10, ismeta=False, **kwargs):
         self.src = src
         self.pair_path = pairs_to_load
         self.z_key = z_key
@@ -244,17 +244,23 @@ class QuintileExplorer(object):
         self.flist_jk = flist_jk
         self.file_tag = file_tag
         self.id_key = id_key
+        self.npdf = npdf
+        self.ismeta = ismeta
 
-        # self._quintiles = ((0, 20), (20, 40), (40, 60), (60, 80), (80, 100))
-        self._quintiles = ((0, 10), (10, 20), (20, 30), (30, 40), (40, 50), (50, 60), (60, 70), (70, 80), (80, 90), (90, 100))
+        self._quintiles = ((0, 20), (20, 40), (40, 60), (60, 80), (80, 100))
+        # self._quintiles = ((0, 10), (10, 20), (20, 30), (30, 40), (40, 50), (50, 60), (60, 70), (70, 80), (80, 90), (90, 100))
+
+    def load_target(self):
+        self.ACP = self._calc_profile()
+        self.target = self.ACP.target
 
     def _calc_profile(self, weights=None, **kwargs):
-        ACP = shearops.AutoCalibrateProfile(self.flist, self.flist_jk, self.src, weights=weights)
-        ACP.get_profiles()
+        ACP = shearops.AutoCalibrateProfile(self.flist, self.flist_jk, self.src, weights=weights, xlims=(0.1, 100))
+        ACP.get_profiles(ismeta=self.ismeta)
 
         smb = pzboost.SOMBoost(self.src, [self.flist_jk,], pairs_to_load=self.pair_path)
-        smb.prep_boost()
-        smb.get_boost(**kwargs)
+        smb.prep_boost(bins_to_use=np.linspace(0, 14, 15))
+        smb.get_boost(npdf=15, **kwargs)
 
         ACP.add_boost(smb)
         return ACP
@@ -266,7 +272,7 @@ class QuintileExplorer(object):
     def calc_fiducial_profile(self, nwalkers=16, **kwargs):
         self.ACP = self._calc_profile()
 
-        self.zmean = np.mean(self.ACP.target[self.z_key])
+        self.zmean = np.mean(self.target[self.z_key])
         parmaker = make_params(z=self.zmean, cosmo=default_cosmo)
         self.params = parmaker.params
 
@@ -286,7 +292,8 @@ class QuintileExplorer(object):
         self.pmean = self.flat_samples.mean(axis=0)
         self.pcov = cov * factor
         self.ppp = np.random.multivariate_normal(self.flat_samples.mean(axis=0), cov=self.pcov, size=int(2e5))
-        self.lprior = log_prior(self.pmean, self.pcov)
+        # self.lprior = log_prior(self.pmean, self.pcov)
+        self.lprior = log_prior()
 
     def calc_weights(self, score, qq, **kwargs):
         q_low = self._quintiles[qq][0]
@@ -315,7 +322,8 @@ class QuintileExplorer(object):
         return ww
 
     def set_features(self, features):
-        self.features = features
+        tmp = pd.merge(pd.DataFrame(self.target["MEM_MATCH_ID"]), features, on="MEM_MATCH_ID", how="left")
+        self.features = tmp.dropna()
         tmp = self.features.drop(columns=["MEM_MATCH_ID",])
 
         self.scaler = sklearn.preprocessing.StandardScaler()
@@ -344,7 +352,7 @@ class QuintileExplorer(object):
     def calc_ref_profiles(self):
         feat = self.features["LAMBDA_CHISQ"].values
         print("calculating reference profiles")
-        for iq in np.arange(10):
+        for iq in np.arange(5):
             print("starting decile ", str(iq))
             self._calc_q_prof(feat, iq, "ref")
 
@@ -353,7 +361,7 @@ class QuintileExplorer(object):
         for col in np.arange(self.eff.shape[1]):
             print("starting eigen-feature ", str(col))
             feat = self.eff[:, col]
-            for iq in np.arange(10):
+            for iq in np.arange(5):
                 print("starting decile ", str(iq), "of col", str(col))
                 self._calc_q_prof(feat, iq, "feat-"+str(col))
 
