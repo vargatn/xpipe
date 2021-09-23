@@ -59,7 +59,7 @@ def redges(rmin, rmax, nbin):
 
 
 class StackedProfileContainer(object):
-    def __init__(self, info, data, labels, ncen, lcname=None, metadata=None, metatags=None, **kwargs):
+    def __init__(self, info, data, labels, ncen, lcname=None, metadata=None, metatags=None, Rs=None, **kwargs):
         """
         Object Oriented interface for stacked shear and :math:`\\Delta\\Sigma` calculated via **xshear**
 
@@ -154,6 +154,8 @@ class StackedProfileContainer(object):
             sheared versions of :code:`data`
         metatags : list of str
             sheared tags
+        Rs : float
+            metacal selection response (constant) which will be used instead of metadata / metatags
         """
 
         # indices to be used in the shear stacking
@@ -188,6 +190,11 @@ class StackedProfileContainer(object):
         self.metadata = metadata
         self.metatags = metatags
         self.ismeta = self.metadata is not None and self.metatags is not None
+
+        self.Rs = Rs
+
+        if self.Rs is not None:
+            self.ismeta = False
 
         self.labels = labels
         self.ncen = ncen  # number of centers
@@ -392,8 +399,10 @@ class StackedProfileContainer(object):
             ww = self.w[ind, np.newaxis]
             ww_sum = np.sum(self.w[ind])
 
-
             Rs = np.zeros(len(cind))
+            if self.Rs is not None:
+                Rs = np.ones(len(cind)) * self.Rs
+
             if self.ismeta:
                 val1parr = (np.sum(self.metadata[0][self.e1_nom, ind][:, cind] * ww, axis=0) /
                             np.sum(self.metadata[0][self.meta_denom, ind][:, cind] * ww, axis=0))
@@ -767,7 +776,7 @@ def stacked_pcov(plist):
     return supercov_t, supercov_x
 
 
-def process_profile(fnames, ismeta=True, labels=None, weights=None, weight_key="ww", id_key="id", shear=False):
+def process_profile(fnames, ismeta=True, labels=None, weights=None, weight_key="ww", id_key="id", shear=False, Rs=None):
     """
     Extracts StackedProfileContainer from xshear output
 
@@ -802,7 +811,7 @@ def process_profile(fnames, ismeta=True, labels=None, weights=None, weight_key="
 
     prof = StackedProfileContainer(cinfo, cdata, labels, ncens,
                                    metadata=sheared_data,
-                                   metatags=sheared_tags)
+                                   metatags=sheared_tags, Rs=Rs)
     if shear:
         prof.dst_denom = 8
         prof.dsx_denom = 9
@@ -875,7 +884,7 @@ class AutoCalibrateProfile(object):
         self.sbins = sbins
         self.xlims = xlims
 
-    def _load_profiles(self, ismeta=True, shear=True, weight_key="WEIGHT", id_key="MEM_MATCH_ID", **kwargs):
+    def _load_profiles(self, ismeta=True, Rs_sbins=None, shear=True, weight_key="WEIGHT", id_key="MEM_MATCH_ID", **kwargs):
         self._profiles = []
         for i, sbin in enumerate(self.sbins):
             print("loading source bin", sbin)
@@ -884,7 +893,10 @@ class AutoCalibrateProfile(object):
             # clust_files = [info["outfile"].replace("_result.dat", "_result.dat")
             #                for info in self.infos]
             # print(clust_files)
-            clust = process_profile(clust_files, ismeta=ismeta,
+            Rs = None
+            if Rs_sbins is not None:
+                Rs = Rs_sbins[i]
+            clust = process_profile(clust_files, ismeta=ismeta, Rs=Rs,
                                              weights=self.weights, weight_key=weight_key, id_key=id_key,
                                              shear=shear)
             self._profiles.append(clust)
@@ -935,9 +947,9 @@ class AutoCalibrateProfile(object):
         self.profile.multiply(factor)
 
 
-    def get_profiles(self, scinvs=None, mfactor_sbins=None, **kwargs):
+    def get_profiles(self, scinvs=None, mfactor_sbins=None, Rs_sbins=None, **kwargs):
 
-        self._load_profiles(**kwargs)
+        self._load_profiles(Rs_sbins=Rs_sbins, **kwargs)
 
         self.scinvs = scinvs
         if self.scinvs is None:
