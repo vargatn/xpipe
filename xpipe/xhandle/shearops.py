@@ -1012,7 +1012,7 @@ class AutoCalibrateProfile(object):
         ln = len(self.dst) - len(self.fcl)
         print(ln)
         if ln > 0:
-            pad = np.zeros(len(self.dst_sub.shape[0]) - len(self.fcl))
+            pad = np.zeros(self.profile.dst_sub.shape[0] - len(self.fcl))
             self.fcl = np.concatenate((self.fcl, pad))
         self.profile.multiply((self.fcl + 1)[:, np.newaxis])
         self._scale_cut()
