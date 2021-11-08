@@ -1,7 +1,3 @@
-"""
-# TODO add documentation
-"""
-
 from __future__ import print_function, division
 
 import os
@@ -33,7 +29,6 @@ def _bin_fnames(qlist, fnames):
     all_list = []
     chunk = []
     for i, qname in enumerate(qlist):
-        # print chunk
         if i == 0 or qlist[i - 1] == qlist[i]:
             chunk.append(fnames[i])
         else:
@@ -45,7 +40,7 @@ def _bin_fnames(qlist, fnames):
     return all_list
 
 
-def get_file_lists(params, dirpaths):
+def get_file_lists(params=None, dirpaths=None):
     """
     Return lists of input files
 
@@ -74,6 +69,11 @@ def get_file_lists(params, dirpaths):
           while each entry is a list of different patches.
 
     """
+    if params is None:
+        params = paths.params
+    if dirpaths is None:
+        dirpaths = paths.dirpaths
+
     dpath = get_dpath(params, dirpaths)
 
     fpath = dpath + "/" + params["tag"] + flist_suffix
@@ -355,9 +355,6 @@ def load_randcat(params=None, fullpaths=None, which=None):
     else:
         select = np.ones(len(ra), dtype=bool)
 
-    # print(randkey)
-    # print(len(randkey.keys())-4)
-    # number of parameter columns
     nq = len(randkey.keys()) - 4
     if "jkey" in randkey.keys():
         nq -= 1
