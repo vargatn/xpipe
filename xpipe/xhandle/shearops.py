@@ -59,7 +59,7 @@ def redges(rmin, rmax, nbin):
 
 
 class StackedProfileContainer(object):
-    def __init__(self, info, data, labels, ncen, lcname=None, metadata=None, metatags=None, Rs=None, **kwargs):
+    def __init__(self, info, data, labels, ncen, lcname=None, metadata=None, metatags=None, Rs=None, weights=None, **kwargs):
         """
         Object Oriented interface for stacked shear and :math:`\\Delta\\Sigma` calculated via **xshear**
 
@@ -200,7 +200,7 @@ class StackedProfileContainer(object):
         self.ncen = ncen  # number of centers
 
         # containers for stacking parameters
-        self.weights = None  # stacking weights
+        self.weights = weights  # stacking weights
 
         # containers for the Jackknife sampling
         self.sub_labels = None
@@ -241,6 +241,33 @@ class StackedProfileContainer(object):
         self.hasprofile = False
         self.hasdata = True
 
+    def __copy__(self):
+
+        infodict = self.to_dict()
+
+        obj = StackedProfileContainer(**infodict)
+        return obj
+
+    def to_dict(self):
+        """
+        Extracts the raw data to a dictionary
+
+        Contains the arguments passed to this dataset
+        """
+        infodict = {
+            "info": self.info,
+            "data": self.data,
+            "labels": self.labels,
+            "ncen": self.ncen,
+            "lcname": self.lcname,
+            "metadata": self.metadata,
+            "metatags": self.metatags,
+            "Rs": self.Rs,
+            "weights": self.weights,
+        }
+        return infodict
+
+
     @classmethod
     def from_sub_dict(cls, sub_dict):
         """
@@ -263,7 +290,7 @@ class StackedProfileContainer(object):
         The resulting dict does not contain the base data, only the profile, the JK-subprofiles and
         ancillary quantities
         """
-
+        # raise DeprecationWarning
         infodict = {
             "lcname": self.lcname,
             "nbin": self.nbin,
@@ -842,11 +869,9 @@ def extract_weights(info, weights, weight_key="ww", id_key="id"):
 
     itab = pd.DataFrame()
     itab["index_0"] = match_endian(info[:, 0])
-    # print(id_key)
-    # print(itab)
-    # print(weights)
+
     tab = pd.merge(itab, weights, how="left", left_on="index_0", right_on=id_key, ).fillna(0)
-    # print(tab)
+
     return tab[weight_key].values
 
 
@@ -895,14 +920,9 @@ class AutoCalibrateProfile(object):
             print("loading source bin", sbin)
             clust_files = [info["outfile"].replace("_result.dat", "_bin" + str(sbin + 1) + "_result.dat")
                            for info in self.infos]
-            # clust_files = [info["outfile"].replace("_result.dat", "_result.dat")
-            #                for info in self.infos]
-            # print(clust_files)
             Rs = None
             if Rs_sbins is not None:
                 Rs = Rs_sbins[i]
-
-            # print("weights", self.weights)
 
             clust = process_profile(clust_files, ismeta=ismeta, Rs=Rs,
                                              weights=self.weights, weight_key=weight_key, id_key=id_key,
