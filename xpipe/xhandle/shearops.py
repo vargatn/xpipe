@@ -309,9 +309,10 @@ class StackedProfileContainer(object):
         self.labels = None
         self.hasdata = False
 
-    def _reset_profile(self, keep_rr=True):
+    def _reset_profile(self, keep_rr=True, reset_w=False):
         """Resets the profile container, while keeping the base data and JK-subprofiles"""
-        self.w = np.ones(self.num)
+        if reset_w:
+            self.w = np.ones(self.num)
         if not keep_rr:
             self.rr = np.ones(self.nbin) * -1.0
         self.dst0 = np.zeros(self.nbin)
@@ -821,8 +822,10 @@ def process_profile(fnames, ismeta=True, labels=None, weights=None, weight_key="
         prof.snum_ind = 3
 
     if weights is not None:
-            weights = extract_weights(cinfo, weights, weight_key=weight_key, id_key=id_key)
-
+        weights = extract_weights(cinfo, weights, weight_key=weight_key, id_key=id_key)
+        print(weights.sum())
+        # weights = np.nan_to_num(weights).astype(int)
+    # print(weights)
     prof.prof_maker(weights=weights)
 
     return prof
@@ -839,9 +842,11 @@ def extract_weights(info, weights, weight_key="ww", id_key="id"):
 
     itab = pd.DataFrame()
     itab["index_0"] = match_endian(info[:, 0])
-
-    tab = pd.merge(itab, weights, how="left", left_on="index_0", right_on=id_key)
-
+    # print(id_key)
+    # print(itab)
+    # print(weights)
+    tab = pd.merge(itab, weights, how="left", left_on="index_0", right_on=id_key, ).fillna(0)
+    # print(tab)
     return tab[weight_key].values
 
 
@@ -896,6 +901,9 @@ class AutoCalibrateProfile(object):
             Rs = None
             if Rs_sbins is not None:
                 Rs = Rs_sbins[i]
+
+            # print("weights", self.weights)
+
             clust = process_profile(clust_files, ismeta=ismeta, Rs=Rs,
                                              weights=self.weights, weight_key=weight_key, id_key=id_key,
                                              shear=shear)

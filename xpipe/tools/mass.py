@@ -265,8 +265,10 @@ class QuintileExplorer(object):
         ACP.add_boost(smb)
         return ACP
 
-    def _fit_model(self, data, nwalkers=16, **kwargs) :
-        flat_samples = do_mcmc(data, self.params, nwalkers=nwalkers)[0]
+    def _fit_model(self, data, nwalkers=16, params=None, **kwargs) :
+        if params is None:
+            params = self.params
+        flat_samples = do_mcmc(data, params, nwalkers=nwalkers)[0]
         return flat_samples
 
     def calc_fiducial_profile(self, nwalkers=16, **kwargs):
@@ -341,8 +343,12 @@ class QuintileExplorer(object):
         ww = self.calc_weights(feat, iq)
         prof = self._calc_profile(weights=ww).to_profile()
 
+        zmean = np.average(self.target[self.z_key], weights=ww)
+        parmaker = make_params(z=zmean, cosmo=default_cosmo)
+        params = parmaker.params
+
         data = get_scales(prof)
-        prior_flat_samples = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior, **kwargs)
+        prior_flat_samples = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior, params=params, **kwargs)
 
         container = {"ww": ww, "prof": prof, "flat_samples": prior_flat_samples}
         fname = self.file_tag + "_prof_"+tag+"_q"+str(iq)+".p"
