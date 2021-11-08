@@ -45,7 +45,18 @@ def sigma_crit_inv(zclust, z, cosmo=default_cosmo):
 
 
 class sompz_reader(object):
-    def __init__(self, main_file_path):
+    """Reader class for DES Y3 - style SOMPZ data"""
+    def __init__(self, main_file_path, z_clust_grid_edges=None):
+        """
+        Reader class for DES Y3 - style SOMPZ data, also loads BPZ Z_MC redshifts
+
+        Parameters
+        ----------
+        main_file_path : str
+            file path of the Y3 master catalog
+        z_clust_grid_edges : np.array
+            list of redshift histogram edges for cluster sample
+        """
 
         self.main_file = h5py.File(main_file_path, mode = 'r')
         zlows = self.main_file["catalog/sompz/pzdata/zlow"][:]
@@ -61,7 +72,10 @@ class sompz_reader(object):
             self.main_file["catalog/sompz/pzdata/bin3"][:],
         ]
 
-        self.zclust_grid_edges = np.linspace(0.00, 1.0, 101)
+        if z_clust_grid_edges is not None:
+            self.zclust_grid_edges = z_clust_grid_edges
+        else:
+            self.zclust_grid_edges = np.linspace(0.00, 1.0, 101)
         self.zclust_grid = self.zclust_grid_edges[:-1] + np.diff(self.zclust_grid_edges) / 2.
 
         self.select = self.main_file["index/select"][:]
@@ -73,6 +87,7 @@ class sompz_reader(object):
         self.bpz["ZMC"] = self.zmc[self.select]
 
     def build_lookup(self, verbose=False):
+        """Pre-calculates the sigma_crit_inverse values for a source histogram mid-points tomographic redshift bins"""
         self.scritinv_tab = np.zeros(shape=(len(self.zclust_grid), len(self.zcens)))
         for i, zclust in enumerate(self.zclust_grid):
             if verbose & (i%10==0):
@@ -81,61 +96,27 @@ class sompz_reader(object):
             for j, zsource in enumerate(self.zcens):
                 self.scritinv_tab[i,j] = sigma_crit_inv(zclust, zsource)
 
-    def get_single_scinv(self, clust_zvals, sbin=-1):
-        ii = np.argmin((clust_zvals -  self.zclust_grid)**2.)
+    def get_single_scinv(self, clust_zval, sbin=-1):
+        """Calculates sigma_crit_inverse with a single lens redshift and a tomographic source bin"""
+        ii = np.argmin((clust_zval -  self.zclust_grid)**2.)
 
         scvals = np.average(self.scritinv_tab[ii], weights=self.source_bins[sbin])
 
         return scvals
 
-    # def get_bin_scinv(self, clust_zvals, sbin=-1):
-    #
-    #     # try:
-    #     #     len(clust_zvals)
-    #     # except:
-    #     #     clust_zvals = (clust_zvals,)
-    #     ccounts = np.histogram(clust_zvals, bins=self.zclust_grid_edges)[0]
-    #     print(ccounts)
-    #     scvals = np.zeros(len(self.zcens))
-    #     for i, z in enumerate(self.zcens):
-    #         #         print(i)
-    #         scvals[i] = np.average(self.scritinv_tab[i], weights=self.source_bins[sbin])
-    #     #
-    #     # scritinv = np.average(scvals, weights=ccounts)
-    #     # return scritinv
+    def get_bin_scinv(self, clust_zvals, sbin=-1):
+        """Calculates sigma_crit_inverse with a single lens redshift and a tomographic source bin"""
+        try:
+            len(clust_zvals)
+        except:
+            clust_zvals = (clust_zvals,)
+        ccounts = np.histogram(clust_zvals, bins=self.zclust_grid_edges)[0]
 
-
-# class PZData(object):
-#     def __init__(self, main_file_path):
-#         self.main_file_path = main_file_path
-#         self.main_file = h5py.File(self.main_file_path, mode = 'r')
-#         self.zlows = self.main_file["catalog/sompz/pzdata/zlow"][:]
-#         self.zhighs = self.main_file["catalog/sompz/pzdata/zhigh"][:]
-#         self.zcens = self.zlows + (self.zhighs - self.zlows) / 2.
-#         self.zcens = self.zcens[:300]
-#         # zedges = np.concatenate((zlows[:300],  [zhighs[299],]))
-#
-#         self.source_bins = [
-#             self.main_file["catalog/sompz/pzdata/bin0"][:],
-#             self.main_file["catalog/sompz/pzdata/bin1"][:],
-#             self.main_file["catalog/sompz/pzdata/bin2"][:],
-#             self.main_file["catalog/sompz/pzdata/bin3"][:],
-#         ]
-#
-#         # zclust_grid = np.linspace(0.05, 1., 101)
-#         self.zclust_grid_edges = np.linspace(0.00, 1.0, 101)
-#         self.zclust_grid = self.zclust_grid_edges[:-1] + np.diff(self.zclust_grid_edges) / 2.
-#
-#         self.cid = self.main_file["catalog/bpz/unsheared/coadd_object_id"][:].byteswap().newbyteorder()
-#         self.zmc = self.main_file["catalog/bpz/unsheared/zmc_sof"][:].byteswap().newbyteorder()
-#         self.pz_chat = self.main_file["catalog/sompz/pzdata/pz_chat"][:]
-#         self.bpz = pd.DataFrame()
-#         self.bpz["ID"] = self.cid
-#         self.bpz["ZMC"] = self.zmc
-#
-#         self.dnf = pd.DataFrame()
-#         self.dnf["ID"] = self.cid
-#         self.dnf["ZMC"] = self.main_file["catalog/dnf/unsheared/zmc_sof"][:].byteswap().newbyteorder()
+        scvals = np.zeros(len(self.zcens))
+        for i, z in enumerate(self.zcens):
+            scvals[i] = np.average(self.scritinv_tab[i], weights=self.source_bins[sbin])
+        scritinv = np.average(scvals, weights=ccounts)
+        return scritinv
 
 
 
