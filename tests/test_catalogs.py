@@ -29,7 +29,6 @@ def mock_data():
 
     return raw_data, answer_data
 
-
 class TestToPandas(object):
 
     def test_content(self, mock_data):
@@ -49,7 +48,6 @@ class TestToPandas(object):
 
         for s1, s2 in zip(columns, answer_columns):
             assert s1 == s2, "dtypes not identical: " + s1 + " " + s2
-
 
 
 
