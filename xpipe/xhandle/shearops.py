@@ -59,7 +59,7 @@ def redges(rmin, rmax, nbin):
 
 
 class StackedProfileContainer(object):
-    def __init__(self, info, data, labels, ncen, lcname=None, metadata=None, metatags=None, Rs=None, weights=None, **kwargs):
+    def __init__(self, info, data, labels, ncen, lcname=None, metadata=None, metatags=None, Rs=None, weights=None, shear=False, **kwargs):
         """
         Object Oriented interface for stacked shear and :math:`\\Delta\\Sigma` calculated via **xshear**
 
@@ -173,6 +173,14 @@ class StackedProfileContainer(object):
 
         self.snum_ind = 2
 
+        if shear:
+            self.dst_denom = 8
+            self.dsx_denom = 9
+
+            self.meta_denom = 3
+            self.meta_prefac = 3
+            self.snum_ind = 3
+
         # input params saved
         self.info = info
         self.data = data
@@ -241,7 +249,7 @@ class StackedProfileContainer(object):
         self.hasprofile = False
         self.hasdata = True
 
-    def __copy__(self):
+    def copy(self):
 
         infodict = self.to_dict()
 
@@ -902,9 +910,8 @@ def olivers_mock_function(a, b, c):
     """
     pass
 
-
-
 class AutoCalibrateProfile(object):
+    """This """
     def __init__(self, flist, flist_jk, pzcat, weights=None, sbins=(2, 3), xlims=(0.2, 30)):
         self.flist = flist
         self.flist_jk = flist_jk
@@ -914,7 +921,27 @@ class AutoCalibrateProfile(object):
         self.sbins = sbins
         self.xlims = xlims
 
-    def _load_profiles(self, ismeta=True, Rs_sbins=None, shear=True, weight_key="WEIGHT", id_key="MEM_MATCH_ID", **kwargs):
+        self._profiles = []
+        self.profile = None
+        self.target = None
+        self.scinvs = []
+
+    def copy(self):
+
+        res = AutoCalibrateProfile(self.flist, self.flist_jk, self.pzcat, self.weights, self.sbins, self.xlims)
+
+        res._profiles = []
+        for prof in self._profiles:
+            res._profiles.append(copy.deepcopy(prof))
+        res.target = self.target.copy()
+        res.scinvs = self.scinvs.copy()
+        res.profile = copy.deepcopy(self.profile)
+        return res
+
+    def _load_profiles(self, ismeta=True, Rs_sbins=None, shear=True, weight_key="WEIGHT", weight=None, id_key="MEM_MATCH_ID", **kwargs):
+        if weight is not None:
+            self.weights = weight
+
         self._profiles = []
         for i, sbin in enumerate(self.sbins):
             print("loading source bin", sbin)
@@ -927,6 +954,7 @@ class AutoCalibrateProfile(object):
             clust = process_profile(clust_files, ismeta=ismeta, Rs=Rs,
                                              weights=self.weights, weight_key=weight_key, id_key=id_key,
                                              shear=shear)
+            # print(clust.dst)
             self._profiles.append(clust)
 
     def _load_targets(self, id_key="MEM_MATCH_ID", **kwargs):
@@ -955,47 +983,43 @@ class AutoCalibrateProfile(object):
         self.scinvs = np.array(self.scinvs)
 
     def _combine_sbins(self, mfactor_sbins=None, weight_scrit_exponent=1):
-        _profiles = copy.deepcopy(self._profiles)
+        _profiles = []
         for i, scinv in enumerate(self.scinvs):
+            _profiles.append(copy.deepcopy(self._profiles[i]))
+            _profiles[i].prof_maker(weights=self.weights)
+            # print(i, _profiles[i].dst)
             _profiles[i].multiply(scinv**weight_scrit_exponent)
-
 
         if mfactor_sbins is None:
             mfactor_sbins = np.ones(len(self.scinvs))
         self.profile = _profiles[0]
+        # print(self._profiles.dst)
         self.profile.multiply(mfactor_sbins[0])
-
         for i in np.arange(len(_profiles) - 1):
             tmp = _profiles[i + 1]
             tmp.multiply(mfactor_sbins[i + 1])
             self.profile.composite(tmp, operation="+")
-
+        # print(self.profile.dst)
         factor = 1. / np.sum(self.scinvs**(weight_scrit_exponent + 1))
-
         self.profile.multiply(factor)
+        # print(self.profile.dst)
 
 
-    def get_profiles(self, scinvs=None, mfactor_sbins=None, Rs_sbins=None, **kwargs):
+    def get_profiles(self, reload=True, scinvs=None, mfactor_sbins=None, Rs_sbins=None, weights=None, **kwargs):
 
-        self._load_profiles(Rs_sbins=Rs_sbins, **kwargs)
+        if weights is not None:
+            self.weights = weights
+
+        if reload:
+            self._load_profiles(Rs_sbins=Rs_sbins, **kwargs)
 
         self.scinvs = scinvs
         if self.scinvs is None:
-            self._load_targets(**kwargs)
+            if reload:
+                self._load_targets(**kwargs)
             self._get_scinvs(**kwargs)
-        self._combine_sbins(mfactor_sbins)
 
-        # _profiles = copy.deepcopy(self._profiles)
-        # for i, scinv in enumerate(self.scinvs):
-        #     _profiles[i].multiply(scinv)
-        #
-        # self.profile = _profiles[0]
-        # for i in np.arange(len(_profiles) - 1):
-        #     self.profile.composite(_profiles[i + 1], operation="+")
-        #
-        # factor = 1. / np.sum(self.scinvs**2)
-        #
-        # self.profile.multiply(factor)
+        self._combine_sbins(mfactor_sbins)
 
         self._scale_cut()
 
@@ -1052,19 +1076,19 @@ class AutoCalibrateProfile(object):
         prof = ProfileContainer(self.rr, self.dst, self.dst_err, self.cov)
         return prof
 
-    def append_profile(self, other, **kwargs):
-
-        # append profile
-        _profiles = []
-        for i, sbin in enumerate(self.sbins):
-            self._profiles[i].append(other._profiles[i])
-
-        # append targets
-        self.target = pd.concat((self.target, other.target))
-
-        self._get_scinvs(**kwargs)
-        self._combine_sbins()
-        self._scale_cut()
+    # def append_profile(self, other, **kwargs):
+    #
+    #     # append profile
+    #     _profiles = []
+    #     for i, sbin in enumerate(self.sbins):
+    #         self._profiles[i].append(other._profiles[i])
+    #
+    #     # append targets
+    #     self.target = pd.concat((self.target, other.target))
+    #
+    #     self._get_scinvs(**kwargs)
+    #     self._combine_sbins()
+    #     self._scale_cut()
 
 
 

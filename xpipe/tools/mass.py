@@ -251,18 +251,19 @@ class QuintileExplorer(object):
         # self._quintiles = ((0, 10), (10, 20), (20, 30), (30, 40), (40, 50), (50, 60), (60, 70), (70, 80), (80, 90), (90, 100))
 
     def load_target(self):
-        self.ACP = self._calc_profile()
-        self.target = self.ACP.target
+        self.raw_ACP = shearops.AutoCalibrateProfile(self.flist, self.flist_jk, self.src, xlims=(0.1, 100))
+        self.raw_ACP.get_profiles(ismeta=self.ismeta)
+        self.target = self.raw_ACP.target
+        self.smb = pzboost.SOMBoost(self.src, [self.flist_jk,], pairs_to_load=self.pair_path)
 
     def _calc_profile(self, weights=None, **kwargs):
-        ACP = shearops.AutoCalibrateProfile(self.flist, self.flist_jk, self.src, weights=weights, xlims=(0.1, 100))
-        ACP.get_profiles(ismeta=self.ismeta)
+        ACP = self.raw_ACP.copy()
+        ACP.get_profiles(reload=False, ismeta=self.ismeta, weights=weights)
 
-        smb = pzboost.SOMBoost(self.src, [self.flist_jk,], pairs_to_load=self.pair_path)
-        smb.prep_boost(bins_to_use=np.linspace(0, 14, 15))
-        smb.get_boost(npdf=15, **kwargs)
+        self.smb.prep_boost(bins_to_use=np.linspace(0, 14, 15))
+        self.smb.get_boost(npdf=15, **kwargs)
 
-        ACP.add_boost(smb)
+        ACP.add_boost(self.smb)
         return ACP
 
     def _fit_model(self, data, nwalkers=16, params=None, **kwargs) :
@@ -330,11 +331,11 @@ class QuintileExplorer(object):
 
         self.scaler = sklearn.preprocessing.StandardScaler()
         self.scaler.fit(tmp)
-        feats = self.scaler.transform(tmp)
+        self.feats = self.scaler.transform(tmp)
 
         self.pca = sklearn.decomposition.PCA()
-        self.pca.fit(feats)
-        self.eff = self.pca.transform(feats)
+        self.pca.fit(self.feats)
+        self.eff = self.pca.transform(self.feats)
 
     def _calc_q_prof(self, feat, iq, tag, nwalkers=16, **kwargs):
 
@@ -363,10 +364,19 @@ class QuintileExplorer(object):
             self._calc_q_prof(feat, iq, "ref")
 
     def calc_eff_profiles(self):
-        print("calculating reference profiles")
+        print("calculating PCA-space split profiles")
         for col in np.arange(self.eff.shape[1]):
             print("starting eigen-feature ", str(col))
             feat = self.eff[:, col]
+            for iq in np.arange(5):
+                print("starting decile ", str(iq), "of col", str(col))
+                self._calc_q_prof(feat, iq, "feat-"+str(col))
+
+    def calc_feat_profiles(self):
+        print("calculating reference profiles")
+        for col in np.arange(self.feats.shape[1]):
+            print("starting feature ", str(col))
+            feat = self.feats[:, col]
             for iq in np.arange(5):
                 print("starting decile ", str(iq), "of col", str(col))
                 self._calc_q_prof(feat, iq, "feat-"+str(col))

@@ -6,6 +6,7 @@
 TempdirFactory
 xpipe.egg-info
 
+venv
 build
 dist
 files.txt
