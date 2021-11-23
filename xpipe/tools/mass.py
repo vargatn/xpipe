@@ -6,6 +6,7 @@ from cluster_toolkit import deltasigma
 import sklearn
 from cluster_toolkit import xi
 from cluster_toolkit import bias
+from cluster_toolkit import miscentering
 
 import pandas as pd
 from classy import Class
@@ -88,24 +89,10 @@ class make_params(object):
 
         }
 
-def calc_nfw(rarr, logmass, c, bias, params, component="both"):
-
+def calc_nfw(rarr, logmass, c, params):
 
     _rarr = rarr * params["h"] / params["scale_factor"]
     mass = 10**logmass * params["h"]
-
-    #     radii = np.logspace(-3, 4, 10000) #Mpc/h comoving
-    #     xi_nfw = xi.xi_nfw_at_r(radii, mass, c, params["Omega_m"])
-    #     xi_mm = xi.xi_mm_at_r(radii, params["k"], params["P_lin"])
-    #     xi_2halo = xi.xi_2halo(bias, xi_mm)
-    #
-    #     xi_hm = xi.xi_hm(xi_nfw, xi_2halo)
-    #     if component == "1h":
-    #         xi_hm = xi_nfw
-    #         print(xi_nfw)
-    #     if component == "2h":
-    #         xi_hm = xi.xi_hm(xi_2halo, xi_2halo)
-    #         xi_hm = xi_2halo
 
     R_perp = np.logspace(-3, 3, 1000) #Mpc/h comoving; distance on the sky
     Sigma = deltasigma.Sigma_nfw_at_R(R_perp, mass, c, params["Omega_m"])
@@ -113,6 +100,19 @@ def calc_nfw(rarr, logmass, c, bias, params, component="both"):
     DeltaSigma = deltasigma.DeltaSigma_at_R(_rarr, R_perp, Sigma, mass, c, params["Omega_m"])
 
     #     factor = (1 / h) / (1 / h * scale_factor)**2
+    factor = params["h"]/ params["scale_factor"]**2
+    return DeltaSigma * factor
+
+def calc_misc_nfw(rarr, logmass, c, R_misc, params):
+    _rarr = rarr * params["h"] / params["scale_factor"]
+    _R_misc = R_misc * params["h"] / params["scale_factor"]
+    mass = 10**logmass * params["h"]
+
+    R_perp = np.logspace(-3, 3, 1000) #Mpc/h comoving; distance on the sky
+    Sigma = deltasigma.Sigma_nfw_at_R(R_perp, mass, c, params["Omega_m"])
+    Sigma_misc = miscentering.Sigma_mis_single_at_R(R_perp, R_perp, Sigma, mass, c, params["Omega_m"], _R_misc)
+    DeltaSigma = miscentering.DeltaSigma_mis_at_R(_rarr, R_perp, Sigma_misc)
+
     factor = params["h"]/ params["scale_factor"]**2
     return DeltaSigma * factor
 
@@ -154,7 +154,7 @@ def calc_model(rarr, logmass, c, bias, params, component="both"):
     _rarr = rarr * params["h"] / params["scale_factor"]
     mass = 10**logmass * params["h"]
 
-    radii = np.logspace(-3, 3, 200) #Mpc/h comoving
+    radii = np.logspace(-3, 3, 400) #Mpc/h comoving
     xi_nfw = xi.xi_nfw_at_r(radii, mass, c, params["Omega_m"])
     xi_mm = xi.xi_mm_at_r(radii, params["k"], params["P_nonlin"])
     xi_2halo = xi.xi_2halo(bias, xi_mm)
@@ -162,16 +162,15 @@ def calc_model(rarr, logmass, c, bias, params, component="both"):
     xi_hm = xi.xi_hm(xi_nfw, xi_2halo)
     if component == "1h":
         xi_hm = xi_nfw
-    # elif component == "2h":
-    #     xi_hm = xi_2halo
 
-    # R_perp = np.logspace(-3, 2.4, 100) #Mpc/h comoving; distance on the sky
-    Sigma = deltasigma.Sigma_at_R(_rarr, radii, xi_hm, mass, c, params["Omega_m"])
-    DeltaSigma = deltasigma.DeltaSigma_at_R(_rarr, _rarr, Sigma, mass, c, params["Omega_m"])
-
+    R_perp = np.logspace(-3, 2.4, 300) #Mpc/h comoving; distance on the sky
+    Sigma = deltasigma.Sigma_at_R(R_perp, radii, xi_hm, mass, c, params["Omega_m"])
+    # return Sigma
+    DeltaSigma = deltasigma.DeltaSigma_at_R(_rarr, R_perp, Sigma, mass, c, params["Omega_m"])
     #     factor = (1 / h) / (1 / h * scale_factor)**2
     factor = params["h"]/ params["scale_factor"]**2
     return DeltaSigma * factor
+
 
 
 def log_likelihood(theta, data, params):
