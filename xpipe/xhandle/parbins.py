@@ -781,10 +781,10 @@ class XIO(object):
         # try:
         #     ftab = to_pandas(self.lenses["fullcat"][sind])
         #     ftab["JK_ID"] = labels
-        #     fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), ftab.to_records(), clobber=True)
+        #     fio.write(self.dpath + "/" + self.fname[self.ind].replace('.dat', '.fits'), ftab.to_records(), clobber=True)
         # except:
         #     print("cannot save JK_ID to file...")
-        #     fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), self.lenses["fullcat"][sind], clobber=True)
+        #     fio.write(self.dpath + "/" + self.fname[self.ind].replace('.dat', '.fits'), self.lenses["fullcat"][sind], clobber=True)
 
         for label, jkind in enumerate(jkinds):
             froot = self.flist[self.ind].replace('.dat', '_patch' + str(label) + '.dat')

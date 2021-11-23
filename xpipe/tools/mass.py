@@ -207,7 +207,7 @@ def do_mcmc(data, params, nstep=1000, nwalkers=16, prior=None):
 
     with Pool() as pool:
         sampler = emcee.EnsembleSampler(nwalkers, ndim, log_probability, args=(data, params, prior), pool=pool)
-        sampler.run_mcmc(pos, nstep, progress=True);
+        sampler.run_mcmc(pos, nstep, progress=True)
         flat_samples = sampler.get_chain(discard=500, thin=1, flat=True)
 
     return flat_samples, sampler
@@ -247,6 +247,8 @@ class QuintileExplorer(object):
         self.npdf = npdf
         self.ismeta = ismeta
 
+        self.lprior = None
+
         self._quintiles = ((0, 20), (20, 40), (40, 60), (60, 80), (80, 100))
         # self._quintiles = ((0, 10), (10, 20), (20, 30), (30, 40), (40, 50), (50, 60), (60, 70), (70, 80), (80, 90), (90, 100))
 
@@ -266,10 +268,10 @@ class QuintileExplorer(object):
         ACP.add_boost(self.smb)
         return ACP
 
-    def _fit_model(self, data, nwalkers=16, params=None, **kwargs) :
+    def _fit_model(self, data, nwalkers=16, params=None, lprior=None, **kwargs) :
         if params is None:
             params = self.params
-        flat_samples = do_mcmc(data, params, nwalkers=nwalkers)[0]
+        flat_samples = do_mcmc(data, params, nwalkers=nwalkers, prior=lprior)[0]
         return flat_samples
 
     def calc_fiducial_profile(self, nwalkers=16, **kwargs):
@@ -311,8 +313,8 @@ class QuintileExplorer(object):
             val_high = np.percentile(score, q_high)
 
         _ww = pd.DataFrame()
-        _ww[self.id_key] = self.ACP.target[self.id_key]
-
+        _ww[self.id_key] = self.raw_ACP.target[self.id_key]
+        print("here")
         tmp = pd.DataFrame()
 
         tmp[self.id_key] = self.features[self.id_key]
@@ -322,7 +324,7 @@ class QuintileExplorer(object):
 
         ww = pd.merge(_ww, tmp, on=self.id_key, how="left").fillna(value=0.)
 
-        return ww
+        return ww["WEIGHT"].values
 
     def set_features(self, features):
         tmp = pd.merge(pd.DataFrame(self.target["MEM_MATCH_ID"]), features, on="MEM_MATCH_ID", how="left")
@@ -345,6 +347,7 @@ class QuintileExplorer(object):
         prof = self._calc_profile(weights=ww).to_profile()
 
         zmean = np.average(self.target[self.z_key], weights=ww)
+        print("mean-z", zmean)
         parmaker = make_params(z=zmean, cosmo=default_cosmo)
         params = parmaker.params
 
@@ -370,7 +373,7 @@ class QuintileExplorer(object):
             feat = self.eff[:, col]
             for iq in np.arange(5):
                 print("starting decile ", str(iq), "of col", str(col))
-                self._calc_q_prof(feat, iq, "feat-"+str(col))
+                self._calc_q_prof(feat, iq, "eff-feat-"+str(col))
 
     def calc_feat_profiles(self):
         print("calculating reference profiles")

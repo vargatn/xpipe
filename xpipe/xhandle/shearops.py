@@ -910,14 +910,46 @@ def olivers_mock_function(a, b, c):
     """
     pass
 
+
 class AutoCalibrateProfile(object):
     """This """
-    def __init__(self, flist, flist_jk, pzcat, weights=None, sbins=(2, 3), xlims=(0.2, 30)):
-        self.flist = flist
-        self.flist_jk = flist_jk
+    def __init__(self, fname, fname_jk, pzcat, weights=None, id_key="MEM_MATCH_ID", weight_key="WEIGHT",
+                 z_key="Z_LAMBDA", sbins=(2, 3), xlims=(0.2, 30), Rs_sbins=None):
+        """
+
+        Parameters
+        ----------
+        fname: str
+            file name
+        fname_jk: list of lists
+            file names to Jackknife patches
+        pzcat: sompz_reader object
+            SOMPZ dataset
+        weights: DataFrame
+            DataFrame of IDs and weights
+        id_key: str
+            column key for IDs
+        weight_key: str
+            column key for weights
+        z_key: str
+            column key for redshifts
+        sbins: tuple
+            source bins to use
+        xlims: tuple
+            radius min and max in the units of xshear
+        Rs_sbins: list of lists
+            selection responses for the source bins
+        """
+        self.fname = fname
+        self.fname_jk = fname_jk
         self.pzcat = pzcat
-        self.infos = create_infodict(flist_jk)
+        self.infos = create_infodict(fname_jk)
+
         self.weights = weights
+        self.weight_key = weight_key
+        self.id_key = id_key
+        self.z_key = z_key
+
         self.sbins = sbins
         self.xlims = xlims
 
@@ -925,22 +957,9 @@ class AutoCalibrateProfile(object):
         self.profile = None
         self.target = None
         self.scinvs = []
+        self.Rs_sbins = Rs_sbins
 
-    def copy(self):
-
-        res = AutoCalibrateProfile(self.flist, self.flist_jk, self.pzcat, self.weights, self.sbins, self.xlims)
-
-        res._profiles = []
-        for prof in self._profiles:
-            res._profiles.append(copy.deepcopy(prof))
-        res.target = self.target.copy()
-        res.scinvs = self.scinvs.copy()
-        res.profile = copy.deepcopy(self.profile)
-        return res
-
-    def _load_profiles(self, ismeta=True, Rs_sbins=None, shear=True, weight_key="WEIGHT", weight=None, id_key="MEM_MATCH_ID", **kwargs):
-        if weight is not None:
-            self.weights = weight
+    def _load_profiles(self, ismeta=True, shear=True, **kwargs):
 
         self._profiles = []
         for i, sbin in enumerate(self.sbins):
@@ -948,38 +967,46 @@ class AutoCalibrateProfile(object):
             clust_files = [info["outfile"].replace("_result.dat", "_bin" + str(sbin + 1) + "_result.dat")
                            for info in self.infos]
             Rs = None
-            if Rs_sbins is not None:
-                Rs = Rs_sbins[i]
+            if self.Rs_sbins is not None:
+                Rs = self.Rs_sbins[i]
 
             clust = process_profile(clust_files, ismeta=ismeta, Rs=Rs,
-                                             weights=self.weights, weight_key=weight_key, id_key=id_key,
+                                             weights=self.weights, weight_key=self.weight_key, id_key=self.id_key,
                                              shear=shear)
             # print(clust.dst)
             self._profiles.append(clust)
 
-    def _load_targets(self, id_key="MEM_MATCH_ID", **kwargs):
+    def _load_targets(self, **kwargs):
+
         iname = self.infos[0]["infile"].split("_patch")[0] + ".fits"
         _target = fio.read(iname)
         target = to_pandas(_target)
         print(iname)
 
         tmp = pd.DataFrame()
-        tmp[id_key] = self._profiles[0].info[:, 0]
+        tmp[self.id_key] = self._profiles[0].info[:, 0]
 
-        self.target = pd.merge(tmp, target, how="left", on=id_key).reset_index(drop=True)
-        self.target["WEIGHT"] = 1.
+        self.target = pd.merge(tmp, target, how="left", on=self.id_key).reset_index(drop=True)
+        self.target[self.weight_key] = 1.
 
         ww = np.ones(len(self.target))
         if self.weights is not None:
             ww = self.weights
-        self.target["WEIGHT"] = ww
+        self.target[self.weight_key] = ww
 
-    def _get_scinvs(self, z_key="Z_LAMBDA", **kwargs):
-        zmean = np.average(self.target[z_key], weights=self.target["WEIGHT"])
+    def _get_scinvs(self, **kwargs):
+        zmean = np.average(self.target[self.z_key], weights=self.weights[self.weight_key])
 
         self.scinvs = []
         for sbin in self.sbins:
             self.scinvs.append(self.pzcat.get_single_scinv(zmean, sbin=sbin))
+        self.scinvs = np.array(self.scinvs)
+
+    def _get_scinvs_bin(self, **kwargs):
+
+        self.scinvs = []
+        for sbin in self.sbins:
+            self.scinvs.append(self.pzcat.get_bin_scinv(self.target[self.z_key], sbin=sbin, weights=self.target[self.weight_key]))
         self.scinvs = np.array(self.scinvs)
 
     def _combine_sbins(self, mfactor_sbins=None, weight_scrit_exponent=1):
@@ -1005,10 +1032,41 @@ class AutoCalibrateProfile(object):
         # print(self.profile.dst)
 
 
-    def get_profiles(self, reload=True, scinvs=None, mfactor_sbins=None, Rs_sbins=None, weights=None, **kwargs):
+    def get_profiles(self, reload=True, scinvs=None, mfactor_sbins=None, Rs_sbins=None,
+                     weights=None, weight_key=None, id_key=None, z_key=None, **kwargs):
+        """
+        Loads and Calculates DeltaSigma profile from a combination of tomographic source bins
 
+        Parameters
+        ----------
+        reload: bool
+            If true, file leading is performed, if false re-processes the already loaded data
+        scinvs: list
+            list of Sigma Crit inverse values
+        mfactor_sbins: list
+            mean multiplicative shear bias and redshift bias for each tomographic bin
+        Rs_sbins: list of lists
+            selection responses for the source bins
+        weights: DataFrame
+            DataFrame of IDs and weights
+        id_key: str
+            column key for IDs
+        weight_key: str
+            column key for weights
+        z_key: str
+            column key for redshifts
+        """
+
+        if Rs_sbins is not None:
+            self.Rs_sbins = Rs_sbins
         if weights is not None:
             self.weights = weights
+        if id_key is not None:
+            self.id_key = id_key
+        if weight_key is not None:
+            self.weight_key = weight_key
+        if z_key is not None:
+            self.z_key = z_key
 
         if reload:
             self._load_profiles(Rs_sbins=Rs_sbins, **kwargs)
@@ -1017,14 +1075,27 @@ class AutoCalibrateProfile(object):
         if self.scinvs is None:
             if reload:
                 self._load_targets(**kwargs)
-            self._get_scinvs(**kwargs)
+            self._get_scinvs_bin(**kwargs)
 
         self._combine_sbins(mfactor_sbins)
 
         self._scale_cut()
 
     def composite(self, other, operation):
+        """
+        Add, Subtract, Multiply or Divide this object by an other object of the same class
 
+        Parameters
+        ----------
+        other: AutoCalibrateProfile
+            Object to composite with
+        operation: str
+            "+, -, *, /"
+
+        Returns
+        -------
+        AutoCalibrateProfile
+        """
         _profiles = copy.copy(self._profiles)
         res = []
         for i, prof in enumerate(_profiles):
@@ -1090,9 +1161,17 @@ class AutoCalibrateProfile(object):
     #     self._combine_sbins()
     #     self._scale_cut()
 
-
-
-
+    # def copy(self):
+    #
+    #     res = AutoCalibrateProfile(self.fname, self.fname_jk, self.pzcat, self.weights, self.sbins, self.xlims)
+    #
+    #     res._profiles = []
+    #     for prof in self._profiles:
+    #         res._profiles.append(copy.deepcopy(prof))
+    #     res.target = self.target.copy()
+    #     res.scinvs = self.scinvs.copy()
+    #     res.profile = copy.deepcopy(self.profile)
+    #     return res
 
 
 class ProfileContainer(object):
@@ -1101,6 +1180,7 @@ class ProfileContainer(object):
         self.dst = dst
         self.dst_err = dst_err
         self.cov = cov
+
 
 
 

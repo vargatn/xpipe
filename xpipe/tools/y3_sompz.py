@@ -104,16 +104,16 @@ class sompz_reader(object):
 
         return scvals
 
-    def get_bin_scinv(self, clust_zvals, sbin=-1):
+    def get_bin_scinv(self, clust_zvals, sbin=-1, weights=None):
         """Calculates sigma_crit_inverse with a single lens redshift and a tomographic source bin"""
         try:
             len(clust_zvals)
         except:
             clust_zvals = (clust_zvals,)
-        ccounts = np.histogram(clust_zvals, bins=self.zclust_grid_edges)[0]
+        ccounts = np.histogram(clust_zvals, bins=self.zclust_grid_edges, weights=weights)[0]
 
-        scvals = np.zeros(len(self.zcens))
-        for i, z in enumerate(self.zcens):
+        scvals = np.zeros(len(self.zclust_grid))
+        for i, z in enumerate(self.zclust_grid):
             scvals[i] = np.average(self.scritinv_tab[i], weights=self.source_bins[sbin])
         scritinv = np.average(scvals, weights=ccounts)
         return scritinv
