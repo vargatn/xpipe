@@ -1098,13 +1098,18 @@ class SOMBoost(object):
                 for i, tmp in  enumerate(clust_infos):
                     print(j, sbin, i, end="\n")
                     pair_name = tmp["outfile"].replace("_result.dat", "_bin" + str(sbin+1) + "_result_pairs.dat")
+                    # print(pair_name)
                     try:
-                        tabs.append(pd.read_csv(pair_name, delim_whitespace=True, header=None, skiprows=1).values[:, (0, 1, 2, 3, 4)])
+                        _data = pd.read_csv(pair_name, delim_whitespace=True, header=None, skiprows=1).values[:, (0, 1, 2, 3, 4)]
+                        data = pd.DataFrame(_data, columns=("MEM_MATCH_ID", "ID", "SOMCELL", "RBIN", "W"))
+                        data["JK_LABEL"] = i
+                        tabs.append(data)
                     except:
                         pass
-
-                tabs = np.vstack(tabs)
-                table = pd.DataFrame(tabs, columns=("MEM_MATCH_ID", "ID", "SOMCELL", "RBIN", "W"))
+                # print(tabs)
+                # tabs = np.vstack(tabs)
+                table = pd.concat(tabs)
+                # table = pd.DataFrame(tabs, columns=("MEM_MATCH_ID", "ID", "SOMCELL", "RBIN", "W", "JK_LABEL"))
                 match = pd.merge(table, self._cat, how="left", on="ID")
                 print("merged catalogs")
                 # if oname is not None:
