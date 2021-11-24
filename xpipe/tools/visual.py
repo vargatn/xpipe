@@ -8,6 +8,59 @@ import scipy.stats as stats
 import scipy.ndimage as ndimage
 
 
+def make_simple_corner(flat_samples, color="C0", fig=None, axarr=None, npar=3,
+                       axis_labels=("log10 M", "c", "b"), limits=((14, 15), (0, 8), (0, 8)), **kwargs):
+    if fig is None:
+        fig, axarr = plt.subplots(nrows=3, ncols=3, figsize=(8, 8), sharex=False, sharey=False)
+        fig.subplots_adjust(hspace=0.20, wspace=0.20)
+
+    for i in np.arange(npar):
+        axarr[-1, i].set_xlabel(axis_labels[i], fontsize=12)
+        for j in np.arange():
+            if j > i:
+                axarr[i, j].axis('off')
+
+    for i in np.arange(npar):
+        axarr[-1, i].set_xlabel(axis_labels[i], fontsize=12)
+        axarr[i, 0].set_ylabel(axis_labels[i], fontsize=12)
+        for j in np.arange(npar):
+            if j < i:
+                axarr[i, j].set_xlim(limits[j])
+                axarr[i, j].set_ylim(limits[i])
+
+                nbins = 40
+                bins = (
+                    np.linspace(limits[j][0], limits[j][1], nbins),
+                    np.linspace(limits[i][0], limits[i][1], nbins),
+                )
+                xcens = bins[0][:-1] + np.diff(bins[0]) / 2
+                ycens = bins[1][:-1] + np.diff(bins[1]) / 2
+
+                xx, yy = np.meshgrid(xcens, ycens)
+                xx = xx.T
+                yy = yy.T
+
+                tmp = flat_samples
+
+                _counts = np.histogram2d(tmp[:, j], tmp[:, i], bins=bins)[0]
+                counts = ndimage.gaussian_filter(_counts, sigma=1.0, order=0)
+                mx = counts.max()
+                axarr[i, j].contour(xx, yy, counts,levels=[mx*0.05, mx*0.2, mx*0.5, mx*0.8],
+                                    linewidths=0.9, colors=color, **kwargs)
+
+
+    for i in np.arange(npar):
+        axarr[i, i].set_xlim(limits[i])
+        bins = np.linspace(limits[i][0], limits[i][1], 40)
+        tmp = flat_samples
+        axarr[i, i].hist(tmp[:, i], histtype="step", color=color, density=True, bins=bins, **kwargs)
+
+
+    axarr[0, 0].set_ylabel("p.d.f.")
+    return fig, axarr
+
+
+
 def contprep(data, clevels=(0.68, 0.95), sample=5000, weights=None, **kwargs):
     """
     Prepares contour levels based on passsed dataset
