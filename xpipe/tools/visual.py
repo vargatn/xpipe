@@ -7,16 +7,17 @@ import matplotlib.pyplot as plt
 import scipy.stats as stats
 import scipy.ndimage as ndimage
 
+import scipy.ndimage as ndimage
 
-def make_simple_corner(flat_samples, color="C0", fig=None, axarr=None, npar=3,
+def make_simple_corner(flat_samples, color="C0", fig=None, axarr=None, npar=3, figsize=(8, 8), wspace=0.2, hspace=0.2,
                        axis_labels=("log10 M", "c", "b"), limits=((14, 15), (0, 8), (0, 8)), **kwargs):
     if fig is None:
-        fig, axarr = plt.subplots(nrows=3, ncols=3, figsize=(8, 8), sharex=False, sharey=False)
-        fig.subplots_adjust(hspace=0.20, wspace=0.20)
+        fig, axarr = plt.subplots(nrows=npar, ncols=npar, figsize=figsize, sharex=False, sharey=False)
+        fig.subplots_adjust(hspace=hspace, wspace=wspace)
 
     for i in np.arange(npar):
         axarr[-1, i].set_xlabel(axis_labels[i], fontsize=12)
-        for j in np.arange():
+        for j in np.arange(npar):
             if j > i:
                 axarr[i, j].axis('off')
 

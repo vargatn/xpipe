@@ -1101,7 +1101,7 @@ class SOMBoost(object):
                     # print(pair_name)
                     try:
                         _data = pd.read_csv(pair_name, delim_whitespace=True, header=None, skiprows=1).values[:, (0, 1, 2, 3, 4)]
-                        data = pd.DataFrame(_data, columns=("MEM_MATCH_ID", "ID", "SOMCELL", "RBIN", "W"))
+                        data = pd.DataFrame(_data, columns=(self.lens_key, "ID", "SOMCELL", "RBIN", "W"))
                         data["JK_LABEL"] = i
                         tabs.append(data)
                     except:
@@ -1123,7 +1123,7 @@ class SOMBoost(object):
     def _merge_weights(self, table, weights):
         if weights is not None:
             print("here")
-            res = pd.merge(weights, table, on="MEM_MATCH_ID", how="left")
+            res = pd.merge(weights, table, on=self.lens_key, how="left")
         else:
          res = table
         return res
@@ -1156,7 +1156,10 @@ class SOMBoost(object):
             self.zvals.append(_zvals)
             self.wws.append(_wws)
 
-    def prep_boost(self, pair_outpath=None, lens_weights=None, pair_datas=None, **kwargs):
+    def prep_boost(self, pair_outpath=None, lens_weights=None, lens_key="MEM_MATCH_ID", weight_key="WEIGHT", pair_datas=None, **kwargs):
+        self.lens_key = lens_key
+        self.weight_key = weight_key
+
         self.get_pair_datas(pair_outpath=pair_outpath, pair_datas=pair_datas)
 
         self.get_histograms(lens_weights=lens_weights, **kwargs)
@@ -1210,6 +1213,7 @@ class SOMBoost(object):
             self.boost_amps.append(_tmp2)
             self.bmixers.append(_tmp3)
             self.covs.append(_tmp4)
+
 
 
 

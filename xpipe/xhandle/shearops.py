@@ -981,11 +981,9 @@ class AutoCalibrateProfile(object):
         iname = self.infos[0]["infile"].split("_patch")[0] + ".fits"
         _target = fio.read(iname)
         target = to_pandas(_target)
-        print(iname)
 
         tmp = pd.DataFrame()
         tmp[self.id_key] = self._profiles[0].info[:, 0]
-
         self.target = pd.merge(tmp, target, how="left", on=self.id_key).reset_index(drop=True)
         self.target[self.weight_key] = 1.
 
@@ -1006,30 +1004,33 @@ class AutoCalibrateProfile(object):
 
         self.scinvs = []
         for sbin in self.sbins:
-            self.scinvs.append(self.pzcat.get_bin_scinv(self.target[self.z_key], sbin=sbin, weights=self.target[self.weight_key]))
+            self.scinvs.append(self.pzcat.get_bin_scinv(self.target[self.z_key], sbin=sbin, weights=self.target[self.weight_key].values))
         self.scinvs = np.array(self.scinvs)
 
-    def _combine_sbins(self, mfactor_sbins=None, weight_scrit_exponent=1):
+    def _combine_sbins(self, mfactor_sbins=None, weight_scrit_exponent=1, reload=True):
         _profiles = []
         for i, scinv in enumerate(self.scinvs):
             _profiles.append(copy.deepcopy(self._profiles[i]))
-            _profiles[i].prof_maker(weights=self.weights)
-            # print(i, _profiles[i].dst)
+            if self.weights is not None:
+                _weights = extract_weights(self._profiles[i].info, self.weights, weight_key=self.weight_key, id_key=self.id_key)
+                _profiles[i].prof_maker(weights=_weights)
+            else:
+                _profiles[i].prof_maker()
             _profiles[i].multiply(scinv**weight_scrit_exponent)
 
         if mfactor_sbins is None:
             mfactor_sbins = np.ones(len(self.scinvs))
+
         self.profile = _profiles[0]
-        # print(self._profiles.dst)
         self.profile.multiply(mfactor_sbins[0])
+
         for i in np.arange(len(_profiles) - 1):
             tmp = _profiles[i + 1]
             tmp.multiply(mfactor_sbins[i + 1])
             self.profile.composite(tmp, operation="+")
-        # print(self.profile.dst)
+
         factor = 1. / np.sum(self.scinvs**(weight_scrit_exponent + 1))
         self.profile.multiply(factor)
-        # print(self.profile.dst)
 
 
     def get_profiles(self, reload=True, scinvs=None, mfactor_sbins=None, Rs_sbins=None,
@@ -1076,9 +1077,7 @@ class AutoCalibrateProfile(object):
             if reload:
                 self._load_targets(**kwargs)
             self._get_scinvs_bin(**kwargs)
-
         self._combine_sbins(mfactor_sbins)
-
         self._scale_cut()
 
     def composite(self, other, operation):
@@ -1119,26 +1118,34 @@ class AutoCalibrateProfile(object):
         self.cov = self.profile.dst_cov[ii, :][:, ii]
 
     def add_boost(self, sboost):
+        """Boost uncertainty is added to the diagonal in quadrature of the covariance"""
 
+        try:
+            cov = sboost.covs[0]
+        except:
+            cov = np.zeros(shape=(len(self.dst), len(self.dst)))
         self._fcls = []
         amp = sboost.boost_amps[0]
         tmps = []
+        self.fcl_err = []
         for i, _amp in enumerate(amp):
             # arr = np.concatenate((_amp, (0,)))
             self._fcls.append(_amp)
             tmps.append(_amp * self.scinvs[i])
-
+            self.fcl_err.append(np.diag(cov[i]).mean() * self.scinvs[i])
 
         factor = 1. / self.scinvs.sum()
         self.fcl = np.sum(tmps, axis=0)  * factor
-        print(self.fcl.shape)
+        self.fcl_err = np.sum(self.fcl_err) * factor
+
         ln = len(self.dst) - len(self.fcl)
-        print(ln)
         if ln > 0:
             pad = np.zeros(self.profile.dst_sub.shape[0] - len(self.fcl))
             self.fcl = np.concatenate((self.fcl, pad))
         self.profile.multiply((self.fcl + 1)[:, np.newaxis])
         self._scale_cut()
+        self.cov = self.cov + np.diag(self.cov) * self.fcl_err
+
         # self.dst = self.profile.dst
         # self.dst_err = self.profile.dst_err
         # self.rr = self.profile.rr

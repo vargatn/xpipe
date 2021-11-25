@@ -5,6 +5,7 @@ from cluster_toolkit import deltasigma
 from cluster_toolkit import xi
 from cluster_toolkit import miscentering
 from cluster_toolkit import bias
+from cluster_toolkit import averaging
 from classy import Class
 from multiprocessing import Pool
 
@@ -152,6 +153,7 @@ def calc_sub_misc_nfw(rarr, logmass, c, R_misc, f_cen, dist, params):
     _rarr = rarr * params["h"] / params["scale_factor"]
     _R_misc = R_misc * params["h"] / params["scale_factor"]
     _dist = dist * params["h"] / params["scale_factor"]
+    # print(dist, _dist)
     mass = 10**logmass * params["h"]
 
     R_perp = np.logspace(-3, 2.4, 1000) #Mpc/h comoving; distance on the sky
@@ -161,6 +163,7 @@ def calc_sub_misc_nfw(rarr, logmass, c, R_misc, f_cen, dist, params):
     Sigma_clust = f_cen * Sigma + (1 - f_cen) * Sigma_misc
 
     Sigma_sub_clust = miscentering.Sigma_mis_single_at_R(R_perp, R_perp, Sigma_clust, mass, c, params["Omega_m"], _dist)
+    # print(Sigma_sub_clust)
     DeltaSigma = miscentering.DeltaSigma_mis_at_R(_rarr, R_perp, Sigma_sub_clust)
 
     factor = params["h"]/ params["scale_factor"]**2
@@ -343,7 +346,6 @@ def log_cluster_likelihood(theta, data, params):
     R_lambda = data["R_lambda"]
     R_misc = tau_misc * R_lambda
 
-
     model = calc_cluster_model(x, logmass, c, R_misc, f_cen, params)
 
     dvec = y - model
@@ -377,8 +379,142 @@ def do_cluster_mcmc(data, params, nstep=1000, nwalkers=16, prior=None, init_pos=
 
 
 
+class log_sub_cluster_prior(object):
+    def __init__(self, logmass_edges=(10, 18), c_edges=(2, 20), c_sub_edges=(5, 20), tau_pars=(0.17, 0.04), f_pars=(0.75, 0.08)):
+        """logmass, c linear edges, tau, f gaussian prior (and zero cut)"""
+        self.logmass_edges = logmass_edges
+        self.c_edges = c_edges
+        self.c_sub_edges = c_sub_edges
+        self.tau_pars = tau_pars
+        self.f_pars = f_pars
+        self.BADVAL = -99999
+
+    def __call__(self, theta):
+        """logmass, c, tau, f_cen"""
+        logmass1, c1, logmass2, logmass3, logmass4, c2, tau, f_cen = theta
+        lp = 0
+
+        if (self.logmass_edges[0] > logmass1) or (self.logmass_edges[1] < logmass1):
+            lp = self.BADVAL
+        if (self.c_edges[0] > c1) or (self.c_edges[1] < c1):
+            lp = self.BADVAL
+        if (self.logmass_edges[0] > logmass2) or (self.logmass_edges[1] < logmass2):
+            lp = self.BADVAL
+        if (self.logmass_edges[0] > logmass3) or (self.logmass_edges[1] < logmass3):
+            lp = self.BADVAL
+        if (self.logmass_edges[0] > logmass4) or (self.logmass_edges[1] < logmass4):
+            lp = self.BADVAL
+        if (self.c_sub_edges[0] > c2) or (self.c_sub_edges[1] < c2):
+            lp = self.BADVAL
+
+        lp += -np.log(self.tau_pars[1]) - (tau - self.tau_pars[0])**2 / (2 * self.tau_pars[1]**2)
+        lp += -np.log(self.f_pars[1]) - (f_cen - self.f_pars[0])**2 / (2 * self.f_pars[1]**2)
+
+        if not np.isfinite(lp):
+            lp = self.BADVAL
+        if np.min(theta) < 0:
+            lp = self.BADVAL
+        return lp
 
 
+def calc_average_offset_nfw(rarr, logmass1, c1, R_misc, f_cen, distvals, params, nbins=4):
+
+    vals, edges = np.histogram(distvals, bins=nbins)
+    cens = edges[:-1] + np.diff(edges) / 2
+
+    profiles = []
+    for cen in cens:
+        tmp = calc_sub_misc_nfw(rarr, logmass1, c1, R_misc, f_cen, cen, params)
+        profiles.append(tmp)
+    model = np.average(profiles, axis=0, weights=vals)
+    return model
 
 
+def calc_sub_cluster_model(rbin_edges, rarr_dense, logmass1, c1, logmass2, logmass3, logmass4, c2, R_misc, f_cen, dists, params, dist_mult=1.42857):
+    dist1, dist2, dist3 = dists
+    rbc, rbs1, rbs2, rbs3 = rbin_edges
+    xc, xs1, xs2, xs3 = rarr_dense
+    # print(logmass1, c1, logmass2, logmass3, logmass4, c2, R_misc, f_cen, dist1, dist2, dist3)
+    cluster_model = calc_cluster_model(xc, logmass1, c1, R_misc, f_cen, params)
+    av_cluster_model = averaging.average_profile_in_bins(rbc, xc, cluster_model)
+    # print(av_cluster_model.shape)
+    sub_model1 = calc_nfw(xs1, logmass2, c2, params)
+    sub_model2 = calc_nfw(xs2, logmass3, c2, params)
+    sub_model3 = calc_nfw(xs3, logmass4, c2, params)
+    # print(dists)
+    offset_clust_model1 = calc_average_offset_nfw(xs1, logmass1, c1, R_misc, f_cen, dist1*dist_mult, params)
+    offset_clust_model2 = calc_average_offset_nfw(xs2, logmass1, c1, R_misc, f_cen, dist2*dist_mult, params)
+    offset_clust_model3 = calc_average_offset_nfw(xs3, logmass1, c1, R_misc, f_cen, dist3*dist_mult, params)
+    # print(offset_clust_model3)
+    # print(offset_clust_model2)
+    # print(offset_clust_model1)
+    #
+    model1 = sub_model1 + offset_clust_model1
+    av_model1 = averaging.average_profile_in_bins(rbs1, xs1, model1)
+    model2 = sub_model2 + offset_clust_model2
+    av_model2 = averaging.average_profile_in_bins(rbs2, xs2, model2)
+    model3 = sub_model3 + offset_clust_model3
+    av_model3 = averaging.average_profile_in_bins(rbs3, xs3, model3)
+    # print(av_model1.shape, av_model2.shape, av_model3.shape)
+    # print(av_model3)
+    # # print(model1)
+    model = np.concatenate((cluster_model, model1, model2, model3))
+    average_model = np.concatenate((av_cluster_model, av_model1, av_model2, av_model3))
+    # print(average_model.shape)
+    # model = cluster_model
+    return model, average_model
+
+
+def log_sub_cluster_likelihood(theta, data, params):
+    logmass1 = theta[0]
+    c1 = theta[1]
+
+    logmass2 = theta[2]
+    logmass3 = theta[3]
+    logmass4 = theta[4]
+    c2 =  theta[5]
+
+    tau_misc = theta[6]
+    f_cen = theta[7]
+    # dist_mult = theta[8]
+
+
+    y = data["dst"]
+    cov = data["cov"]
+    R_lambda = data["R_lambda"]
+    R_misc = tau_misc * R_lambda
+
+    model = calc_sub_cluster_model(data["rbin_edges"], data["rarr_dense"], logmass1, c1, logmass2, logmass3, logmass4, c2, R_misc, f_cen, data["dists"], params, dist_mult=1.42857)[1]
+
+    dvec = y - model
+    lprop = -0.5 * np.dot(np.dot(dvec.T, np.linalg.inv(cov)), dvec)
+    return lprop
+
+
+def log_sub_cluster_probability(theta, data, params):
+
+    prior = log_sub_cluster_prior()
+    # lp = 0
+    # if log_prior is not None:
+    lp = prior(theta)
+
+    ll = log_sub_cluster_likelihood(theta, data, params)
+    if np. isnan(ll):
+        ll = -99999.
+    return lp + ll
+
+def do_sub_cluster_mcmc(data, params, nstep=1000, nwalkers=16,
+                        init_pos=np.array([14.7, 5.5, 12.3, 12.3, 12.3, 10, 0.2, 0.8]), init_fac=1e-2, discard=200):
+    ndim = len(init_pos)
+    pos = init_pos[:, np.newaxis].T + init_fac * np.random.randn(nwalkers, ndim)
+
+    try:
+        with Pool() as pool:
+            sampler = emcee.EnsembleSampler(nwalkers, ndim, log_sub_cluster_probability, args=(data, params), pool=pool)
+            sampler.run_mcmc(pos, nstep, progress=True)
+            flat_samples = sampler.get_chain(discard=discard, thin=1, flat=True)
+    except KeyboardInterrupt:
+        raise KeyboardInterrupt
+
+    return flat_samples, sampler
 
