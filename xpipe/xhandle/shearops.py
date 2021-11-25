@@ -912,7 +912,7 @@ def olivers_mock_function(a, b, c):
 
 
 class AutoCalibrateProfile(object):
-    """This """
+    """WEIGHTS must be from the base input dataset for Random points!!!"""
     def __init__(self, fname, fname_jk, pzcat, weights=None, id_key="MEM_MATCH_ID", weight_key="WEIGHT",
                  z_key="Z_LAMBDA", sbins=(2, 3), xlims=(0.2, 30), Rs_sbins=None):
         """
