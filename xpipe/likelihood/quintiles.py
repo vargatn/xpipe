@@ -1,6 +1,7 @@
 import pickle
 
-from xpipe.tools.mass import do_mcmc, make_params, default_cosmo, get_scales, log_prior
+from xpipe.likelihood.mass import make_params, default_cosmo, get_scales
+from xpipe.likelihood.mcmc import do_mcmc, log_prior
 from xpipe.xhandle import shearops, pzboost
 
 
