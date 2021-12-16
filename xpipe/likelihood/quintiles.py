@@ -1,7 +1,7 @@
 import pickle
 
 from xpipe.likelihood.mass import make_params, default_cosmo, get_scales
-from xpipe.likelihood.mcmc import do_mcmc, log_prior
+from xpipe.likelihood.mcmc import do_mcmc
 from xpipe.xhandle import shearops, pzboost
 
 
@@ -22,7 +22,6 @@ class QuintileExplorer(object):
         self.lprior = None
 
         self._quintiles = ((0, 20), (20, 40), (40, 60), (60, 80), (80, 100))
-        # self._quintiles = ((0, 10), (10, 20), (20, 30), (30, 40), (40, 50), (50, 60), (60, 70), (70, 80), (80, 90), (90, 100))
 
     def load_target(self):
         self.raw_ACP = shearops.AutoCalibrateProfile(self.flist, self.flist_jk, self.src, xlims=(0.1, 100))
