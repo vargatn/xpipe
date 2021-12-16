@@ -9,11 +9,12 @@ import fitsio as fio
 import numpy as np
 import pandas as pd
 import sys
+import copy
 
 from .ioshear import read_single_bin, read_multiple_bin
-from .xwrap import sheared_tags
+from .xwrap import sheared_tags, create_infodict
 from ..paths import fullpaths, params
-from ..tools.catalogs import match_endian
+from ..tools.catalogs import match_endian, to_pandas
 
 BADVAL = -9999.0
 
@@ -58,7 +59,7 @@ def redges(rmin, rmax, nbin):
 
 
 class StackedProfileContainer(object):
-    def __init__(self, info, data, labels, ncen, lcname=None, metadata=None, metatags=None, **kwargs):
+    def __init__(self, info, data, labels, ncen, lcname=None, metadata=None, metatags=None, Rs=None, weights=None, shear=False, **kwargs):
         """
         Object Oriented interface for stacked shear and :math:`\\Delta\\Sigma` calculated via **xshear**
 
@@ -153,6 +154,8 @@ class StackedProfileContainer(object):
             sheared versions of :code:`data`
         metatags : list of str
             sheared tags
+        Rs : float
+            metacal selection response (constant) which will be used instead of metadata / metatags
         """
 
         # indices to be used in the shear stacking
@@ -161,12 +164,22 @@ class StackedProfileContainer(object):
         self.dst_denom = 6
         self.dsx_denom = 7
 
+        self.dsensum_s = 8
+
         self.e1_nom = 10
         self.e2_nom = 11
         self.meta_denom = 3
         self.meta_prefac = 2
 
         self.snum_ind = 2
+
+        if shear:
+            self.dst_denom = 8
+            self.dsx_denom = 9
+
+            self.meta_denom = 3
+            self.meta_prefac = 3
+            self.snum_ind = 3
 
         # input params saved
         self.info = info
@@ -186,11 +199,16 @@ class StackedProfileContainer(object):
         self.metatags = metatags
         self.ismeta = self.metadata is not None and self.metatags is not None
 
+        self.Rs = Rs
+
+        if self.Rs is not None:
+            self.ismeta = False
+
         self.labels = labels
         self.ncen = ncen  # number of centers
 
         # containers for stacking parameters
-        self.weights = None  # stacking weights
+        self.weights = weights  # stacking weights
 
         # containers for the Jackknife sampling
         self.sub_labels = None
@@ -216,6 +234,11 @@ class StackedProfileContainer(object):
         self.dsx_cov = np.zeros((self.nbin, self.nbin))
         self.dsx_err = np.zeros(self.nbin)
 
+        self.resp_shear = np.zeros(self.nbin)
+        self.resp_sel = np.zeros(self.nbin)
+        self.resp_shear_err = np.zeros(self.nbin)
+        self.resp_sel_err = np.zeros(self.nbin)
+
         # containers for the source number profile
         self.snum = np.zeros(self.nbin)
         self.snum0 = np.zeros(self.nbin)
@@ -225,6 +248,33 @@ class StackedProfileContainer(object):
         self.neff = 0  # number of entries with sources in any bin
         self.hasprofile = False
         self.hasdata = True
+
+    def copy(self):
+
+        infodict = self.to_dict()
+
+        obj = StackedProfileContainer(**infodict)
+        return obj
+
+    def to_dict(self):
+        """
+        Extracts the raw data to a dictionary
+
+        Contains the arguments passed to this dataset
+        """
+        infodict = {
+            "info": self.info,
+            "data": self.data,
+            "labels": self.labels,
+            "ncen": self.ncen,
+            "lcname": self.lcname,
+            "metadata": self.metadata,
+            "metatags": self.metatags,
+            "Rs": self.Rs,
+            "weights": self.weights,
+        }
+        return infodict
+
 
     @classmethod
     def from_sub_dict(cls, sub_dict):
@@ -248,7 +298,7 @@ class StackedProfileContainer(object):
         The resulting dict does not contain the base data, only the profile, the JK-subprofiles and
         ancillary quantities
         """
-
+        # raise DeprecationWarning
         infodict = {
             "lcname": self.lcname,
             "nbin": self.nbin,
@@ -294,9 +344,10 @@ class StackedProfileContainer(object):
         self.labels = None
         self.hasdata = False
 
-    def _reset_profile(self, keep_rr=True):
+    def _reset_profile(self, keep_rr=True, reset_w=False):
         """Resets the profile container, while keeping the base data and JK-subprofiles"""
-        self.w = np.ones(self.num)
+        if reset_w:
+            self.w = np.ones(self.num)
         if not keep_rr:
             self.rr = np.ones(self.nbin) * -1.0
         self.dst0 = np.zeros(self.nbin)
@@ -307,6 +358,11 @@ class StackedProfileContainer(object):
         self.dst_err = np.zeros(self.nbin)
         self.dsx_cov = np.zeros((self.nbin, self.nbin))
         self.dsx_err = np.zeros(self.nbin)
+
+        self.resp_shear = np.zeros(self.nbin)
+        self.resp_sel = np.zeros(self.nbin)
+        self.resp_shear_err = np.zeros(self.nbin)
+        self.resp_sel_err = np.zeros(self.nbin)
 
         self.hasprofile = False
 
@@ -326,6 +382,11 @@ class StackedProfileContainer(object):
         self.dsx_sub = np.zeros(shape=(self.nbin, self.ncen))
         self.dst_sub = np.zeros(shape=(self.nbin, self.ncen))
         self.snum_sub = np.zeros(shape=(self.nbin, self.ncen))
+
+        self.resp_sub_shear = np.zeros(shape=(self.nbin, self.ncen))
+        self.resp_sub_sel = np.zeros(shape=(self.nbin, self.ncen))
+        self.resp_sub_shear_err = np.zeros(shape=(self.nbin, self.ncen))
+        self.resp_sub_sel_err = np.zeros(shape=(self.nbin, self.ncen))
 
     def _get_rr(self):
         """calculating radial values for data points"""
@@ -372,11 +433,12 @@ class StackedProfileContainer(object):
             cind = hasval[i]
 
             ww = self.w[ind, np.newaxis]
-            wsum = np.sum(self.w[ind])
-
-            # TODO log responses
+            ww_sum = np.sum(self.w[ind])
 
             Rs = np.zeros(len(cind))
+            if self.Rs is not None:
+                Rs = np.ones(len(cind)) * self.Rs
+
             if self.ismeta:
                 val1parr = (np.sum(self.metadata[0][self.e1_nom, ind][:, cind] * ww, axis=0) /
                             np.sum(self.metadata[0][self.meta_denom, ind][:, cind] * ww, axis=0))
@@ -389,18 +451,27 @@ class StackedProfileContainer(object):
                 val2marr = (np.sum(self.metadata[3][self.e2_nom, ind][:, cind] * ww, axis=0) /
                             np.sum(self.metadata[3][self.meta_denom, ind][:, cind] * ww, axis=0))
                 R22 = (val2parr - val2marr) / 0.02
-                Rs = 0.5 * (R11 + R22) * np.sum(self.data[self.meta_prefac, ind][:, cind] * ww, axis=0)
+
+                Rs = 0.5 * (R11 + R22)
+                # print(Rs)
+
+            wsum = np.sum(self.data[self.meta_prefac, ind][:, cind] * ww, axis=0)
+            ssum = np.sum(self.data[self.meta_denom, ind][:, cind] * ww, axis=0)
 
             dsum_jack = np.sum(self.data[self.dst_nom, ind][:, cind] * ww, axis=0)
             dsum_w_jack = np.sum(self.data[self.dst_denom, ind][:, cind] * ww, axis=0)
 
-            self.dst_sub[cind, lab] = dsum_jack / (dsum_w_jack + Rs)
+            self.dst_sub[cind, lab] = dsum_jack / (dsum_w_jack + Rs * wsum)
 
             osum_jack = np.sum(self.data[self.dsx_nom, ind][:, cind] * ww, axis=0)
             osum_w_jack = np.sum(self.data[self.dsx_denom, ind][:, cind] * ww, axis=0)
-            self.dsx_sub[cind, lab] = osum_jack / (osum_w_jack + Rs)
+            self.dsx_sub[cind, lab] = osum_jack / (osum_w_jack + Rs * wsum)
 
-            self.snum_sub[cind, lab] = np.sum(self.data[self.snum_ind, ind][:, cind] * ww, axis=0) / wsum
+            dsensum = np.sum(self.data[self.dsensum_s, ind][:, cind] * ww, axis=0)
+            self.resp_sub_shear[cind, lab] = dsensum / ssum
+            self.resp_sub_sel[cind, lab] = Rs
+
+            self.snum_sub[cind, lab] = np.sum(self.data[self.snum_ind, ind][:, cind] * ww, axis=0) / ww_sum
             self.snum_sub[:, lab] /= np.sum(self.snum_sub[:, lab])
 
     def _profcalc(self):
@@ -418,6 +489,13 @@ class StackedProfileContainer(object):
                 self.dsx[r] = np.sum(self.dsx_sub[r, subind]) / njk
                 self.snum[r] = np.sum(self.snum_sub[r, subind]) / njk
                 self.rr[r] = tmp_rr[r]
+
+                self.resp_sel[r] = np.sum(self.resp_sub_sel[r, subind]) / njk
+                self.resp_shear[r] = np.sum(self.resp_sub_shear[r, subind]) / njk
+                # This is kind of a placeholder errorbar without cov bookeeping
+                self.resp_sel_err[r] = np.sqrt(np.var(self.resp_sub_sel[r, subind]) * (njk - 1.) / njk)
+                self.resp_shear_err[r] = np.sqrt(np.var(self.resp_sub_shear[r, subind]) * (njk - 1.) / njk)
+
 
     def _covcalc(self):
         """JK estimate on the covariance matrix"""
@@ -574,6 +652,7 @@ class StackedProfileContainer(object):
 
         # performs the multiplication
         self.dst_sub *= val
+        self.dsx_sub *= val
 
         # re calculates profiles
         self._profcalc()
@@ -628,6 +707,43 @@ class StackedProfileContainer(object):
 
         # updates subprofiles
         self._composite_subprofiles(other=other, operation=operation)
+        self._profcalc()
+        self._covcalc()
+
+        self.hasprofile = True
+
+    def append(self, other, keep_rr=True):
+
+        # making sure that there is a profile in both containers
+        assert self.hasprofile and other.hasprofile
+
+        # making sure that the two profiles use the same centers
+        # err_msg = 'JK centers do not agree within 1e-5'
+        # np.testing.assert_allclose(self.centers, other.centers,
+        #                            rtol=1e-5, err_msg=err_msg)
+        assert self.dst_sub.shape == other.dst_sub.shape
+
+        # clears the profile container
+        self._reset_profile(keep_rr=keep_rr)
+
+        if not keep_rr:
+            # getting radius values
+            self._get_rr()
+
+        # concat info, data, labels, metadata
+        self.info = np.vstack((self.info, other.info))
+        self.data = np.hstack((self.data, other.data))
+        if self.labels is not None:
+            self.labels = np.concatenate((self.labels, other.labels))
+        if self.metadata is not None:
+            _metadata = []
+            for i in np.arange(4):
+                _metadata.append(np.hstack((self.metadata[i], other.metadata[i])))
+            self.metadata = _metadata
+
+        # calculating the profiles
+        self._setup_subpatches()
+        self._subprofiles()
         self._profcalc()
         self._covcalc()
 
@@ -696,7 +812,7 @@ def stacked_pcov(plist):
     return supercov_t, supercov_x
 
 
-def process_profile(fnames, ismeta=True, labels=None, weights=None):
+def process_profile(fnames, ismeta=True, labels=None, weights=None, weight_key="ww", id_key="id", shear=False, Rs=None):
     """
     Extracts StackedProfileContainer from xshear output
 
@@ -710,6 +826,8 @@ def process_profile(fnames, ismeta=True, labels=None, weights=None):
         JK-labels for each entry in the lens files (in the order they are written to disk)
     weights: list
         weights to be applied to the lenses in calculating the average signal
+    weight_key: str
+        column name for weight DataFrame used to match to cluster IDs
 
     Returns
     -------
@@ -729,14 +847,24 @@ def process_profile(fnames, ismeta=True, labels=None, weights=None):
 
     prof = StackedProfileContainer(cinfo, cdata, labels, ncens,
                                    metadata=sheared_data,
-                                   metatags=sheared_tags)
+                                   metatags=sheared_tags, Rs=Rs)
+    if shear:
+        prof.dst_denom = 8
+        prof.dsx_denom = 9
+
+        prof.meta_denom = 3
+        prof.meta_prefac = 3
+        prof.snum_ind = 3
 
     if weights is not None:
-        weights = extract_weights(cinfo, weights)
-
+        weights = extract_weights(cinfo, weights, weight_key=weight_key, id_key=id_key)
+        print(weights.sum())
+        # weights = np.nan_to_num(weights).astype(int)
+    # print(weights)
     prof.prof_maker(weights=weights)
 
     return prof
+
 
 def load_weights(ibin):
     lenstab = fio.read(fullpaths[params["cat_to_use"]]["lens"].flatten()[ibin])
@@ -745,14 +873,14 @@ def load_weights(ibin):
     weights["ww"] = match_endian(lenstab[params["lensweight"]])
     return weights
 
-def extract_weights(info, weights):
+def extract_weights(info, weights, weight_key="ww", id_key="id"):
 
     itab = pd.DataFrame()
     itab["index_0"] = match_endian(info[:, 0])
 
-    tab = pd.merge(itab, weights, how="left", left_on="index_0", right_on="id")
+    tab = pd.merge(itab, weights, how="left", left_on="index_0", right_on=id_key, ).fillna(0)
 
-    return tab["ww"].values
+    return tab[weight_key].values
 
 
 def olivers_mock_function(a, b, c):
@@ -781,3 +909,311 @@ def olivers_mock_function(a, b, c):
 
     """
     pass
+
+
+class AutoCalibrateProfile(object):
+    """WEIGHTS must be from the base input dataset for Random points!!!"""
+    def __init__(self, fname, fname_jk, pzcat, weights=None, id_key="MEM_MATCH_ID", weight_key="WEIGHT",
+                 z_key="Z_LAMBDA", sbins=(2, 3), xlims=(0.2, 30), Rs_sbins=None):
+        """
+
+        Parameters
+        ----------
+        fname: str
+            file name
+        fname_jk: list of lists
+            file names to Jackknife patches
+        pzcat: sompz_reader object
+            SOMPZ dataset
+        weights: DataFrame
+            DataFrame of IDs and weights
+        id_key: str
+            column key for IDs
+        weight_key: str
+            column key for weights
+        z_key: str
+            column key for redshifts
+        sbins: tuple
+            source bins to use
+        xlims: tuple
+            radius min and max in the units of xshear
+        Rs_sbins: list of lists
+            selection responses for the source bins
+        """
+        self.fname = fname
+        self.fname_jk = fname_jk
+        self.pzcat = pzcat
+        self.infos = create_infodict(fname_jk)
+
+        self.weights = weights
+        self.weight_key = weight_key
+        self.id_key = id_key
+        self.z_key = z_key
+
+        self.sbins = sbins
+        self.xlims = xlims
+
+        self._profiles = []
+        self.profile = None
+        self.target = None
+        self.scinvs = []
+        self.Rs_sbins = Rs_sbins
+
+    def _load_profiles(self, ismeta=True, shear=True, **kwargs):
+
+        self._profiles = []
+        for i, sbin in enumerate(self.sbins):
+            print("loading source bin", sbin)
+            clust_files = [info["outfile"].replace("_result.dat", "_bin" + str(sbin + 1) + "_result.dat")
+                           for info in self.infos]
+            Rs = None
+            if self.Rs_sbins is not None:
+                Rs = self.Rs_sbins[i]
+
+            clust = process_profile(clust_files, ismeta=ismeta, Rs=Rs,
+                                             weights=self.weights, weight_key=self.weight_key, id_key=self.id_key,
+                                             shear=shear)
+            # print(clust.dst)
+            self._profiles.append(clust)
+
+    def _load_targets(self, **kwargs):
+
+        iname = self.infos[0]["infile"].split("_patch")[0] + ".fits"
+        _target = fio.read(iname)
+        target = to_pandas(_target)
+
+        tmp = pd.DataFrame()
+        tmp[self.id_key] = self._profiles[0].info[:, 0]
+        self.target = pd.merge(tmp, target, how="left", on=self.id_key).reset_index(drop=True)
+        self.target[self.weight_key] = 1.
+
+        ww = np.ones(len(self.target))
+        if self.weights is not None:
+            ww = self.weights
+        self.target[self.weight_key] = ww
+
+    def _get_scinvs(self, **kwargs):
+        zmean = np.average(self.target[self.z_key], weights=self.weights[self.weight_key])
+
+        self.scinvs = []
+        for sbin in self.sbins:
+            self.scinvs.append(self.pzcat.get_single_scinv(zmean, sbin=sbin))
+        self.scinvs = np.array(self.scinvs)
+
+    def _get_scinvs_bin(self, **kwargs):
+
+        self.scinvs = []
+        for sbin in self.sbins:
+            self.scinvs.append(self.pzcat.get_bin_scinv(self.target[self.z_key], sbin=sbin, weights=self.target[self.weight_key].values))
+        self.scinvs = np.array(self.scinvs)
+
+    def _combine_sbins(self, mfactor_sbins=None, weight_scrit_exponent=1, reload=True):
+        _profiles = []
+        for i, scinv in enumerate(self.scinvs):
+            _profiles.append(copy.deepcopy(self._profiles[i]))
+            if self.weights is not None:
+                _weights = extract_weights(self._profiles[i].info, self.weights, weight_key=self.weight_key, id_key=self.id_key)
+                _profiles[i].prof_maker(weights=_weights)
+            else:
+                _profiles[i].prof_maker()
+            _profiles[i].multiply(scinv**weight_scrit_exponent)
+
+        if mfactor_sbins is None:
+            mfactor_sbins = np.ones(len(self.scinvs))
+
+        self.profile = _profiles[0]
+        self.profile.multiply(mfactor_sbins[0])
+
+        for i in np.arange(len(_profiles) - 1):
+            tmp = _profiles[i + 1]
+            tmp.multiply(mfactor_sbins[i + 1])
+            self.profile.composite(tmp, operation="+")
+
+        factor = 1. / np.sum(self.scinvs**(weight_scrit_exponent + 1))
+        self.profile.multiply(factor)
+
+
+
+    def get_profiles(self, reload=True, scinvs=None, mfactor_sbins=None, Rs_sbins=None,
+                     weights=None, weight_key=None, id_key=None, z_key=None, **kwargs):
+        """
+        Loads and Calculates DeltaSigma profile from a combination of tomographic source bins
+
+        Parameters
+        ----------
+        reload: bool
+            If true, file leading is performed, if false re-processes the already loaded data
+        scinvs: list
+            list of Sigma Crit inverse values
+        mfactor_sbins: list
+            mean multiplicative shear bias and redshift bias for each tomographic bin
+        Rs_sbins: list of lists
+            selection responses for the source bins
+        weights: DataFrame
+            DataFrame of IDs and weights
+        id_key: str
+            column key for IDs
+        weight_key: str
+            column key for weights
+        z_key: str
+            column key for redshifts
+        """
+
+        if Rs_sbins is not None:
+            self.Rs_sbins = Rs_sbins
+        if weights is not None:
+            self.weights = weights
+        if id_key is not None:
+            self.id_key = id_key
+        if weight_key is not None:
+            self.weight_key = weight_key
+        if z_key is not None:
+            self.z_key = z_key
+
+        if reload:
+            self._load_profiles(Rs_sbins=Rs_sbins, **kwargs)
+
+        self.scinvs = scinvs
+        if self.scinvs is None:
+            if reload:
+                self._load_targets(**kwargs)
+            self._get_scinvs_bin(**kwargs)
+        self._combine_sbins(mfactor_sbins)
+        self._scale_cut()
+
+    def composite(self, other, operation):
+        """
+        Add, Subtract, Multiply or Divide this object by an other object of the same class
+
+        Parameters
+        ----------
+        other: AutoCalibrateProfile
+            Object to composite with
+        operation: str
+            "+, -, *, /"
+
+        Returns
+        -------
+        AutoCalibrateProfile
+        """
+        _profiles = copy.copy(self._profiles)
+        res = []
+        for i, prof in enumerate(_profiles):
+            prof.composite(other._profiles[i], operation)
+            res.append(prof)
+        self._profiles = res
+
+        self._combine_sbins()
+        self._scale_cut()
+
+    def _scale_cut(self):
+        self.rr = self.profile.rr
+        self.dst = self.profile.dst
+        self.dst_err = self.profile.dst_err
+        self.cov = self.profile.dst_cov
+
+        ii = (self.profile.rr > self.xlims[0]) & (self.profile.rr < self.xlims[1])
+        self.rr = self.profile.rr[ii]
+        self.dst = self.profile.dst[ii]
+        self.dst_err = self.profile.dst_err[ii]
+        self.cov = self.profile.dst_cov[ii, :][:, ii]
+
+    def add_boost_jk(self, sboost, mfactor_sbins=None):
+        """Boost uncertainty is added to the diagonal in quadrature of the covariance"""
+
+        _profiles = []
+        for i, scinv in enumerate(self.scinvs):
+            _profiles.append(copy.deepcopy(self._profiles[i]))
+            fcl = sboost.resarr_jk[0][i][:, 2:].T
+            _profiles[i].multiply(scinv * (fcl + 1))
+
+        if mfactor_sbins is None:
+            mfactor_sbins = np.ones(len(self.scinvs))
+
+        self.profile = _profiles[0]
+        self.profile.multiply(mfactor_sbins[0])
+        #
+        for i in np.arange(len(_profiles) - 1):
+            tmp = _profiles[i + 1]
+            tmp.multiply(mfactor_sbins[i + 1])
+            self.profile.composite(tmp, operation="+")
+
+        factor = 1. / np.sum(self.scinvs**(2))
+        self.profile.multiply(factor)
+        self._scale_cut()
+
+
+    def add_boost(self, sboost):
+        """Boost uncertainty is added to the diagonal in quadrature of the covariance"""
+
+        try:
+            cov = sboost.covs[0]
+        except:
+            cov = np.zeros(shape=(len(self.dst), len(self.dst)))
+        self._fcls = []
+        amp = sboost.boost_amps[0]
+        tmps = []
+        self.fcl_err = []
+        for i, _amp in enumerate(amp):
+            # arr = np.concatenate((_amp, (0,)))
+            self._fcls.append(_amp)
+            tmps.append(_amp * self.scinvs[i])
+            self.fcl_err.append(np.diag(cov[i]).mean() * self.scinvs[i])
+
+        factor = 1. / self.scinvs.sum()
+        self.fcl = np.sum(tmps, axis=0)  * factor
+        self.fcl_err = np.sum(self.fcl_err) * factor
+
+        ln = len(self.dst) - len(self.fcl)
+        if ln > 0:
+            pad = np.zeros(self.profile.dst_sub.shape[0] - len(self.fcl))
+            self.fcl = np.concatenate((self.fcl, pad))
+        self.profile.multiply((self.fcl + 1)[:, np.newaxis])
+        self._scale_cut()
+        self.cov = self.cov + np.diag(self.cov) * self.fcl_err
+
+        # self.dst = self.profile.dst
+        # self.dst_err = self.profile.dst_err
+        # self.rr = self.profile.rr
+
+    def to_profile(self):
+        prof = ProfileContainer(self.rr, self.dst, self.dst_err, self.cov)
+        return prof
+
+    # def append_profile(self, other, **kwargs):
+    #
+    #     # append profile
+    #     _profiles = []
+    #     for i, sbin in enumerate(self.sbins):
+    #         self._profiles[i].append(other._profiles[i])
+    #
+    #     # append targets
+    #     self.target = pd.concat((self.target, other.target))
+    #
+    #     self._get_scinvs(**kwargs)
+    #     self._combine_sbins()
+    #     self._scale_cut()
+
+    # def copy(self):
+    #
+    #     res = AutoCalibrateProfile(self.fname, self.fname_jk, self.pzcat, self.weights, self.sbins, self.xlims)
+    #
+    #     res._profiles = []
+    #     for prof in self._profiles:
+    #         res._profiles.append(copy.deepcopy(prof))
+    #     res.target = self.target.copy()
+    #     res.scinvs = self.scinvs.copy()
+    #     res.profile = copy.deepcopy(self.profile)
+    #     return res
+
+
+class ProfileContainer(object):
+    def __init__(self, rr, dst, dst_err, cov):
+        self.rr = rr
+        self.dst = dst
+        self.dst_err = dst_err
+        self.cov = cov
+
+
+
+

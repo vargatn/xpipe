@@ -254,6 +254,8 @@ def get_main_source_settings_nopairs():
 
 
 sheared_tags = ["_1p", "_1m", "_2p", "_2m"]
+sheared_tags_long = ["_sheared_1p", "_sheared_1m", "_sheared_2p", "_sheared_2m"]
+
 sheared_source_settings = {
     "shear": OrderedDict([
         ('shear_style', "reduced"),
@@ -625,8 +627,8 @@ def create_infodict(flist, head=False, pairs=False, seed=None,
             _spath = shape_path
 
             if len(src_bins) > 1:
-                src_tag = "_sbin" + str(isrc)
-                _spath = shape_path + src_tag + ".dat"
+                src_tag = "_bin" + str(isrc + 1)
+                _spath = shape_path + src_tag + metatag + ".dat"
 
             infodict_raw = {
                 'infile':  iroot + file,
@@ -809,7 +811,7 @@ def write_calib_cont(resname, ccont, bin_vals):
 
 
 """
-dat = pickle.load(open("/home/moon/vargatn/DES/Y3_WORK/xpipe/bin/redpipe/ccont.p", "rb"))
+dat = pickle.load(open("/home/moon/vargatn/DES/Y3_WORK/xpipe/bin/pipe-y1/ccont.p", "rb"))
 header = ("z_bin\t sigma_crit_inv [pc^2 / M_\odot]\t sigma_crit_inv_err [pc^2 / M_\odot]")
 fmt = ["%d", ] + ["%.12f"] * 2
 

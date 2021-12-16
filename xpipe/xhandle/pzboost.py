@@ -12,10 +12,15 @@ import fitsio as fio
 import pickle
 import multiprocessing as mp
 import pandas as pd
+import copy
+import h5py
+from ..tools.selector import partition
 
 from ..tools import selector as sl
 from .. import paths
 from ..xhandle import shearops
+from .xwrap import create_infodict
+from ..tools.y3_sompz import sigma_crit_inv
 
 pcols = [('lens_id', 'i8'), ('source_id', 'i8'), ('rbin', 'i4'), ('source_weight', 'f8'), ('scinv', 'f8'),
          ('gsens_t', 'f8'), ('z_sample', 'f8')]
@@ -1051,3 +1056,268 @@ class BoostMixerRandRef(object):
         return diff.flatten()
 
 ###################################################################
+
+
+class SOMBoost(object):
+    def __init__(self, pzdata, flist_jk, pairs_to_load=None, which_cat="bpz", sbins=(2, 3)):
+
+        self.pzdata = pzdata
+        self.pairs_to_load = pairs_to_load
+        self.flist_jk = flist_jk
+        self.sbins = sbins
+
+        self._get_scritinv()
+
+        self._cat = self.pzdata.bpz
+        if which_cat == "dnf":
+            self._cat = self.pzdata.dnf
+
+    def _get_scritinv(self):
+        self.scritinv_tab = np.zeros(shape=(len(self.pzdata.zclust_grid), len(self.pzdata.zcens)))
+        for i, zclust in enumerate(self.pzdata.zclust_grid):
+            for j, zsource in enumerate(self.pzdata.zcens):
+                self.scritinv_tab[i,j] = sigma_crit_inv(zclust, zsource)
+
+    def get_pair_datas(self, pair_datas=None, pair_outpath=None):
+        if pair_outpath is not None:
+            self.pair_datas = self._calc_pair_datas(self.flist_jk, oname=pair_outpath)
+            pickle.dump(self.pair_datas, open(pair_outpath, "wb"))
+        elif self.pairs_to_load is not None:
+            self.pair_datas = pickle.load(open(self.pairs_to_load, "rb"))
+        elif pair_datas is not None:
+            self.pair_datas = pair_datas
+
+    def _calc_pair_datas(self, flist_jk, oname=None):
+        pair_datas = []
+        for j, clust_name in enumerate(flist_jk):
+            _pair_datas = []
+
+            for sbin in self.sbins:
+                print(j, sbin)
+                clust_infos = create_infodict(clust_name, pairs=True)
+                tabs = []
+                for i, tmp in  enumerate(clust_infos):
+                    print(j, sbin, i, end="\n")
+                    pair_name = tmp["outfile"].replace("_result.dat", "_bin" + str(sbin+1) + "_result_pairs.dat")
+                    # print(pair_name)
+                    try:
+                        _data = pd.read_csv(pair_name, delim_whitespace=True, header=None, skiprows=1).values[:, (0, 1, 2, 3, 4)]
+                        data = pd.DataFrame(_data, columns=(self.lens_key, "ID", "SOMCELL", "RBIN", "W"))
+                        # print(data.shape)
+                        data["JK_LABEL"] = i
+                        tabs.append(data)
+                    except:
+                        pass
+                # print(tabs)
+                # tabs = np.vstack(tabs)
+                table = pd.concat(tabs)
+                # table = pd.DataFrame(tabs, columns=("MEM_MATCH_ID", "ID", "SOMCELL", "RBIN", "W", "JK_LABEL"))
+                match = pd.merge(table, self._cat, how="left", on="ID")
+                print("merged catalogs")
+                # if oname is not None:
+                #     fname = oname + "_part" + str(j) + ".h5"
+                #     print(fname)
+                #     match.to_hdf(fname, key="data")
+                _pair_datas.append(match)
+            pair_datas.append(_pair_datas)
+        return pair_datas
+
+    def _merge_weights(self, table, weights):
+        if weights is not None:
+            print("here")
+            res = pd.merge(weights, table, on=self.lens_key, how="left")
+        else:
+         res = table
+        return res
+
+    def get_histograms(self, lens_weights=None, bins_to_use=np.linspace(4, 14, 11), **kwargs):
+        radials = [[val,] for val in bins_to_use]
+        print(radials)
+        self.zvals = []
+        self.wws = []
+        self.jk_vals = []
+        for i, clust_name in enumerate(self.flist_jk):
+            _zvals = []
+            _wws = []
+            _jkvals = []
+            for j, sbin in enumerate(self.sbins):
+                _tmp = self.pair_datas[i][j]
+                tmp = self._merge_weights(_tmp, lens_weights)
+                __zvals = []
+                __wws = []
+                __jkvals = []
+                for rad in radials:
+                    ii = np.zeros(len(tmp), dtype=bool)
+                    for r in rad:
+                        ii |= tmp["RBIN"] == r
+                        __zvals.append(tmp["ZMC"][ii].values)
+                        __jkvals.append(tmp["JK_LABEL"][ii].values)
+                        if lens_weights is not None:
+                            __wws.append(tmp["W"][ii].values * tmp[self.weight_key][ii].values)
+                        else:
+                            __wws.append(tmp["W"][ii].values)
+
+                _zvals.append(__zvals)
+                _wws.append(__wws)
+                _jkvals.append(__jkvals)
+            self.zvals.append(_zvals)
+            self.wws.append(_wws)
+            self.jk_vals.append(_jkvals)
+
+    def prep_boost(self, pair_outpath=None, lens_weights=None, lens_key="MEM_MATCH_ID", weight_key="WEIGHT", pair_datas=None, **kwargs):
+        self.lens_key = lens_key
+        self.weight_key = weight_key
+
+        self.get_pair_datas(pair_outpath=pair_outpath, pair_datas=pair_datas)
+
+        self.get_histograms(lens_weights=lens_weights, **kwargs)
+
+    def get_boost(self, npdf=10, mean_init=0.5, sigma_init=0.1, amp_init=0.5,
+                  mean_bounds=(0., np.inf), sigma_bounds=(0., 0.15), amp_bounds_single = (0., 1.)):
+        """WARNING: TODO THis has some hardcoded values in it"""
+        self.bounds = np.array([mean_bounds, sigma_bounds] + npdf * [amp_bounds_single,]).T
+        self.point_init = np.array([mean_init, sigma_init] + npdf * [amp_init,])
+
+        bins = np.linspace(0, 1.5, 40)
+        zcens = bins[:-1] + np.diff(bins) / 2.
+
+        self.boost_means  = []
+        self.boost_sigmas  = []
+        self.boost_amps = []
+        self.bmixers = []
+        self.covs = []
+        for i in np.arange(len(self.flist_jk)):
+            _tmp0 = []
+            _tmp1 = []
+            _tmp2 = []
+            _tmp3 = []
+            _tmp4 = []
+            for s, sbin in enumerate(self.sbins):
+                print(i, s)
+                _zvals = self.zvals[i][s]
+                _wws = self.wws[i][s]
+
+                pdfarr = []
+                for r in np.arange(npdf):
+                    pdfarr.append(np.histogram(_zvals[r], bins=bins, weights=_wws[r], density=True)[0])
+                pdfarr = np.array(pdfarr)
+                refpdf = np.histogram(_zvals[-1], bins=bins, weights=_wws[-1], density=True)[0]
+                bmixer = BoostMixer(zcens, pdfarr, refpdf)
+                res = optimize.least_squares(bmixer, self.point_init, bounds=self.bounds)
+
+                mean, sigma = res['x'][:2]
+                amps = res['x'][2:]
+
+                cov = np.linalg.inv(res.jac.T @ res.jac)
+
+                _tmp0.append(mean)
+                _tmp1.append(sigma)
+                _tmp2.append(amps)
+                _tmp3.append(copy.deepcopy(bmixer))
+                _tmp4.append(cov)
+
+            self.boost_means.append(_tmp0)
+            self.boost_sigmas.append(_tmp1)
+            self.boost_amps.append(_tmp2)
+            self.bmixers.append(_tmp3)
+            self.covs.append(_tmp4)
+
+    def get_boost_jk(self, npdf=10, mean_init=0.5, sigma_init=0.1, amp_init=0.5,
+                  mean_bounds=(0., np.inf), sigma_bounds=(0., 0.15), amp_bounds_single = (0., 1.)):
+        """WARNING: TODO THis has some hardcoded values in it"""
+        self.bounds = np.array([mean_bounds, sigma_bounds] + npdf * [amp_bounds_single,]).T
+        self.point_init = np.array([mean_init, sigma_init] + npdf * [amp_init,])
+
+        bins = np.linspace(0, 1.5, 40)
+        zcens = bins[:-1] + np.diff(bins) / 2.
+
+        self.boost_means  = []
+        self.boost_sigmas  = []
+        self.boost_amps = []
+        # self.bmixers = []
+        self.covs = []
+        self.resarr_jk = []
+        njk = len(self.flist_jk[0])
+        for i in np.arange(len(self.flist_jk)):
+            _tmp0 = []
+            _tmp1 = []
+            _tmp2 = []
+            _tmp3 = []
+            _tmp4 = []
+            _resarr_jk = []
+            for s, sbin in enumerate(self.sbins):
+                print(i, s)
+                _zvals = self.zvals[i][s]
+                _wws = self.wws[i][s]
+                _jkvals = self.jk_vals[i][s]
+
+                infos = []
+                for ijk in np.arange(njk):
+                    tmp = _zvals, _wws, _jkvals, bins, zcens, self.point_init, self.bounds, ijk, njk, npdf
+                    infos.append(tmp)
+                __resarr_jk = np.array(multi_decomp_fit(infos))
+                # return _resarr_jk
+                npoints = __resarr_jk.shape[1]
+                _cov_jk = np.zeros((npoints, npoints))
+                points = np.sum(__resarr_jk, axis=0) / njk
+                for l in np.arange(npoints):
+                    for k in np.arange(npoints):
+                        _cov_jk[l, k] = ((np.sum((__resarr_jk[:, l] - points[l, np.newaxis]) *
+                                                (__resarr_jk[:, k] - points[k, np.newaxis]))) *
+                                        (njk - 1.0) / njk)
+                mean = points[0]
+                sigma = points[1]
+                amps = points[2:]
+                cov = _cov_jk[2:, :][:, 2:]
+            #
+                _tmp0.append(mean)
+                _tmp1.append(sigma)
+                _tmp2.append(amps)
+                _tmp4.append(cov)
+                _resarr_jk.append(__resarr_jk)
+            #
+            self.boost_means.append(_tmp0)
+            self.boost_sigmas.append(_tmp1)
+            self.boost_amps.append(_tmp2)
+            # self.bmixers.append(_tmp3)
+            self.covs.append(_tmp4)
+            self.resarr_jk.append(_resarr_jk)
+            #
+
+
+def calc_decomp(inputs):
+    zvals, wws, jkvals, bins, zcens, point_init, bounds, ijk, njk, npdf = inputs
+
+    print(ijk, njk)
+    pdfarr = []
+    for r in np.arange(npdf):
+        ii = (ijk != jkvals[r])
+        pdfarr.append(np.histogram(zvals[r][ii], bins=bins, weights=wws[r][ii], density=True)[0])
+    pdfarr = np.array(pdfarr)
+    refpdf = np.histogram(zvals[-1], bins=bins, weights=wws[-1], density=True)[0]
+    # inputs.append((zcens, pdfarr, refpdf, self.point_init, self.bounds))
+    bmixer = BoostMixer(zcens, pdfarr, refpdf)
+    res = optimize.least_squares(bmixer, point_init, bounds=bounds)
+
+    # bmixer = BoostMixer(inputs[0], inputs[1], inputs[2])
+    # res = optimize.least_squares(bmixer, inputs[3], bounds=inputs[4])
+    return res["x"]
+
+
+def multi_decomp_fit(infodicts):
+    nprocess = len(infodicts)
+
+    pool = mp.Pool(processes=nprocess)
+    res = None
+    try:
+        pp = pool.map_async(calc_decomp, infodicts)
+        res = pp.get(172800)  # apparently this counters a bug in the exception passing in python.subprocess...
+    except KeyboardInterrupt:
+        print("Caught KeyboardInterrupt, terminating workers")
+        pool.terminate()
+        pool.join()
+    else:
+        pool.close()
+        pool.join()
+
+    return res

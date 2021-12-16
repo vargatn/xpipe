@@ -1,5 +1,5 @@
 """
-Apparent to Absolute magnitude conversion **WORK IN PROGRESS**
+Apparent to Absolute magnitude conversion **DEPRECATED / Work in progress **
 """
 
 import numpy as np

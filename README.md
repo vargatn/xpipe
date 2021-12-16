@@ -18,4 +18,4 @@ For detailed documentation see http://xpipe.readthedocs.io/
 * [API reference](https://xpipe.readthedocs.io/en/stable/api.html)
 
 
-Tamas Norbert Varga 2018
+Tamas Norbert Varga 2021

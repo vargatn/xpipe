@@ -1,7 +1,3 @@
-"""
-# TODO add documentation
-"""
-
 from __future__ import print_function, division
 
 import os
@@ -33,7 +29,6 @@ def _bin_fnames(qlist, fnames):
     all_list = []
     chunk = []
     for i, qname in enumerate(qlist):
-        # print chunk
         if i == 0 or qlist[i - 1] == qlist[i]:
             chunk.append(fnames[i])
         else:
@@ -45,7 +40,7 @@ def _bin_fnames(qlist, fnames):
     return all_list
 
 
-def get_file_lists(params, dirpaths):
+def get_file_lists(params=None, dirpaths=None):
     """
     Return lists of input files
 
@@ -74,6 +69,11 @@ def get_file_lists(params, dirpaths):
           while each entry is a list of different patches.
 
     """
+    if params is None:
+        params = paths.params
+    if dirpaths is None:
+        dirpaths = paths.dirpaths
+
     dpath = get_dpath(params, dirpaths)
 
     fpath = dpath + "/" + params["tag"] + flist_suffix
@@ -355,8 +355,7 @@ def load_randcat(params=None, fullpaths=None, which=None):
     else:
         select = np.ones(len(ra), dtype=bool)
 
-    # number of parameter columns
-    nq = len(randkey.keys()) - 3
+    nq = len(randkey.keys()) - 4
     if "jkey" in randkey.keys():
         nq -= 1
     qlist = np.zeros(shape=(len(ra), nq))
@@ -782,10 +781,10 @@ class XIO(object):
         # try:
         #     ftab = to_pandas(self.lenses["fullcat"][sind])
         #     ftab["JK_ID"] = labels
-        #     fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), ftab.to_records(), clobber=True)
+        #     fio.write(self.dpath + "/" + self.fname[self.ind].replace('.dat', '.fits'), ftab.to_records(), clobber=True)
         # except:
         #     print("cannot save JK_ID to file...")
-        #     fio.write(self.dpath + "/" + self.flist[self.ind].replace('.dat', '.fits'), self.lenses["fullcat"][sind], clobber=True)
+        #     fio.write(self.dpath + "/" + self.fname[self.ind].replace('.dat', '.fits'), self.lenses["fullcat"][sind], clobber=True)
 
         for label, jkind in enumerate(jkinds):
             froot = self.flist[self.ind].replace('.dat', '_patch' + str(label) + '.dat')
@@ -838,6 +837,9 @@ class XIO(object):
                         self.randoms['id'][rind][self.idraw], self.randoms['ra'][rind][self.idraw],
                         self.randoms['dec'][rind][self.idraw], self.randoms['z'][rind][self.idraw])
         print('saved ' + self.rlist[self.ind])
+
+        fio.write(self.dpath + "/" + self.rlist[self.ind].replace('.dat', '.fits'), self.randoms["fullcat"][rind], clobber=True)
+
 
     def save_rands_jk(self):
         """writes random points to file for each JK patch in xshear style"""

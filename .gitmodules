@@ -1,6 +1,6 @@
 [submodule "submodules/xshear"]
 	path = submodules/xshear
-	url = https://github.com/danielgruen/xshear.git
+	url = https://github.com/vargatn/xshear.git
 	branch = redmapper
 
 # https://github.com/esheldon/xshear.git

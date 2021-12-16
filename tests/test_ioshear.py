@@ -18,8 +18,8 @@ class TestRaw(object):
         np.savetxt(fname, arr)
 
         res = ioshear.read_raw(fname)
-
         np.testing.assert_allclose(res, arr)
+
 
     def test_empty(self, tmpdir):
         dirname = str(tmpdir.mkdir("test"))
