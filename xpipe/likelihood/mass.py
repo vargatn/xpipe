@@ -219,26 +219,6 @@ def calc_misc_nfw(rarr, logmass, c, R_misc, params):
     return DeltaSigma * factor
 
 
-# def calc_misc_model(rarr, logmass, c, bias, R_misc, params):
-#     _rarr = rarr * params["h"] / params["scale_factor"]
-#     _R_misc = R_misc * params["h"] / params["scale_factor"]
-#     mass = 10**logmass * params["h"]
-#
-#     radii = np.logspace(-3, 3, 400) #Mpc/h comoving
-#     xi_nfw = xi.xi_nfw_at_r(radii, mass, c, params["Omega_m"])
-#     xi_mm = xi.xi_mm_at_r(radii, params["k"], params["P_nonlin"])
-#     xi_2halo = xi.xi_2halo(bias, xi_mm)
-#
-#     xi_hm = xi.xi_hm(xi_nfw, xi_2halo)
-#     R_perp = np.logspace(-3, 2.4, 300) #Mpc/h comoving; distance on the sky
-#     Sigma = deltasigma.Sigma_at_R(R_perp, radii, xi_hm, mass, c, params["Omega_m"])
-#     Sigma_misc = miscentering.Sigma_mis_at_R(R_perp, R_perp, Sigma, mass, c, params["Omega_m"], _R_misc)
-#     DeltaSigma = miscentering.DeltaSigma_mis_at_R(_rarr, R_perp, Sigma_misc)
-#
-#     factor = params["h"]/ params["scale_factor"]**2
-#     return DeltaSigma * factor
-
-
 def calc_sub_misc_nfw(rarr, logmass, c, R_misc, f_cen, dist, params):
     _rarr = rarr * params["h"] / params["scale_factor"]
     _R_misc = R_misc * params["h"] / params["scale_factor"]
@@ -504,7 +484,7 @@ def calc_sub_mixture_nw(rarr, logmass1, c1, logmass2, c2, R_misc, f_cen, distval
     mass1 = 10**logmass1 * params["h"]
     mass2 = 10**logmass2 * params["h"]
 
-    R_perp = np.logspace(-2.2, 2, 100) #Mpc/h comoving; distance on the sky
+    R_perp = np.logspace(np.log10(_rarr.min()*0.5), np.log10(_rarr.max()*1.5), 100) #Mpc/h comoving; distance on the sky
     Sigma1_cen = deltasigma.Sigma_nfw_at_R(R_perp, mass1, c1, params["Omega_m"])
     Sigma1_misc = miscentering.Sigma_mis_at_R(R_perp, R_perp, Sigma1_cen, mass1, c1, params["Omega_m"], _R_misc)
     Sigma1 = f_cen * Sigma1_cen + (1 - f_cen) * Sigma1_misc
@@ -521,10 +501,11 @@ def calc_sub_mixture_nw(rarr, logmass1, c1, logmass2, c2, R_misc, f_cen, distval
 
     Sigma = Sigma2 + off_Sigma1
     # return Sigma
-    # print(Sigma)
-    DeltaSigma = miscentering.DeltaSigma_mis_at_R(_rarr, R_perp, Sigma)
+    # print(R_perp.min(), _rarr.min())
+    # print(R_perp.max(), _rarr.max())
+    DeltaSigma = np.nan_to_num(miscentering.DeltaSigma_mis_at_R(_rarr, R_perp, Sigma))
     if nonweak:
-        _Sigma = np.interp(_rarr, R_perp, Sigma)
+        _Sigma = np.nan_to_num(np.interp(_rarr, R_perp, Sigma))
         DeltaSigma = DeltaSigma / (1 - _Sigma * _scinv)
 
     factor = params["h"]/ params["scale_factor"]**2
@@ -583,7 +564,7 @@ def calc_sub_mixture2_clustonly_nw(rarr, logmass1, c1, logmass2, c2, logmass_bcg
     mass2 = 10**logmass2 * params["h"]
     mass_bcg = 10**logmass_bcg * params["h"]
 
-    R_perp = np.logspace(-2.2, 2, 100) #Mpc/h comoving; distance on the sky
+    R_perp = np.logspace(-2.2, 3, 100) #Mpc/h comoving; distance on the sky
     Sigma1_cen = deltasigma.Sigma_nfw_at_R(R_perp, mass1, c1, params["Omega_m"])
     Sigma1_bcg = deltasigma.Sigma_nfw_at_R(R_perp, mass_bcg, c_bcg, params["Omega_m"])
     Sigma1_misc = miscentering.Sigma_mis_at_R(R_perp, R_perp, Sigma1_cen, mass1, c1, params["Omega_m"], _R_misc)

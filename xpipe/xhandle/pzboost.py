@@ -1255,15 +1255,15 @@ class SOMBoost(object):
                 for ijk in np.arange(njk):
                     tmp = _zvals, _wws, _jkvals, bins, zcens, self.point_init, self.bounds, ijk, njk, npdf
                     infos.append(tmp)
-                _resarr_jk = np.array(multi_decomp_fit(infos))
+                __resarr_jk = np.array(multi_decomp_fit(infos))
                 # return _resarr_jk
-                npoints = _resarr_jk.shape[1]
+                npoints = __resarr_jk.shape[1]
                 _cov_jk = np.zeros((npoints, npoints))
-                points = np.sum(_resarr_jk, axis=0) / njk
+                points = np.sum(__resarr_jk, axis=0) / njk
                 for l in np.arange(npoints):
                     for k in np.arange(npoints):
-                        _cov_jk[l, k] = ((np.sum((_resarr_jk[:, l] - points[l, np.newaxis]) *
-                                                (_resarr_jk[:, k] - points[k, np.newaxis]))) *
+                        _cov_jk[l, k] = ((np.sum((__resarr_jk[:, l] - points[l, np.newaxis]) *
+                                                (__resarr_jk[:, k] - points[k, np.newaxis]))) *
                                         (njk - 1.0) / njk)
                 mean = points[0]
                 sigma = points[1]
@@ -1274,12 +1274,14 @@ class SOMBoost(object):
                 _tmp1.append(sigma)
                 _tmp2.append(amps)
                 _tmp4.append(cov)
+                _resarr_jk.append(__resarr_jk)
             #
             self.boost_means.append(_tmp0)
             self.boost_sigmas.append(_tmp1)
             self.boost_amps.append(_tmp2)
             # self.bmixers.append(_tmp3)
             self.covs.append(_tmp4)
+            self.resarr_jk.append(_resarr_jk)
             #
 
 
