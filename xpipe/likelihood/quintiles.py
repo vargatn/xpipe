@@ -4,6 +4,8 @@ from xpipe.likelihood.mass import make_params, default_cosmo, get_scales
 from xpipe.likelihood.mcmc import do_mcmc
 from xpipe.xhandle import shearops, pzboost
 
+# TODO update this for Eigen features
+# TODO update this for standard features and then correct for their correlations
 
 class QuintileExplorer(object):
     def __init__(self, src, flist, flist_jk, file_tag="autosplit_v1", pairs_to_load=None,
