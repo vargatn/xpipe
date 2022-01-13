@@ -7,6 +7,8 @@ from xpipe.xhandle import shearops, pzboost
 # TODO update this for Eigen features
 # TODO update this for standard features and then correct for their correlations
 
+# TODO prepare for end  of JAn sprint clean this up
+
 class QuintileExplorer(object):
     def __init__(self, src, flist, flist_jk, file_tag="autosplit_v1", pairs_to_load=None,
                  z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID", npdf=10, ismeta=False, **kwargs):
