@@ -19,3 +19,7 @@ def test_redges():
     assert (cens == true_cens).all
     assert (edges == true_edges).all
     assert (areas == true_areas).all
+
+
+def test_ACP_copy():
+    pass

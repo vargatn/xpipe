@@ -1007,7 +1007,7 @@ class AutoCalibrateProfile(object):
             self.scinvs.append(self.pzcat.get_bin_scinv(self.target[self.z_key], sbin=sbin, weights=self.target[self.weight_key].values))
         self.scinvs = np.array(self.scinvs)
 
-    def _combine_sbins(self, mfactor_sbins=None, weight_scrit_exponent=1, reload=True):
+    def _combine_sbins(self, mfactor_sbins=None, weight_scrit_exponent=1):
         _profiles = []
         for i, scinv in enumerate(self.scinvs):
             _profiles.append(copy.deepcopy(self._profiles[i]))
@@ -1194,17 +1194,18 @@ class AutoCalibrateProfile(object):
     #     self._combine_sbins()
     #     self._scale_cut()
 
-    # def copy(self):
-    #
-    #     res = AutoCalibrateProfile(self.fname, self.fname_jk, self.pzcat, self.weights, self.sbins, self.xlims)
-    #
-    #     res._profiles = []
-    #     for prof in self._profiles:
-    #         res._profiles.append(copy.deepcopy(prof))
-    #     res.target = self.target.copy()
-    #     res.scinvs = self.scinvs.copy()
-    #     res.profile = copy.deepcopy(self.profile)
-    #     return res
+    def copy(self):
+
+        res = AutoCalibrateProfile(self.fname, self.fname_jk, self.pzcat, self.weights,
+                                   id_key=self.id_key, weight_key=self.weight_key,
+                                   sbins=self.sbins, xlims=self.xlims, Rs_sbins=self.Rs_sbins)
+        res._profiles = []
+        for prof in self._profiles:
+            res._profiles.append(copy.deepcopy(prof))
+        res.target = self.target.copy()
+        res.scinvs = self.scinvs.copy()
+        res.profile = copy.deepcopy(self.profile)
+        return res
 
 
 class ProfileContainer(object):
