@@ -10,12 +10,10 @@ from xpipe.xhandle import shearops, pzboost
 # TODO update this for Eigen features
 # TODO update this for standard features and then correct for their correlations
 
-# TODO prepare for end  of JAn sprint clean this up
-
 class QuintileExplorer(object):
     def __init__(self, src, flist, flist_jk, file_tag="autosplit_v1", pairs_to_load=None,
-                 z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID", npdf=10,
-                 ismeta=False, **kwargs):
+                 z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID",
+                 ismeta=False, bins_to_use=np.linspace(0, 14, 15), npdf=15, **kwargs):
         self.src = src
         self.pair_path = pairs_to_load
         self.z_key = z_key
@@ -24,8 +22,10 @@ class QuintileExplorer(object):
         self.flist_jk = flist_jk
         self.file_tag = file_tag
         self.id_key = id_key
-        self.npdf = npdf
         self.ismeta = ismeta
+
+        self.bins_to_use = bins_to_use
+        self.npdf = npdf
 
         self.lprior = None
 
@@ -42,9 +42,9 @@ class QuintileExplorer(object):
         ACP.get_profiles(reload=False, ismeta=self.ismeta, weights=weights)
 
         self.smb.prep_boost(bins_to_use=np.linspace(0, 14, 15))
-        self.smb.get_boost(npdf=15, **kwargs)
+        self.smb.get_boost_jk(npdf=15, **kwargs)
 
-        ACP.add_boost(self.smb)
+        ACP.add_boost_jk(self.smb)
         return ACP
     #
     # def _fit_model(self, data, nwalkers=16, params=None, lprior=None, **kwargs) :
@@ -57,24 +57,27 @@ class QuintileExplorer(object):
     #     flat_samples = do_mcmc(data, params, nwalkers=nwalkers, prior=_lprior)[0]
     #     return flat_samples
     #
-    # def calc_fiducial_profile(self, nwalkers=16, **kwargs):
-    #     self.ACP = self._calc_profile()
-    #
-    #     self.zmean = np.mean(self.target[self.z_key])
-    #     parmaker = make_params(z=self.zmean, cosmo=default_cosmo)
-    #     self.params = parmaker.params
-    #
-    #     prof = self.ACP.to_profile()
-    #     data = get_scales(self.ACP)
-    #     self.flat_samples = self._fit_model(data, nwalkers=nwalkers, **kwargs)
-    #
-    #     container = {"prof": prof, "flat_samples": self.flat_samples}
-    #     fname = self.file_tag + "_default_profile.p"
-    #     print(fname)
-    #     pickle.dump(container, open(fname, "wb"))
-    #
-    #     self._calc_prior(**kwargs)
-    #
+    def calc_fiducial_profile(self, nwalkers=16, do_fit=True, **kwargs):
+        self.ACP = self._calc_profile()
+        prof = self.ACP.to_profile()
+        container = {"prof": prof}
+
+        if do_fit:
+            self.zmean = np.mean(self.target[self.z_key])
+            parmaker = make_params(z=self.zmean, cosmo=default_cosmo)
+            self.params = parmaker.params
+
+            prof = self.ACP.to_profile()
+            data = get_scales(self.ACP)
+            self.flat_samples = self._fit_model(data, nwalkers=nwalkers, **kwargs)
+            container.update({"flat_samples": self.flat_samples})
+
+        fname = self.file_tag + "_default_profile.p"
+        print(fname)
+        pickle.dump(container, open(fname, "wb"))
+
+        # self._calc_prior(**kwargs)
+
     # def _calc_prior(self, factor=50., **kwargs):
     #     cov = sklearn.covariance.empirical_covariance(self.flat_samples)
     #     self.pmean = self.flat_samples.mean(axis=0)
@@ -97,7 +100,6 @@ class QuintileExplorer(object):
 
         _ww = pd.DataFrame()
         _ww[self.id_key] = self.raw_ACP.target[self.id_key]
-        print("here")
         tmp = pd.DataFrame()
 
         tmp[self.id_key] = self.features[self.id_key]
@@ -107,7 +109,7 @@ class QuintileExplorer(object):
 
         ww = pd.merge(_ww, tmp, on=self.id_key, how="left").fillna(value=0.)
 
-        return ww["WEIGHT"].values
+        return ww
 
     def set_features(self, features):
         tmp = pd.merge(pd.DataFrame(self.target["MEM_MATCH_ID"]), features, on="MEM_MATCH_ID", how="left")
@@ -122,31 +124,33 @@ class QuintileExplorer(object):
         self.pca.fit(self.feats)
         self.eff = self.pca.transform(self.feats)
 
-    # def _calc_q_prof(self, feat, iq, tag, nwalkers=16, **kwargs):
-    #
-    #     print(iq)
-    #     print(self._quintiles[iq])
-    #     ww = self.calc_weights(feat, iq)
-    #     prof = self._calc_profile(weights=ww).to_profile()
-    #
-    #     zmean = np.average(self.target[self.z_key], weights=ww)
-    #     print("mean-z", zmean)
-    #     parmaker = make_params(z=zmean, cosmo=default_cosmo)
-    #     params = parmaker.params
-    #
-    #     data = get_scales(prof)
-    #     prior_flat_samples = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior, params=params, **kwargs)
-    #
-    #     container = {"ww": ww, "prof": prof, "flat_samples": prior_flat_samples}
-    #     fname = self.file_tag + "_prof_"+tag+"_q"+str(iq)+".p"
-    #     print(fname)
-    #     pickle.dump(container, open(fname, "wb"))
-    #
+    def _calc_q_prof(self, feat, iq, tag, nwalkers=16, do_fit=True, **kwargs):
+
+        print(iq)
+        print(self._quintiles[iq])
+        ww = self.calc_weights(feat, iq)
+        # prof = self._calc_profile(weights=ww).to_profile()
+        # container = {"ww": ww, "prof": prof}
+
+        # if do_fit:
+        #     zmean = np.average(self.target[self.z_key], weights=ww)
+        #     print("mean-z", zmean)
+        #     parmaker = make_params(z=zmean, cosmo=default_cosmo)
+        #     params = parmaker.params
+        #
+        #     data = get_scales(prof)
+        #     flat_samples = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior, params=params, **kwargs)
+        #     container.update({"flat_samples": flat_samples})
+
+        # fname = self.file_tag + "_prof_"+tag+"_q"+str(iq)+".p"
+        # print(fname)
+        # pickle.dump(container, open(fname, "wb"))
+
     # def calc_ref_profiles(self):
     #     feat = self.features["LAMBDA_CHISQ"].values
     #     print("calculating reference profiles")
     #     for iq in np.arange(5):
-    #         print("starting decile ", str(iq))
+    #         print("starting quintile ", str(iq))
     #         self._calc_q_prof(feat, iq, "ref")
     #
     # def calc_eff_profiles(self):
@@ -155,14 +159,14 @@ class QuintileExplorer(object):
     #         print("starting eigen-feature ", str(col))
     #         feat = self.eff[:, col]
     #         for iq in np.arange(5):
-    #             print("starting decile ", str(iq), "of col", str(col))
+    #             print("starting quintile ", str(iq), "of col", str(col))
     #             self._calc_q_prof(feat, iq, "eff-feat-"+str(col))
     #
-    # def calc_feat_profiles(self):
-    #     print("calculating reference profiles")
-    #     for col in np.arange(self.feats.shape[1]):
-    #         print("starting feature ", str(col))
-    #         feat = self.feats[:, col]
-    #         for iq in np.arange(5):
-    #             print("starting decile ", str(iq), "of col", str(col))
-    #             self._calc_q_prof(feat, iq, "feat-"+str(col))
+    def calc_feat_profiles(self, do_fit=True):
+        print("calculating reference profiles")
+        for col in np.arange(self.feats.shape[1]):
+            print("starting feature ", str(col))
+            feat = self.feats[:, col]
+            for iq in np.arange(5):
+                print("starting quintile ", str(iq), "of col", str(col))
+                self._calc_q_prof(feat, iq, "feat-"+str(col), fit=do_fit)
