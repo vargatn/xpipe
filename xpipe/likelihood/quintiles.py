@@ -152,12 +152,12 @@ class QuintileExplorer(object):
         self.pca.fit(self.feats)
         self.eff = self.pca.transform(self.feats)
 
-    def _calc_q_prof(self, feat, iq, tag, nwalkers=16, do_fit=True, **kwargs):
+    def _calc_q_prof(self, feat, iq, tag, nwalkers=16, do_fit=True, _include_boost=True, **kwargs):
 
         print(iq)
         print(self._quintiles[iq])
         ww = self.calc_weights(feat, iq)
-        prof = self._calc_profile(weights=ww).to_profile()
+        prof = self._calc_profile(weights=ww, _include_boost=_include_boost).to_profile()
         container = {"ww": ww, "prof": prof}
 
         if do_fit:
@@ -175,29 +175,29 @@ class QuintileExplorer(object):
         print(fname)
         pickle.dump(container, open(fname, "wb"))
 
-    # def calc_ref_profiles(self):
-    #     feat = self.features["LAMBDA_CHISQ"].values
-    #     print("calculating reference profiles")
-    #     for iq in np.arange(5):
-    #         print("starting quintile ", str(iq))
-    #         self._calc_q_prof(feat, iq, "ref")
-    #
-    # def calc_eff_profiles(self):
-    #     print("calculating PCA-space split profiles")
-    #     for col in np.arange(self.eff.shape[1]):
-    #         print("starting eigen-feature ", str(col))
-    #         feat = self.eff[:, col]
-    #         for iq in np.arange(len(self._quintiles)):
-    #              print("starting quintile ", str(iq), "of col", str(col))
-    #             self._calc_q_prof(feat, iq, "eff-feat-"+str(col))
-    #
-    def calc_feat_profiles(self, do_fit=True):
+    def calc_ref_profiles(self, do_fit=True, _include_boost=True):
+        feat = self.features["LAMBDA_CHISQ"].values
+        print("calculating reference profiles")
+        for iq in np.arange(len(self._quintiles)):
+            print("starting quintile ", str(iq))
+            self._calc_q_prof(feat, iq, "ref", do_fit=do_fit, _include_boost=_include_boost)
+
+    def calc_eff_profiles(self, do_fit=True, _include_boost=True):
+        print("calculating PCA-space split profiles")
+        for col in np.arange(self.eff.shape[1]):
+            print("starting eigen-feature ", str(col))
+            feat = self.eff[:, col]
+            for iq in np.arange(len(self._quintiles)):
+                print("starting quintile ", str(iq), "of col", str(col))
+                self._calc_q_prof(feat, iq, "eff-feat-"+str(col), do_fit=do_fit, _include_boost=_include_boost)
+
+    def calc_feat_profiles(self, do_fit=True, _include_boost=True):
         print("calculating reference profiles")
         for col in np.arange(self.feats.shape[1]):
             print("starting feature ", str(col))
             feat = self.feats[:, col]
             for iq in np.arange(len(self._quintiles)):
                 print("starting quintile ", str(iq), "of col", str(col))
-                self._calc_q_prof(feat, iq, "feat-"+str(col), fit=do_fit)
+                self._calc_q_prof(feat, iq, "feat-"+str(col), do_fit=do_fit, _include_boost=_include_boost)
 
 

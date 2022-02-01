@@ -1290,8 +1290,8 @@ class SOMBoost(object):
 def calc_decomp(inputs):
     zvals, wws, jkvals, bins, zcens, point_init, bounds, ijk, njk, npdf = inputs
 
-    if ijk % 20 == 0:
-        print(ijk, njk)
+    # if ijk % 20 == 0:
+    # print(ijk, njk)
     pdfarr = []
     for r in np.arange(npdf):
         ii = (ijk != jkvals[r])
@@ -1312,7 +1312,7 @@ def calc_decomp(inputs):
 
 def multi_decomp_fit(infodicts):
     nprocess = len(infodicts)
-
+    print("fitting for boost factors in {} processes".format(nprocess))
     pool = mp.Pool(processes=nprocess)
     res = None
     try:
