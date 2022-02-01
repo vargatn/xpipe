@@ -4,9 +4,9 @@ import pandas as pd
 import sklearn
 
 from xpipe.likelihood.mass import make_params, default_cosmo, get_scales
-from xpipe.likelihood.mcmc import do_mcmc
 from xpipe.xhandle import shearops, pzboost
 
+from .mcmc import log_cluster_prob, do_mcmc
 # TODO update this for Eigen features
 # TODO update this for standard features and then correct for their correlations
 
@@ -15,7 +15,8 @@ from xpipe.xhandle import shearops, pzboost
 class QuintileExplorer(object):
     def __init__(self, src, flist, flist_jk, file_tag="autosplit_v1", pairs_to_load=None,
                  z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID",
-                 ismeta=False, bins_to_use=np.linspace(0, 14, 15), npdf=15, **kwargs):
+                 ismeta=False, bins_to_use=np.linspace(0, 14, 15), npdf=15, init_pos=(14.3,  4.5, 0.15,  0.83),
+                 nstep=1000, nwalkers=16, init_fac=1e-2, discard=200, **kwargs):
         self.src = src
         self.pair_path = pairs_to_load
         self.z_key = z_key
@@ -28,6 +29,12 @@ class QuintileExplorer(object):
 
         self.bins_to_use = bins_to_use
         self.npdf = npdf
+
+        self.init_pos = init_pos
+        self.nstep = nstep
+        self.nwalkers=nwalkers
+        self.init_fac = init_fac
+        self.discard = discard
 
         self.lprior = None
 
@@ -50,17 +57,16 @@ class QuintileExplorer(object):
 
         return ACP
     #
-    def _fit_model(self, data, nwalkers=16, params=None, lprior=None, **kwargs) :
-
-        if lprior is None:
-            _lprior = self.lprior
+    def _fit_model(self, data, params=None, **kwargs):
     #
-    #     if params is None:
-    #         params = self.params
-    #     flat_samples = do_mcmc(data, params, nwalkers=nwalkers, prior=_lprior)[0]
-    #     return flat_samples
+        if params is None:
+            params = self.params
 
-    def calc_fiducial_profile(self, nwalkers=16, do_fit=True, _include_boost=True, **kwargs):
+        lcp = log_cluster_prob(data, params)
+        flat_samples, sampler = do_mcmc(lcp, self.init_pos, self.nstep, self.nwalkers, self.init_fac, self.discard)
+        return flat_samples, sampler
+
+    def calc_fiducial_profile(self, do_fit=True, _include_boost=True, **kwargs):
         self.ACP = self._calc_profile(_include_boost=_include_boost)
         prof = self.ACP.to_profile()
         container = {"prof": prof}
@@ -70,16 +76,13 @@ class QuintileExplorer(object):
             parmaker = make_params(z=self.zmean, cosmo=default_cosmo)
             self.params = parmaker.params
 
-            prof = self.ACP.to_profile()
             data = get_scales(self.ACP)
-            self.flat_samples = self._fit_model(data, nwalkers=nwalkers, **kwargs)
-            # container.update({"flat_samples": self.flat_samples})
+            self.flat_samples, sampler = self._fit_model(data, **kwargs)
+            container.update({"flat_samples": self.flat_samples, "sampler": sampler})
 
         fname = self.file_tag + "_default_profile.p"
         print(fname)
         pickle.dump(container, open(fname, "wb"))
-
-        # self._calc_prior(**kwargs)
 
     # def _calc_prior(self, factor=50., **kwargs):
     #     cov = sklearn.covariance.empirical_covariance(self.flat_samples)
@@ -132,22 +135,22 @@ class QuintileExplorer(object):
         print(iq)
         print(self._quintiles[iq])
         ww = self.calc_weights(feat, iq)
-        # prof = self._calc_profile(weights=ww).to_profile()
-        # container = {"ww": ww, "prof": prof}
+        prof = self._calc_profile(weights=ww).to_profile()
+        container = {"ww": ww, "prof": prof}
+        
+        if do_fit:
+            zmean = np.average(self.target[self.z_key], weights=ww)
+            print("mean-z", zmean)
+            parmaker = make_params(z=zmean, cosmo=default_cosmo)
+            params = parmaker.params
 
-        # if do_fit:
-        #     zmean = np.average(self.target[self.z_key], weights=ww)
-        #     print("mean-z", zmean)
-        #     parmaker = make_params(z=zmean, cosmo=default_cosmo)
-        #     params = parmaker.params
-        #
-        #     data = get_scales(prof)
-        #     flat_samples = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior, params=params, **kwargs)
-        #     container.update({"flat_samples": flat_samples})
+            data = get_scales(prof)
+            flat_samples, sampler = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior, params=params, **kwargs)
+            container.update({"flat_samples": flat_samples, "sampler": sampler})
 
-        # fname = self.file_tag + "_prof_"+tag+"_q"+str(iq)+".p"
-        # print(fname)
-        # pickle.dump(container, open(fname, "wb"))
+        fname = self.file_tag + "_prof_"+tag+"_q"+str(iq)+".p"
+        print(fname)
+        pickle.dump(container, open(fname, "wb"))
 
     # def calc_ref_profiles(self):
     #     feat = self.features["LAMBDA_CHISQ"].values
@@ -161,8 +164,8 @@ class QuintileExplorer(object):
     #     for col in np.arange(self.eff.shape[1]):
     #         print("starting eigen-feature ", str(col))
     #         feat = self.eff[:, col]
-    #         for iq in np.arange(5):
-    #             print("starting quintile ", str(iq), "of col", str(col))
+    #         for iq in np.arange(len(self._quintiles)):
+    #              print("starting quintile ", str(iq), "of col", str(col))
     #             self._calc_q_prof(feat, iq, "eff-feat-"+str(col))
     #
     def calc_feat_profiles(self, do_fit=True):
@@ -170,6 +173,6 @@ class QuintileExplorer(object):
         for col in np.arange(self.feats.shape[1]):
             print("starting feature ", str(col))
             feat = self.feats[:, col]
-            for iq in np.arange(5):
+            for iq in np.arange(len(self._quintiles)):
                 print("starting quintile ", str(iq), "of col", str(col))
                 self._calc_q_prof(feat, iq, "feat-"+str(col), fit=do_fit)
