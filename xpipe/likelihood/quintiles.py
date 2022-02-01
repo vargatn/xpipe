@@ -161,7 +161,7 @@ class QuintileExplorer(object):
         container = {"ww": ww, "prof": prof}
 
         if do_fit:
-            zmean = np.average(self.target[self.z_key], weights=ww)
+            zmean = np.average(self.target[self.z_key], weights=ww["WEIGHT"])
             print("mean-z", zmean)
             parmaker = make_params(z=zmean, cosmo=default_cosmo)
             parmaker.params.update({"scinv": self.scinv})
