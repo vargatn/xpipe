@@ -16,6 +16,8 @@ import copy
 import h5py
 from ..tools.selector import partition
 
+import warnings
+
 from ..tools import selector as sl
 from .. import paths
 from ..xhandle import shearops
@@ -1288,7 +1290,8 @@ class SOMBoost(object):
 def calc_decomp(inputs):
     zvals, wws, jkvals, bins, zcens, point_init, bounds, ijk, njk, npdf = inputs
 
-    print(ijk, njk)
+    if ijk % 20 == 0:
+        print(ijk, njk)
     pdfarr = []
     for r in np.arange(npdf):
         ii = (ijk != jkvals[r])
@@ -1297,7 +1300,10 @@ def calc_decomp(inputs):
     refpdf = np.histogram(zvals[-1], bins=bins, weights=wws[-1], density=True)[0]
     # inputs.append((zcens, pdfarr, refpdf, self.point_init, self.bounds))
     bmixer = BoostMixer(zcens, pdfarr, refpdf)
-    res = optimize.least_squares(bmixer, point_init, bounds=bounds)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        res = optimize.least_squares(bmixer, point_init, bounds=bounds)
 
     # bmixer = BoostMixer(inputs[0], inputs[1], inputs[2])
     # res = optimize.least_squares(bmixer, inputs[3], bounds=inputs[4])

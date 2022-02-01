@@ -10,6 +10,8 @@ from xpipe.xhandle import shearops, pzboost
 # TODO update this for Eigen features
 # TODO update this for standard features and then correct for their correlations
 
+
+# Cluster likelihood is mcmc.log_cluster_prob()
 class QuintileExplorer(object):
     def __init__(self, src, flist, flist_jk, file_tag="autosplit_v1", pairs_to_load=None,
                  z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID",
@@ -37,28 +39,29 @@ class QuintileExplorer(object):
         self.target = self.raw_ACP.target
         self.smb = pzboost.SOMBoost(self.src, [self.flist_jk,], pairs_to_load=self.pair_path)
 
-    def _calc_profile(self, weights=None, **kwargs):
+    def _calc_profile(self, weights=None, _include_boost=True, **kwargs):
         ACP = self.raw_ACP.copy()
         ACP.get_profiles(reload=False, ismeta=self.ismeta, weights=weights)
 
-        self.smb.prep_boost(bins_to_use=np.linspace(0, 14, 15))
-        self.smb.get_boost_jk(npdf=15, **kwargs)
+        if _include_boost:
+            self.smb.prep_boost(bins_to_use=np.linspace(0, 14, 15))
+            self.smb.get_boost_jk(npdf=15, **kwargs)
+            ACP.add_boost_jk(self.smb)
 
-        ACP.add_boost_jk(self.smb)
         return ACP
     #
-    # def _fit_model(self, data, nwalkers=16, params=None, lprior=None, **kwargs) :
-    #
-    #     if lprior is None:
-    #         _lprior = self.lprior
+    def _fit_model(self, data, nwalkers=16, params=None, lprior=None, **kwargs) :
+
+        if lprior is None:
+            _lprior = self.lprior
     #
     #     if params is None:
     #         params = self.params
     #     flat_samples = do_mcmc(data, params, nwalkers=nwalkers, prior=_lprior)[0]
     #     return flat_samples
-    #
-    def calc_fiducial_profile(self, nwalkers=16, do_fit=True, **kwargs):
-        self.ACP = self._calc_profile()
+
+    def calc_fiducial_profile(self, nwalkers=16, do_fit=True, _include_boost=True, **kwargs):
+        self.ACP = self._calc_profile(_include_boost=_include_boost)
         prof = self.ACP.to_profile()
         container = {"prof": prof}
 
@@ -70,7 +73,7 @@ class QuintileExplorer(object):
             prof = self.ACP.to_profile()
             data = get_scales(self.ACP)
             self.flat_samples = self._fit_model(data, nwalkers=nwalkers, **kwargs)
-            container.update({"flat_samples": self.flat_samples})
+            # container.update({"flat_samples": self.flat_samples})
 
         fname = self.file_tag + "_default_profile.p"
         print(fname)
