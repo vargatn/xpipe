@@ -47,18 +47,6 @@ import astropy.cosmology as cosmology
 default_cosmo = cosmology.FlatLambdaCDM(Om0=0.3, H0=70)
 
 
-def get_scales(prof, rmin=0.1, rmax=100):
-    rr = prof.rr
-    ii = (rmin <= rr) & (rr < rmax)
-    data = {
-        "rarr": prof.rr[ii],
-        "dst": prof.dst[ii],
-        "dst_err": prof.dst_err[ii]
-    }
-
-    return data
-
-
 class make_params(object):
     def __init__(self, z, cosmo, logmass_array=np.linspace(12, 16, 1000)):
         self.cosmo = cosmo

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import sklearn
 
-from xpipe.likelihood.mass import make_params, default_cosmo, get_scales
+from xpipe.likelihood.mass import make_params, default_cosmo
 from xpipe.xhandle import shearops, pzboost
 
 from .mcmc import log_cluster_prob, do_mcmc
@@ -11,12 +11,30 @@ from .mcmc import log_cluster_prob, do_mcmc
 # TODO update this for standard features and then correct for their correlations
 
 
+CLUST_RADIAL_EDGES = np.logspace(np.log10(0.1), np.log10(100), 16)
+CLUST_RADIAL_DENSE = np.logspace(np.log10(0.02), 2, 100)
+
+def get_scales(prof, rmin=0.1, rmax=100):
+    rr = prof.rr
+    ii = (rmin <= rr) & (rr < rmax)
+    data = {
+        "rarr": prof.rr[ii],
+        "dst": prof.dst[ii],
+        "dst_err": prof.dst_err[ii],
+        "cov": prof.cov[ii, :][:, ii],
+        "rbin_edges": CLUST_RADIAL_EDGES,
+        "rarr_dense": CLUST_RADIAL_DENSE,
+    }
+
+    return data
+
+
 # Cluster likelihood is mcmc.log_cluster_prob()
 class QuintileExplorer(object):
     def __init__(self, src, flist, flist_jk, file_tag="autosplit_v1", pairs_to_load=None,
                  z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID",
                  ismeta=False, bins_to_use=np.linspace(0, 14, 15), npdf=15, init_pos=(14.3,  4.5, 0.15,  0.83),
-                 nstep=1000, nwalkers=16, init_fac=1e-2, discard=200, **kwargs):
+                 nstep=1000, nwalkers=16, init_fac=1e-2, discard=200, R_lambda=0.88, scinv=0.0003, **kwargs):
         self.src = src
         self.pair_path = pairs_to_load
         self.z_key = z_key
@@ -35,6 +53,8 @@ class QuintileExplorer(object):
         self.nwalkers=nwalkers
         self.init_fac = init_fac
         self.discard = discard
+        self.R_lambda = R_lambda
+        self.scinv = scinv
 
         self.lprior = None
 
@@ -74,9 +94,11 @@ class QuintileExplorer(object):
         if do_fit:
             self.zmean = np.mean(self.target[self.z_key])
             parmaker = make_params(z=self.zmean, cosmo=default_cosmo)
-            self.params = parmaker.params
+            parmaker.params.update({"scinv": self.scinv})
+            self.params = parmaker
 
             data = get_scales(self.ACP)
+            data.update({"R_lambda": self.R_lambda})
             self.flat_samples, sampler = self._fit_model(data, **kwargs)
             container.update({"flat_samples": self.flat_samples, "sampler": sampler})
 
@@ -137,15 +159,16 @@ class QuintileExplorer(object):
         ww = self.calc_weights(feat, iq)
         prof = self._calc_profile(weights=ww).to_profile()
         container = {"ww": ww, "prof": prof}
-        
+
         if do_fit:
             zmean = np.average(self.target[self.z_key], weights=ww)
             print("mean-z", zmean)
             parmaker = make_params(z=zmean, cosmo=default_cosmo)
-            params = parmaker.params
+            parmaker.params.update({"scinv": self.scinv})
 
             data = get_scales(prof)
-            flat_samples, sampler = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior, params=params, **kwargs)
+            data.update({"R_lambda": self.R_lambda})
+            flat_samples, sampler = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior, params=parmaker, **kwargs)
             container.update({"flat_samples": flat_samples, "sampler": sampler})
 
         fname = self.file_tag + "_prof_"+tag+"_q"+str(iq)+".p"
@@ -176,3 +199,5 @@ class QuintileExplorer(object):
             for iq in np.arange(len(self._quintiles)):
                 print("starting quintile ", str(iq), "of col", str(col))
                 self._calc_q_prof(feat, iq, "feat-"+str(col), fit=do_fit)
+
+
