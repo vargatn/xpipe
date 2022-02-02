@@ -82,7 +82,7 @@ class QuintileExplorer(object):
         if params is None:
             params = self.params
 
-        lcp = log_cluster_prob(data, params)
+        lcp = log_cluster_prob(data, params, use_rcens=True)
         flat_samples, sampler = do_mcmc(lcp, self.init_pos, self.nstep, self.nwalkers, self.init_fac, self.discard)
         return flat_samples, sampler
 
@@ -126,17 +126,19 @@ class QuintileExplorer(object):
         if q_high != 100:
             val_high = np.percentile(score, q_high)
 
+        print(score.min(), val_low)
+        print(score.max(), val_high)
         _ww = pd.DataFrame()
         _ww[self.id_key] = self.raw_ACP.target[self.id_key]
         tmp = pd.DataFrame()
 
         tmp[self.id_key] = self.features[self.id_key]
         tmp["WEIGHT"] = 0.
-        ii = ((score > val_low) & (score < val_high))
+        ii = ((score > val_low) & (score <= val_high))
         tmp["WEIGHT"][ii] = 1.
 
         ww = pd.merge(_ww, tmp, on=self.id_key, how="left").fillna(value=0.)
-
+        print("weight fraction", str(ww["WEIGHT"].sum() / len(ww)))
         return ww
 
     def set_features(self, features):
@@ -153,9 +155,11 @@ class QuintileExplorer(object):
         self.eff = self.pca.transform(self.feats)
 
     def _calc_q_prof(self, feat, iq, tag, nwalkers=16, do_fit=True, _include_boost=True, **kwargs):
-
+        fname = self.file_tag + "_prof_"+tag+"_q"+str(iq)+".p"
+        print("starting profile calculation")
         print(iq)
         print(self._quintiles[iq])
+        print(fname)
         ww = self.calc_weights(feat, iq)
         prof = self._calc_profile(weights=ww, _include_boost=_include_boost).to_profile()
         container = {"ww": ww, "prof": prof}
@@ -171,9 +175,8 @@ class QuintileExplorer(object):
             flat_samples, sampler = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior, params=parmaker, **kwargs)
             container.update({"flat_samples": flat_samples, "sampler": sampler})
 
-        fname = self.file_tag + "_prof_"+tag+"_q"+str(iq)+".p"
-        print(fname)
-        pickle.dump(container, open(fname, "wb"))
+            print(fname)
+            pickle.dump(container, open(fname, "wb"))
 
     def calc_ref_profiles(self, do_fit=True, _include_boost=True):
         feat = self.features["LAMBDA_CHISQ"].values

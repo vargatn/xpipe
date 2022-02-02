@@ -9,3 +9,7 @@ def test_quintile_init():
     quintile_limits = ((0, 20), (20, 40), (40, 60), (60, 80), (80, 100))
     assert quintile_limits == qqq._quintiles
 
+
+def test_weights():
+    pass
+
