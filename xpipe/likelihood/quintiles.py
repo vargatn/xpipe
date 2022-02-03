@@ -99,8 +99,9 @@ class QuintileExplorer(object):
 
             data = get_scales(self.ACP)
             data.update({"R_lambda": self.R_lambda})
-            self.flat_samples, sampler = self._fit_model(data, **kwargs)
-            container.update({"flat_samples": self.flat_samples, "sampler": sampler})
+            self.flat_samples, self.sampler = self._fit_model(data, **kwargs)
+            container.update({"flat_samples": self.flat_samples, "sampler": self.sampler, "params": self.params.params})
+            container.update({"scinv": self.scinv, "z": self.zmean, "R_lambda": self.R_lambda})
 
         fname = self.file_tag + "_default_profile.p"
         print(fname)
@@ -172,11 +173,13 @@ class QuintileExplorer(object):
 
             data = get_scales(prof)
             data.update({"R_lambda": self.R_lambda})
-            flat_samples, sampler = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior, params=parmaker, **kwargs)
-            container.update({"flat_samples": flat_samples, "sampler": sampler})
+            self.flat_samples, self.sampler = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior,
+                                                              params=parmaker, **kwargs)
+            container.update({"flat_samples": self.flat_samples, "sampler": self.sampler, "params": self.params.params})
+            container.update({"scinv": self.scinv, "z": zmean, "R_lambda": self.R_lambda})
 
-            print(fname)
-            pickle.dump(container, open(fname, "wb"))
+        print(fname)
+        pickle.dump(container, open(fname, "wb"))
 
     def calc_ref_profiles(self, do_fit=True, _include_boost=True):
         feat = self.features["LAMBDA_CHISQ"].values

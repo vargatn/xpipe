@@ -1119,11 +1119,15 @@ class AutoCalibrateProfile(object):
         self.cov = self.profile.dst_cov[ii, :][:, ii]
 
     def add_boost_jk(self, sboost, mfactor_sbins=None):
-        """Boost uncertainty is added to the diagonal in quadrature of the covariance"""
 
         _profiles = []
         for i, scinv in enumerate(self.scinvs):
             _profiles.append(copy.deepcopy(self._profiles[i]))
+            if self.weights is not None:
+                _weights = extract_weights(self._profiles[i].info, self.weights, weight_key=self.weight_key, id_key=self.id_key)
+                _profiles[i].prof_maker(weights=_weights)
+            else:
+                _profiles[i].prof_maker()
             fcl = sboost.resarr_jk[0][i][:, 2:].T
             _profiles[i].multiply(scinv * (fcl + 1))
 
@@ -1140,6 +1144,7 @@ class AutoCalibrateProfile(object):
 
         factor = 1. / np.sum(self.scinvs**(2))
         self.profile.multiply(factor)
+        print(self.profile.dst)
         self._scale_cut()
 
 
