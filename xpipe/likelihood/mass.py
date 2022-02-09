@@ -462,6 +462,58 @@ def calc_cluster_mix_nw(rarr, logmass, c, bb, R_misc, f_cen, params, nonweak=Tru
     return DeltaSigma * factor
 
 
+def calc_cluster_mix_nw_components(rarr, logmass, c, bb, R_misc, f_cen, params, nonweak=True):
+    """
+    Galaxy cluster mixture model with nonweak shear correction with components shown
+
+    1h centered nonweak
+    1h miscenter nonweak
+    2h centered
+    """
+    factor = params["h"]/ params["scale_factor"]**2
+
+    _scinv = params["scinv"] / factor
+
+    _rarr = rarr * params["h"] / params["scale_factor"]
+    _R_misc = R_misc * params["h"] / params["scale_factor"]
+
+    mass = 10**logmass * params["h"]
+
+    radii = np.logspace(-3, 3, 100) #Mpc/h comoving
+    xi_nfw = xi.xi_nfw_at_r(radii, mass, c, params["Omega_m"])
+    xi_mm = xi.xi_mm_at_r(radii, params["k"], params["P_nonlin"])
+    xi_2halo = xi.xi_2halo(bb, xi_mm)
+
+    xi_hm = xi.xi_hm(xi_nfw, xi_2halo)
+
+    R_perp = np.logspace(-3, 2.4, 100) #Mpc/h comoving; distance on the sky
+    Sigma_cen = deltasigma.Sigma_at_R(R_perp, radii, xi_hm, mass, c, params["Omega_m"])
+    Sigma_misc = miscentering.Sigma_mis_at_R(R_perp, R_perp, Sigma_cen, mass, c, params["Omega_m"], _R_misc)
+
+    Sigma = f_cen * Sigma_cen + (1 - f_cen) * Sigma_misc
+
+    Sigma_cen_nfw = deltasigma.Sigma_nfw_at_R(R_perp, mass, c, params["Omega_m"])
+    Sigma_comp_cen = f_cen * Sigma_cen_nfw
+    Sigma_comp_miscen = (1 - f_cen) * Sigma_misc
+
+    Sigma_2h = deltasigma.Sigma_at_R(R_perp, radii, xi_2halo, mass, c, params["Omega_m"])
+
+    DeltaSigma = miscentering.DeltaSigma_mis_at_R(_rarr, R_perp, Sigma)
+    DeltaSigma_comp_cen = deltasigma.DeltaSigma_at_R(_rarr, R_perp, Sigma_comp_cen, mass, c, params["Omega_m"])
+    DeltaSigma_comp_miscen = miscentering.DeltaSigma_mis_at_R(_rarr, R_perp, Sigma_comp_miscen)
+    DeltaSigma_2h = deltasigma.DeltaSigma_at_R(_rarr, R_perp, Sigma_2h, mass, c, params["Omega_m"])
+
+    if nonweak:
+        _Sigma = np.interp(_rarr, R_perp, Sigma)
+        DeltaSigma = DeltaSigma / (1 - _Sigma * _scinv)
+        DeltaSigma_comp_cen = DeltaSigma_comp_cen / (1 - _Sigma * _scinv)
+        DeltaSigma_comp_miscen = DeltaSigma_comp_miscen / (1 - _Sigma * _scinv)
+        DeltaSigma_2h = DeltaSigma_2h / (1 - _Sigma * _scinv)
+
+    factor = params["h"]/ params["scale_factor"]**2
+    return DeltaSigma * factor, DeltaSigma_comp_cen * factor, DeltaSigma_comp_miscen * factor, DeltaSigma_2h * factor
+
+
 def calc_sub_mixture_nw(rarr, logmass1, c1, logmass2, c2, R_misc, f_cen, distvals, params, nonweak=True, nbins=5):
     """Sat + Galaxy cluster mixture model with nonweak shear correction"""
 

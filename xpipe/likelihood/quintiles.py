@@ -59,6 +59,7 @@ class QuintileExplorer(object):
         self.lprior = None
 
         self._quintiles = ((0, 20), (20, 40), (40, 60), (60, 80), (80, 100))
+        # self._quintiles = ((0, 25), (25, 50), (50, 75), (75, 100))
 
     def load_target(self):
         self.raw_ACP = shearops.AutoCalibrateProfile(self.flist, self.flist_jk, self.src, xlims=(0.1, 100))
@@ -86,7 +87,7 @@ class QuintileExplorer(object):
         flat_samples, sampler = do_mcmc(lcp, self.init_pos, self.nstep, self.nwalkers, self.init_fac, self.discard)
         return flat_samples, sampler
 
-    def calc_fiducial_profile(self, do_fit=True, _include_boost=True, **kwargs):
+    def calc_fiducial_profile(self, do_fit=True, _include_boost=True, save=True, **kwargs):
         self.ACP = self._calc_profile(_include_boost=_include_boost)
         prof = self.ACP.to_profile()
         container = {"prof": prof}
@@ -103,9 +104,10 @@ class QuintileExplorer(object):
             container.update({"flat_samples": self.flat_samples, "sampler": self.sampler, "params": self.params.params})
             container.update({"scinv": self.scinv, "z": self.zmean, "R_lambda": self.R_lambda})
 
-        fname = self.file_tag + "_default_profile.p"
-        print(fname)
-        pickle.dump(container, open(fname, "wb"))
+        if save:
+            fname = self.file_tag + "_default_profile.p"
+            print(fname)
+            pickle.dump(container, open(fname, "wb"))
 
     # def _calc_prior(self, factor=50., **kwargs):
     #     cov = sklearn.covariance.empirical_covariance(self.flat_samples)
@@ -162,21 +164,24 @@ class QuintileExplorer(object):
         print(self._quintiles[iq])
         print(fname)
         ww = self.calc_weights(feat, iq)
-        prof = self._calc_profile(weights=ww, _include_boost=_include_boost).to_profile()
-        container = {"ww": ww, "prof": prof}
+        if not ww["WEIGHT"].sum():
+            container = {"ww": ww, "prof": None}
+        else:
+            prof = self._calc_profile(weights=ww, _include_boost=_include_boost).to_profile()
+            container = {"ww": ww, "prof": prof}
 
-        if do_fit:
-            zmean = np.average(self.target[self.z_key], weights=ww["WEIGHT"])
-            print("mean-z", zmean)
-            parmaker = make_params(z=zmean, cosmo=default_cosmo)
-            parmaker.params.update({"scinv": self.scinv})
+            if do_fit:
+                zmean = np.average(self.target[self.z_key], weights=ww["WEIGHT"])
+                print("mean-z", zmean)
+                parmaker = make_params(z=zmean, cosmo=default_cosmo)
+                parmaker.params.update({"scinv": self.scinv})
 
-            data = get_scales(prof)
-            data.update({"R_lambda": self.R_lambda})
-            self.flat_samples, self.sampler = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior,
-                                                              params=parmaker, **kwargs)
-            container.update({"flat_samples": self.flat_samples, "sampler": self.sampler, "params": self.params.params})
-            container.update({"scinv": self.scinv, "z": zmean, "R_lambda": self.R_lambda})
+                data = get_scales(prof)
+                data.update({"R_lambda": self.R_lambda})
+                self.flat_samples, self.sampler = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior,
+                                                                  params=parmaker, **kwargs)
+                container.update({"flat_samples": self.flat_samples, "sampler": self.sampler, "params": self.params.params})
+                container.update({"scinv": self.scinv, "z": zmean, "R_lambda": self.R_lambda})
 
         print(fname)
         pickle.dump(container, open(fname, "wb"))
@@ -187,6 +192,12 @@ class QuintileExplorer(object):
         for iq in np.arange(len(self._quintiles)):
             print("starting quintile ", str(iq))
             self._calc_q_prof(feat, iq, "ref", do_fit=do_fit, _include_boost=_include_boost)
+
+    def calc_custom_profiles(self, feat, do_fit=True, _include_boost=True, tag="custom"):
+        print("calculating reference profiles")
+        for iq in np.arange(len(self._quintiles)):
+            print("starting quintile ", str(iq))
+            self._calc_q_prof(feat, iq, tag, do_fit=do_fit, _include_boost=_include_boost)
 
     def calc_eff_profiles(self, do_fit=True, _include_boost=True):
         print("calculating PCA-space split profiles")
