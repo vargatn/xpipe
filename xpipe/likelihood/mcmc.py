@@ -649,6 +649,7 @@ class log_sub_cluster_all_prob3(object):
 class log_cluster_prob(object):
     def __init__(self, data, params, logmass_edges=(10, 18), c_edges=(2, 20), c_sub_edges=(5, 20), tau_pars=(0.17, 0.04), f_pars=(0.75, 0.08), use_rcens=False):
         """logmass, c linear edges, tau, f gaussian prior (and zero cut)"""
+        # TODO this might need a multiplicative factor for the data vector see McCrann et al 2021
         self.data = data
         self.params = params.params
         self.logmass_edges = logmass_edges
