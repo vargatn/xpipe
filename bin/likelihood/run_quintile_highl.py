@@ -61,7 +61,7 @@ import argparse
 
 cosmo = cosmology.FlatLambdaCDM(Om0=0.3, H0=70)
 
-paths.update_params("//home/moon/vargatn/DES/PROJECTS/xpipe/settings/params_y3rm-lowl_meta.yml")
+paths.update_params("//home/moon/vargatn/DES/PROJECTS/xpipe/settings/params_y3rm_meta.yml")
 
 parser = argparse.ArgumentParser(description='which chunk')
 parser.add_argument("--lbin", type=int, default=0)
@@ -83,11 +83,11 @@ main_file_path = "/e/ocean1/users/vargatn/DESY3/Y3_mastercat_03_31_20.h5"
 
 root_path = "/e/ocean1/users/vargatn/QUINTILES/"
 
-TAG = "lean-fit_effs_v9_lowl-lowR"
+TAG = "lean-fit_effs_v9-lowR"
 
 features_to_calculate = ["MAGSUM", "BCG_MAGABS_R", "LGAP_SOFT_2", "RGAP_SOFT_2"]
 
-point_means_path = root_path + "autosplit_lean-fit_v7_lowl_point_means.p"
+point_means_path = root_path + "autosplit_lean-fit_v7_point_means.p"
 SCALES = (0.1, 3)
 
 ####################################################
@@ -104,12 +104,12 @@ if __name__ == "__main__":
 
     features = pd.read_hdf(root_path + "allz_rm_gt5_features.h5", key="data")
     flist, flist_jk, rlist, rlist_jk = parbins.get_file_lists(paths.params, paths.dirpaths)
-    flist = np.array(flist)[[0, 1, 2, 7, 8, 9, 14, 15, 16]]
-    flist_jk = np.array(flist_jk)[[0, 1, 2, 7, 8, 9, 14, 15, 16]]
+    # flist = np.array(flist)[[0, 1, 2, 7, 8, 9, 14, 15, 16]]
+    # flist_jk = np.array(flist_jk)[[0, 1, 2, 7, 8, 9, 14, 15, 16]]
 
     i = 0
     for z, zbin in enumerate((0, 1, 2)):
-        for l, lbin in enumerate((0, 1, 2)):
+        for l, lbin in enumerate((0, 1, 2, 3)):
             if lbin == args.lbin:
                 fname_pairs = "/e/ocean1/users/vargatn/DES/pairs/" + flist[i].replace(".dat", "_pairs.p")
                 file_tag = root_path + "runs/autosplit_" + TAG + "_z" + str(zbin) + "-l" + str(lbin)
