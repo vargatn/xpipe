@@ -1177,27 +1177,10 @@ class AutoCalibrateProfile(object):
         self._scale_cut()
         self.cov = self.cov + np.diag(self.cov) * self.fcl_err
 
-        # self.dst = self.profile.dst
-        # self.dst_err = self.profile.dst_err
-        # self.rr = self.profile.rr
-
     def to_profile(self):
         prof = ProfileContainer(self.rr, self.dst, self.dst_err, self.cov)
         return prof
 
-    # def append_profile(self, other, **kwargs):
-    #
-    #     # append profile
-    #     _profiles = []
-    #     for i, sbin in enumerate(self.sbins):
-    #         self._profiles[i].append(other._profiles[i])
-    #
-    #     # append targets
-    #     self.target = pd.concat((self.target, other.target))
-    #
-    #     self._get_scinvs(**kwargs)
-    #     self._combine_sbins()
-    #     self._scale_cut()
 
     def copy(self):
 

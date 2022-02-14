@@ -34,7 +34,8 @@ class QuintileExplorer(object):
     def __init__(self, src, flist, flist_jk, file_tag="autosplit_v1", pairs_to_load=None,
                  z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID",
                  ismeta=False, bins_to_use=np.linspace(0, 14, 15), npdf=15, init_pos=(14.3,  4.5, 0.15,  0.83),
-                 nstep=1000, nwalkers=16, init_fac=1e-2, discard=200, R_lambda=0.88, scinv=0.0003, **kwargs):
+                 nstep=1000, nwalkers=16, init_fac=1e-2, discard=200, R_lambda=0.88, scinv=0.0003, scales=(0.1, 100),
+                 Rs_sbins=None, ms_sbins=None, ms_stds=None, **kwargs):
         self.src = src
         self.pair_path = pairs_to_load
         self.z_key = z_key
@@ -55,31 +56,34 @@ class QuintileExplorer(object):
         self.discard = discard
         self.R_lambda = R_lambda
         self.scinv = scinv
+        self.scales = scales
+        self.Rs_sbins = Rs_sbins
+        self.ms_sbins = ms_sbins
+        self.ms_stds = ms_stds
 
         self.lprior = None
 
         self._quintiles = ((0, 20), (20, 40), (40, 60), (60, 80), (80, 100))
-        # self._quintiles = ((0, 25), (25, 50), (50, 75), (75, 100))
 
     def load_target(self):
-        self.raw_ACP = shearops.AutoCalibrateProfile(self.flist, self.flist_jk, self.src, xlims=(0.1, 100))
-        self.raw_ACP.get_profiles(ismeta=self.ismeta)
+        self.raw_ACP = shearops.AutoCalibrateProfile(self.flist, self.flist_jk, self.src, xlims=(0.1, 100), Rs_sbins=self.Rs_sbins)
+        self.raw_ACP.get_profiles(ismeta=self.ismeta, Rs_sbins=self.Rs_sbins, mfactor_sbins=self.ms_sbins)
         self.target = self.raw_ACP.target
         self.smb = pzboost.SOMBoost(self.src, [self.flist_jk,], pairs_to_load=self.pair_path)
 
     def _calc_profile(self, weights=None, _include_boost=True, **kwargs):
         ACP = self.raw_ACP.copy()
-        ACP.get_profiles(reload=False, ismeta=self.ismeta, weights=weights)
+        ACP.get_profiles(reload=False, ismeta=self.ismeta, weights=weights, Rs_sbins=self.Rs_sbins, mfactor_sbins=self.ms_sbins)
 
         if _include_boost:
             self.smb.prep_boost(bins_to_use=np.linspace(0, 14, 15))
             self.smb.get_boost_jk(npdf=15, **kwargs)
-            ACP.add_boost_jk(self.smb)
+            ACP.add_boost_jk(self.smb, mfactor_sbins=self.ms_sbins)
 
         return ACP
-    #
+
     def _fit_model(self, data, params=None, **kwargs):
-    #
+
         if params is None:
             params = self.params
 
@@ -100,8 +104,9 @@ class QuintileExplorer(object):
 
         if do_fit:
             self.get_params()
-
-            data = get_scales(self.ACP)
+            self.R_lambda = np.average(self.target["R_LAMBDA"])
+            data = get_scales(self.ACP, rmin=self.scales[0], rmax=self.scales[1])
+            print(data["dst"])
             data.update({"R_lambda": self.R_lambda})
             self.flat_samples, self.sampler = self._fit_model(data, **kwargs)
             container.update({"flat_samples": self.flat_samples, "sampler": self.sampler, "params": self.params.params})
@@ -163,13 +168,15 @@ class QuintileExplorer(object):
         pvals2 = np.array([np.percentile(score2, p) for p in np.arange(101)])
         ppvals2 = np.zeros(shape=score2.shape) - 9999
         for i in np.arange(100):
-            ii = np.where((score2 >= pvals2[i]) & (score1 < pvals2[i + 1]))
+            ii = np.where((score2 >= pvals2[i]) & (score2 < pvals2[i + 1]))
             ppvals2[ii] = i
-        ii = np.where(score1 == pvals1[-1])
+        ii = np.where(score2 == pvals2[-1])
         ppvals2[ii] = 100
 
-        score = np.vstack((pvals1, pvals2)).T.mean(axis=1)
-
+        score = np.vstack((ppvals1, ppvals2)).T.mean(axis=1)
+        # print(pvals1)
+        # print(pvals2)
+        # print(score)
         q_low = self._quintiles[qq][0]
         q_high = self._quintiles[qq][1]
 
@@ -194,7 +201,7 @@ class QuintileExplorer(object):
 
         ww = pd.merge(_ww, tmp, on=self.id_key, how="left").fillna(value=0.)
         print("weight fraction", str(ww["WEIGHT"].sum() / len(ww)))
-        return ww
+        return ww#, tmp
 
     def set_features(self, features):
         tmp = pd.merge(pd.DataFrame(self.target["MEM_MATCH_ID"]), features, on="MEM_MATCH_ID", how="left")
@@ -233,8 +240,10 @@ class QuintileExplorer(object):
                 parmaker.params.update({"scinv": self.scinv})
                 self.params = parmaker
 
-                data = get_scales(prof)
-                data.update({"R_lambda": self.R_lambda})
+                r_lambda = np.average(self.target["R_LAMBDA"], weights=ww["WEIGHT"])
+
+                data = get_scales(prof, rmin=self.scales[0], rmax=self.scales[1])
+                data.update({"R_lambda": r_lambda})
                 self.flat_samples, self.sampler = self._fit_model(data, nwalkers=nwalkers, prior=self.lprior,
                                                                   params=parmaker, **kwargs)
                 container.update({"flat_samples": self.flat_samples, "sampler": self.sampler, "params": self.params.params})
@@ -274,12 +283,11 @@ class QuintileExplorer(object):
                 print("starting quintile ", str(iq), "of col", str(col))
                 self._calc_q_prof(feat, iq, "feat-"+str(col), do_fit=do_fit, _include_boost=_include_boost)
 
-
-    # def calc_custom_expand_profiles(self, feat1, feat2, do_fit=True, _include_boost=True, tag="custom_expand"):
-    #     print("calculating reference profiles")
-    #     for iq in np.arange(len(self._quintiles)):
-    #         print("starting quintile ", str(iq))
-    #         self._calc_q_prof(feat, iq, tag, do_fit=do_fit, _include_boost=_include_boost)
+    def calc_custom_expand_profiles(self, feat1, feat2, do_fit=True, _include_boost=True, tag="custom_expand"):
+        print("calculating 1-feature expansion profiles")
+        for iq in np.arange(len(self._quintiles)):
+            print("starting quintile ", str(iq))
+            self._calc_q_prof(feat1, iq, tag, do_fit=do_fit, _include_boost=_include_boost, feat2=feat2)
 
 
 
