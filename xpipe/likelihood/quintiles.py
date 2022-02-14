@@ -144,6 +144,55 @@ class QuintileExplorer(object):
         print("weight fraction", str(ww["WEIGHT"].sum() / len(ww)))
         return ww
 
+    def calc_weights_dual(self, score1, score2, qq, **kwargs):
+        """uses the mean of two feature percentiles to assign quintile weights"""
+        _ww = pd.DataFrame()
+        _ww[self.id_key] = self.raw_ACP.target[self.id_key]
+        tmp = pd.DataFrame()
+
+        pvals1 = np.array([np.percentile(score1, p) for p in np.arange(101)])
+        ppvals1 = np.zeros(shape=score1.shape) - 9999
+        for i in np.arange(100):
+            ii = np.where((score1 >= pvals1[i]) & (score1 < pvals1[i + 1]))
+            ppvals1[ii] = i
+        ii = np.where(score1 == pvals1[-1])
+        ppvals1[ii] = 100
+        pvals2 = np.array([np.percentile(score2, p) for p in np.arange(101)])
+        ppvals2 = np.zeros(shape=score2.shape) - 9999
+        for i in np.arange(100):
+            ii = np.where((score2 >= pvals2[i]) & (score1 < pvals2[i + 1]))
+            ppvals2[ii] = i
+        ii = np.where(score1 == pvals1[-1])
+        ppvals2[ii] = 100
+
+        score = np.vstack((pvals1, pvals2)).T.mean(axis=1)
+
+        q_low = self._quintiles[qq][0]
+        q_high = self._quintiles[qq][1]
+
+        val_low = -np.inf
+        if q_low != 0:
+            val_low = np.percentile(score, q_low)
+
+        val_high = np.inf
+        if q_high != 100:
+            val_high = np.percentile(score, q_high)
+
+        print(score.min(), val_low)
+        print(score.max(), val_high)
+        _ww = pd.DataFrame()
+        _ww[self.id_key] = self.raw_ACP.target[self.id_key]
+        tmp = pd.DataFrame()
+
+        tmp[self.id_key] = self.features[self.id_key]
+        tmp["WEIGHT"] = 0.
+        ii = ((score > val_low) & (score <= val_high))
+        tmp["WEIGHT"][ii] = 1.
+
+        ww = pd.merge(_ww, tmp, on=self.id_key, how="left").fillna(value=0.)
+        print("weight fraction", str(ww["WEIGHT"].sum() / len(ww)))
+        return ww
+
     def set_features(self, features):
         tmp = pd.merge(pd.DataFrame(self.target["MEM_MATCH_ID"]), features, on="MEM_MATCH_ID", how="left")
         self.features = tmp.dropna()
@@ -157,13 +206,17 @@ class QuintileExplorer(object):
         self.pca.fit(self.feats)
         self.eff = self.pca.transform(self.feats)
 
-    def _calc_q_prof(self, feat, iq, tag, nwalkers=16, do_fit=True, _include_boost=True, **kwargs):
+    def _calc_q_prof(self, feat, iq, tag, nwalkers=16, do_fit=True, _include_boost=True, feat2=None, **kwargs):
         fname = self.file_tag + "_prof_"+tag+"_q"+str(iq)+".p"
         print("starting profile calculation")
         print(iq)
         print(self._quintiles[iq])
         print(fname)
-        ww = self.calc_weights(feat, iq)
+        if feat2 is not None:
+            ww = self.calc_weights_dual(feat, feat2, iq)
+        else:
+            ww = self.calc_weights(feat, iq)
+
         if not ww["WEIGHT"].sum():
             container = {"ww": ww, "prof": None}
         else:
@@ -216,5 +269,14 @@ class QuintileExplorer(object):
             for iq in np.arange(len(self._quintiles)):
                 print("starting quintile ", str(iq), "of col", str(col))
                 self._calc_q_prof(feat, iq, "feat-"+str(col), do_fit=do_fit, _include_boost=_include_boost)
+
+
+    # def calc_custom_expand_profiles(self, feat1, feat2, do_fit=True, _include_boost=True, tag="custom_expand"):
+    #     print("calculating reference profiles")
+    #     for iq in np.arange(len(self._quintiles)):
+    #         print("starting quintile ", str(iq))
+    #         self._calc_q_prof(feat, iq, tag, do_fit=do_fit, _include_boost=_include_boost)
+
+
 
 
