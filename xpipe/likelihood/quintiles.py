@@ -87,16 +87,19 @@ class QuintileExplorer(object):
         flat_samples, sampler = do_mcmc(lcp, self.init_pos, self.nstep, self.nwalkers, self.init_fac, self.discard)
         return flat_samples, sampler
 
+    def get_params(self):
+        self.zmean = np.mean(self.target[self.z_key])
+        parmaker = make_params(z=self.zmean, cosmo=default_cosmo)
+        parmaker.params.update({"scinv": self.scinv})
+        self.params = parmaker
+
     def calc_fiducial_profile(self, do_fit=True, _include_boost=True, save=True, **kwargs):
         self.ACP = self._calc_profile(_include_boost=_include_boost)
         prof = self.ACP.to_profile()
         container = {"prof": prof}
 
         if do_fit:
-            self.zmean = np.mean(self.target[self.z_key])
-            parmaker = make_params(z=self.zmean, cosmo=default_cosmo)
-            parmaker.params.update({"scinv": self.scinv})
-            self.params = parmaker
+            self.get_params()
 
             data = get_scales(self.ACP)
             data.update({"R_lambda": self.R_lambda})
@@ -228,6 +231,7 @@ class QuintileExplorer(object):
                 print("mean-z", zmean)
                 parmaker = make_params(z=zmean, cosmo=default_cosmo)
                 parmaker.params.update({"scinv": self.scinv})
+                self.params = parmaker
 
                 data = get_scales(prof)
                 data.update({"R_lambda": self.R_lambda})
