@@ -137,7 +137,7 @@ if __name__ == "__main__":
                 if args.runall or args.exts:
                     for f, feat_name in enumerate(features_to_calculate):
                         feat1 = QE.feats[:, 0]
-                        feat2 = QE.feats[:, np.where(feat_name == features.columns)[0] - 1]
+                        feat2 = QE.feats[:, np.where(feat_name == features.columns)[0] - 1][:, 0]
                         feat2 = feat2 * np.sign(np.corrcoef(feat1, feat2)[1, 0])
                         QE.calc_custom_expand_profiles(feat1, feat2,
                                                        do_fit=do_fit, _include_boost=_include_boost, tag=str(feat_name) + "-expand")

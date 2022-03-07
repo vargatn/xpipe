@@ -290,5 +290,38 @@ class QuintileExplorer(object):
             self._calc_q_prof(feat1, iq, tag, do_fit=do_fit, _include_boost=_include_boost, feat2=feat2)
 
 
+def calc_weights_dual(score1, score2, qq, quintiles=((0, 20), (20, 40), (40, 60), (60, 80), (80, 100)),**kwargs):
+    """uses the mean of two feature percentiles to assign quintile weights"""
+    pvals1 = np.array([np.percentile(score1, p) for p in np.arange(101)])
+    ppvals1 = np.zeros(shape=score1.shape) - 9999
+    for i in np.arange(100):
+        ii = np.where((score1 >= pvals1[i]) & (score1 < pvals1[i + 1]))
+        ppvals1[ii] = i
+    ii = np.where(score1 == pvals1[-1])
+    ppvals1[ii] = 100
+    pvals2 = np.array([np.percentile(score2, p) for p in np.arange(101)])
+    ppvals2 = np.zeros(shape=score2.shape) - 9999
+    for i in np.arange(100):
+        ii = np.where((score2 >= pvals2[i]) & (score2 < pvals2[i + 1]))
+        ppvals2[ii] = i
+    ii = np.where(score2 == pvals2[-1])
+    ppvals2[ii] = 100
 
+    score = np.vstack((ppvals1, ppvals2)).T.mean(axis=1)
 
+    q_low = quintiles[qq][0]
+    q_high = quintiles[qq][1]
+
+    val_low = -np.inf
+    if q_low != 0:
+        val_low = np.percentile(score, q_low)
+
+    val_high = np.inf
+    if q_high != 100:
+        val_high = np.percentile(score, q_high)
+
+    tmp = np.zeros(len(score1))
+    ii = ((score > val_low) & (score <= val_high))
+    tmp[ii] = 1.
+
+    return tmp

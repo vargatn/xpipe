@@ -1129,7 +1129,7 @@ class AutoCalibrateProfile(object):
             else:
                 _profiles[i].prof_maker()
             fcl = sboost.resarr_jk[0][i][:, 2:].T
-            _profiles[i].multiply(scinv * (fcl + 1))
+            _profiles[i].multiply(scinv * (1 / (1 - fcl)))
 
         if mfactor_sbins is None:
             mfactor_sbins = np.ones(len(self.scinvs))
@@ -1173,7 +1173,7 @@ class AutoCalibrateProfile(object):
         if ln > 0:
             pad = np.zeros(self.profile.dst_sub.shape[0] - len(self.fcl))
             self.fcl = np.concatenate((self.fcl, pad))
-        self.profile.multiply((self.fcl + 1)[:, np.newaxis])
+        self.profile.multiply((1 / (1 - self.fcl))[:, np.newaxis])
         self._scale_cut()
         self.cov = self.cov + np.diag(self.cov) * self.fcl_err
 
