@@ -74,6 +74,7 @@ parser.add_argument("--refs", action="store_true", default=False)
 parser.add_argument("--effs", action="store_true", default=False)
 parser.add_argument("--exts", action="store_true", default=False)
 parser.add_argument("--feats", action="store_true", default=False)
+parser.add_argument("--no_overwrite", action="store_false", default=True)
 
 RSEL = [0.004334224019486334, 0.008003474068894987, 0.01080724408713881, 0.011162349600167654]
 MS = 1 / (1 + np.array([-0.024,-0.037]))
@@ -98,6 +99,9 @@ if __name__ == "__main__":
     _include_boost = args.noboost
     print("running chunk", str(args.lbin))
     print("fit:",do_fit, "boost:", _include_boost)
+    if not args.no_overwrite:
+        print("NO OVERWRITE")
+        print(args.no_overwrite)
 
     src = sompz.sompz_reader(main_file_path)
     src.build_lookup()
@@ -132,7 +136,7 @@ if __name__ == "__main__":
                 QE.discard = 100
 
                 if args.runall or args.refs:
-                    QE.calc_ref_profiles(do_fit=do_fit, _include_boost=_include_boost)
+                    QE.calc_ref_profiles(do_fit=do_fit, _include_boost=_include_boost, overwrite=args.no_overwrite)
 
                 if args.runall or args.exts:
                     for f, feat_name in enumerate(features_to_calculate):
@@ -140,11 +144,12 @@ if __name__ == "__main__":
                         feat2 = QE.feats[:, np.where(feat_name == features.columns)[0] - 1][:, 0]
                         feat2 = feat2 * np.sign(np.corrcoef(feat1, feat2)[1, 0])
                         QE.calc_custom_expand_profiles(feat1, feat2,
-                                                       do_fit=do_fit, _include_boost=_include_boost, tag=str(feat_name) + "-expand")
+                                                       do_fit=do_fit, _include_boost=_include_boost,
+                                                       tag=str(feat_name) + "-expand", overwrite=args.no_overwrite)
                 if args.runall or args.feats:
-                    QE.calc_feat_profiles(do_fit=do_fit, _include_boost=_include_boost)
+                    QE.calc_feat_profiles(do_fit=do_fit, _include_boost=_include_boost, overwrite=args.no_overwrite)
                 if args.runall or args.effs:
-                    QE.calc_eff_profiles(do_fit=do_fit, _include_boost=_include_boost)
+                    QE.calc_eff_profiles(do_fit=do_fit, _include_boost=_include_boost, overwrite=args.no_overwrite)
 
             i += 1
 
