@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import sklearn
+import os
 
 from xpipe.likelihood.mass import make_params, default_cosmo
 from xpipe.xhandle import shearops, pzboost
@@ -216,12 +217,18 @@ class QuintileExplorer(object):
         self.pca.fit(self.feats)
         self.eff = self.pca.transform(self.feats)
 
-    def _calc_q_prof(self, feat, iq, tag, nwalkers=16, do_fit=True, _include_boost=True, feat2=None, **kwargs):
+    def _calc_q_prof(self, feat, iq, tag, nwalkers=16, do_fit=True, _include_boost=True, feat2=None, overwrite=True, **kwargs):
         fname = self.file_tag + "_prof_"+tag+"_q"+str(iq)+".p"
-        print("starting profile calculation")
-        print(iq)
-        print(self._quintiles[iq])
         print(fname)
+        if os.path.isfile(fname):
+            print("skipping file...")
+            return None
+        else:
+            print("starting profile calculation")
+
+        # print(iq)
+        # print(self._quintiles[iq])
+
         if feat2 is not None:
             ww = self.calc_weights_dual(feat, feat2, iq)
         else:

@@ -83,7 +83,7 @@ main_file_path = "/e/ocean1/users/vargatn/DESY3/Y3_mastercat_03_31_20.h5"
 
 root_path = "/e/ocean1/users/vargatn/QUINTILES/"
 
-TAG = "lean-fit_effs_v9-lowR"
+TAG = "lean-fit_effs_v10-lowR"
 
 features_to_calculate = ["MAGSUM", "BCG_MAGABS_R", "LGAP_SOFT_2", "RGAP_SOFT_2"]
 
