@@ -259,42 +259,42 @@ class QuintileExplorer(object):
         print(fname)
         pickle.dump(container, open(fname, "wb"))
 
-    def calc_ref_profiles(self, do_fit=True, _include_boost=True):
+    def calc_ref_profiles(self, do_fit=True, _include_boost=True, overwrite=True):
         feat = self.features["LAMBDA_CHISQ"].values
         print("calculating reference profiles")
         for iq in np.arange(len(self._quintiles)):
             print("starting quintile ", str(iq))
-            self._calc_q_prof(feat, iq, "ref", do_fit=do_fit, _include_boost=_include_boost)
+            self._calc_q_prof(feat, iq, "ref", do_fit=do_fit, _include_boost=_include_boost, overwrite=overwrite)
 
-    def calc_custom_profiles(self, feat, do_fit=True, _include_boost=True, tag="custom"):
+    def calc_custom_profiles(self, feat, do_fit=True, _include_boost=True, tag="custom", overwrite=True):
         print("calculating reference profiles")
         for iq in np.arange(len(self._quintiles)):
             print("starting quintile ", str(iq))
-            self._calc_q_prof(feat, iq, tag, do_fit=do_fit, _include_boost=_include_boost)
+            self._calc_q_prof(feat, iq, tag, do_fit=do_fit, _include_boost=_include_boost, overwrite=overwrite)
 
-    def calc_eff_profiles(self, do_fit=True, _include_boost=True):
+    def calc_eff_profiles(self, do_fit=True, _include_boost=True, overwrite=True):
         print("calculating PCA-space split profiles")
         for col in np.arange(self.eff.shape[1]):
             print("starting eigen-feature ", str(col))
             feat = self.eff[:, col]
             for iq in np.arange(len(self._quintiles)):
                 print("starting quintile ", str(iq), "of col", str(col))
-                self._calc_q_prof(feat, iq, "eff-feat-"+str(col), do_fit=do_fit, _include_boost=_include_boost)
+                self._calc_q_prof(feat, iq, "eff-feat-"+str(col), do_fit=do_fit, _include_boost=_include_boost, overwrite=overwrite)
 
-    def calc_feat_profiles(self, do_fit=True, _include_boost=True):
+    def calc_feat_profiles(self, do_fit=True, _include_boost=True, overwrite=True):
         print("calculating reference profiles")
         for col in np.arange(self.feats.shape[1]):
             print("starting feature ", str(col))
             feat = self.feats[:, col]
             for iq in np.arange(len(self._quintiles)):
                 print("starting quintile ", str(iq), "of col", str(col))
-                self._calc_q_prof(feat, iq, "feat-"+str(col), do_fit=do_fit, _include_boost=_include_boost)
+                self._calc_q_prof(feat, iq, "feat-"+str(col), do_fit=do_fit, _include_boost=_include_boost, overwrite=overwrite)
 
-    def calc_custom_expand_profiles(self, feat1, feat2, do_fit=True, _include_boost=True, tag="custom_expand"):
+    def calc_custom_expand_profiles(self, feat1, feat2, do_fit=True, _include_boost=True, tag="custom_expand", overwrite=True):
         print("calculating 1-feature expansion profiles")
         for iq in np.arange(len(self._quintiles)):
             print("starting quintile ", str(iq))
-            self._calc_q_prof(feat1, iq, tag, do_fit=do_fit, _include_boost=_include_boost, feat2=feat2)
+            self._calc_q_prof(feat1, iq, tag, do_fit=do_fit, _include_boost=_include_boost, feat2=feat2, overwrite=overwrite)
 
 
 def calc_weights_dual(score1, score2, qq, quintiles=((0, 20), (20, 40), (40, 60), (60, 80), (80, 100)),**kwargs):
