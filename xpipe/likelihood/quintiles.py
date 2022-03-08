@@ -220,7 +220,7 @@ class QuintileExplorer(object):
     def _calc_q_prof(self, feat, iq, tag, nwalkers=16, do_fit=True, _include_boost=True, feat2=None, overwrite=True, **kwargs):
         fname = self.file_tag + "_prof_"+tag+"_q"+str(iq)+".p"
         print(fname)
-        if os.path.isfile(fname):
+        if os.path.isfile(fname) and overwrite:
             print("skipping file...")
             return None
         else:
