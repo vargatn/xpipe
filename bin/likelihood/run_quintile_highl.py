@@ -65,6 +65,7 @@ paths.update_params("//home/moon/vargatn/DES/PROJECTS/xpipe/settings/params_y3rm
 
 parser = argparse.ArgumentParser(description='which chunk')
 parser.add_argument("--lbin", type=int, default=0)
+parser.add_argument("--zbin", default=None)
 parser.add_argument("--nofit", action="store_false", default=True)
 parser.add_argument("--noboost", action="store_false", default=True)
 
@@ -75,6 +76,7 @@ parser.add_argument("--effs", action="store_true", default=False)
 parser.add_argument("--exts", action="store_true", default=False)
 parser.add_argument("--feats", action="store_true", default=False)
 parser.add_argument("--no_overwrite", action="store_false", default=True)
+
 
 RSEL = [0.004334224019486334, 0.008003474068894987, 0.01080724408713881, 0.011162349600167654]
 MS = 1 / (1 + np.array([-0.024,-0.037]))
@@ -114,7 +116,8 @@ if __name__ == "__main__":
     i = 0
     for z, zbin in enumerate((0, 1, 2)):
         for l, lbin in enumerate((0, 1, 2, 3)):
-            if lbin == args.lbin:
+            cond = (lbin == args.lbin) & ((args.zbin is None) or (int(args.zbin) == zbin))
+            if cond:
                 fname_pairs = "/e/ocean1/users/vargatn/DES/pairs/" + flist[i].replace(".dat", "_pairs.p")
                 file_tag = root_path + "runs/autosplit_" + TAG + "_z" + str(zbin) + "-l" + str(lbin)
                 print(flist[i])
