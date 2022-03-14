@@ -51,11 +51,10 @@ TAG = "lean-fit_effs_v11-lowR"
 
 features_to_calculate = ["MAGSUM", "BCG_MAGABS_R", "LGAP_SOFT_2", "RGAP_SOFT_2"]
 
-#point_means_path = root_path + "autosplit_lean-fit_v7_point_means.p"
 SCALES = (0.1, 3)
+SBINS = ((2, 3), (3,))
 
 ####################################################
-
 
 if __name__ == "__main__":
     args = parser.parse_args()
