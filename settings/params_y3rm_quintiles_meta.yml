@@ -1,0 +1,155 @@
+######################################################
+#  Default Parameter bins for Y1 analysis
+#
+#  The values defined here are loaded into
+#  xpipe.paths.params
+#
+#  LOAD ORDER:
+#  -------------------------
+#  1) default_params.yml
+#  2) looks for params.yml
+#  3) tries to read "custom_params_file" from params.yml
+#
+#  from this point the load is recursive, e.g. param
+#  files are loaded as long as there is a valid
+#  custom params file defined in the last loaded
+#  config
+#
+######################################################
+
+# If you want to use an other parameter file, then
+# specify it here. It must be in the same directory
+#custom_params_file: params_y3rm_meta.yml
+
+# if False: uses default project_path + /data
+custom_data_path: /e/ocean1/users/vargatn/DES/DES_Y3A2_cluster/data
+#custom_data_path: /e/eser2/vargatn/DES/DES_Y3A2_cluster/data
+pdf_paths: test
+
+######################################################
+
+# The pipeline supports two modes: full and dev
+# This is primarily used in setting up the input files
+# for the measurement. E.g. you can define two binning
+# schemes: one really complex for full, and a simple
+# which is expected to run much faster for dev
+mode: full
+
+# prefix for all files (with NO trailing "_")
+#tag: full-y3-meta-som-full-l20-v01
+tag: full-y3-meta-v08-quintiles
+
+# reduced, lensfit, metacal
+shear_style: metacal
+
+# aliases for catalogs defined in default_inputs.yml
+shear_to_use: y3_mcal-dev
+cat_to_use: y3clust-lowl
+source_bins_to_use: [2, 3]
+# parameter bins
+param_bins_full:
+  q0_edges: [0.2, 0.35, 0.5, 0.65]
+  q1_edges: [5, 10, 14, 20, 30, 45, 60, 100]
+
+param_bins_dev:
+  q0_edges: [0.2, 0.35]
+  q1_edges: [45, 60]
+
+# number of processes (cores) to use in calculations
+nprocess: 160
+
+# maximum number of Jackknife regions to use in resampling
+# actual number is max(n_lens, njk_max)
+njk_max: 100
+centers_path: /home/moon/vargatn/DES/PROJECTS/1_PROJECT_Subhalo_joint-dev/November_sprint/jkcens.dat
+
+# number of random points to use
+nrandoms:
+  full: 50000
+  dev: 1000
+
+# random seed for choosing the random points
+seeds:
+  random_seed: 5
+  shear_seed_master: 10
+
+headsize: 5000000
+
+######################################################
+# Here define parameters for XSHEAR config
+
+# cosmology parameters:
+cosmo_params:
+  H0: 70.
+  Om0: 0.3
+
+# logarithmic (base 10) radial bins from rmin to rmax
+# units: Mpc, comoving_mpc or arcmin
+radial_bins:
+  nbin: 15
+  rmin: 0.1
+  rmax: 100
+  units: Mpc
+
+# source weight style
+# "optimal" for DeltaSigma, or "uniform" for shear
+weight_style: "uniform"
+
+# source-lens pair logging
+pairlog:
+  pairlog_rmin: 0
+  pairlog_rmax: 15
+  pairlog_nmax: 10000
+
+
+######################################################
+# aliases for catolog parameters
+
+lenskey:
+  id: MEM_MATCH_ID
+  ra: RA
+  dec: DEC
+  z: Z_LAMBDA
+  q0: Z_LAMBDA
+  q1: LAMBDA_CHISQ
+
+randkey:
+  q0: ZTRUE
+  q1: AVG_LAMBDAOUT
+  ra: RA
+  dec: DEC
+  z: ZTRUE
+  w: WEIGHT
+
+######################################################
+# file prefixes and suffixes
+
+lens_prefix: y3lens
+rand_prefix: y3rand
+
+######################################################
+# DES fields with rectangular boundary in radec
+
+# as defined below
+fields_to_use: null
+
+######################################################
+# boost factor p(z) params
+
+pzpars:
+  hist:
+    nbin: 15
+    zmin: 0.0
+    zmax: 3.0
+    tag: "zhist"
+  full:
+    tag: "zpdf"
+  boost:
+    rbmin: 3
+    rbmax: 13
+
+
+
+
+
+
