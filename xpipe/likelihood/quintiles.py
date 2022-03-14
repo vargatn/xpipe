@@ -10,19 +10,46 @@ from xpipe.xhandle import shearops, pzboost
 from .mcmc import log_cluster_prob, do_mcmc
 
 # TODO add hartlap correction
+# TODO add shear bias scatter
+# TODO add photo-z bias scatter
 
 
 CLUST_RADIAL_EDGES = np.logspace(np.log10(0.1), np.log10(100), 16)
 CLUST_RADIAL_DENSE = np.logspace(np.log10(0.02), 2, 100)
 
-def get_scales(prof, rmin=0.1, rmax=100):
+def get_scales(prof, rmin=0.1, rmax=100, diag_cov=None):
+    """
+
+    Parameters
+    ----------
+    prof: AutoCorrectedProfile
+        profile to processs
+    rmin: float
+        minimum radius
+    rmax: float
+        maximum radius
+    diag_cov: np.array
+        diagonal elements of the cov to be added in quadrature
+
+    Returns
+    -------
+    data: dict
+        data container cut to scale
+
+    """
     rr = prof.rr
     ii = (rmin <= rr) & (rr < rmax)
+
+    err = prof.dst_err[ii]
+    cov = prof.cov[ii, :][:, ii],
+    if diag_cov is not None:
+        cov += diag_cov[ii]
+        err += err + np.sqrt(diag_cov[ii])
     data = {
         "rarr": prof.rr[ii],
         "dst": prof.dst[ii],
-        "dst_err": prof.dst_err[ii],
-        "cov": prof.cov[ii, :][:, ii],
+        "dst_err": err,
+        "cov": cov,
         "rbin_edges": CLUST_RADIAL_EDGES,
         "rarr_dense": CLUST_RADIAL_DENSE,
     }

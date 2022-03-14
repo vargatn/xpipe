@@ -9,6 +9,9 @@ import cluster_toolkit.averaging as averaging
 
 BADVAL = -99999
 
+# TODO quintile trendline fit
+
+
 
 class log_lzscaling_prob(object):
     def __init__(self, data, l_pivot=40, z_pivot=0.35):
