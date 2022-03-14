@@ -8,8 +8,8 @@ from xpipe.likelihood.mass import make_params, default_cosmo
 from xpipe.xhandle import shearops, pzboost
 
 from .mcmc import log_cluster_prob, do_mcmc
-# TODO update this for Eigen features
-# TODO update this for standard features and then correct for their correlations
+
+# TODO add hartlap correction
 
 
 CLUST_RADIAL_EDGES = np.logspace(np.log10(0.1), np.log10(100), 16)
