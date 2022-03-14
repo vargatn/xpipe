@@ -2,6 +2,9 @@ import pickle
 import numpy as np
 import pandas as pd
 import sklearn
+import sklearn.covariance
+import sklearn.neighbors
+import sklearn.decomposition
 import os
 
 from xpipe.likelihood.mass import make_params, default_cosmo
