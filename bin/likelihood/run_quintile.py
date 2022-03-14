@@ -138,8 +138,8 @@ if __name__ == "__main__":
                     QE.calc_fiducial_profile(do_fit=do_fit, _include_boost=_include_boost)
                     pos = QE.flat_samples.mean(axis=0)
                 else:
-                    point_means = pickle.load(open(point_means_path,"rb"))
-                    pos = point_means[zbin][lbin]
+                    point_means = pickle.load(open(file_tag + "_default_profile.p", "rb"))
+                    pos = point_means["flat_samples"].mean(axis=0)
                 print(pos)
                 QE.init_pos = pos
                 QE.nstep = 400
