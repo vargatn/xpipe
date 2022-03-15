@@ -10,7 +10,31 @@ import scipy.ndimage as ndimage
 import scipy.ndimage as ndimage
 
 def make_simple_corner(flat_samples, color="C0", fig=None, axarr=None, npar=3, figsize=(8, 8), wspace=0.2, hspace=0.2,
-                       axis_labels=("log10 M", "c", "b"), limits=((14, 15), (0, 8), (0, 8)), **kwargs):
+                       axis_labels=("log10 M", "c", "b"), limits=((14, 15), (0, 8), (0, 8)), nbins=40, smooth_sigma=1,
+                       levels="max", **kwargs):
+    """
+
+    Parameters
+    ----------
+    flat_samples
+    color
+    fig
+    axarr
+    npar
+    figsize
+    wspace
+    hspace
+    axis_labels
+    limits
+    nbins
+    levels: str
+        "max" or "conf"
+    kwargs
+
+    Returns
+    -------
+
+    """
     if fig is None:
         fig, axarr = plt.subplots(nrows=npar, ncols=npar, figsize=figsize, sharex=False, sharey=False)
         fig.subplots_adjust(hspace=hspace, wspace=wspace)
@@ -29,7 +53,6 @@ def make_simple_corner(flat_samples, color="C0", fig=None, axarr=None, npar=3, f
                 axarr[i, j].set_xlim(limits[j])
                 axarr[i, j].set_ylim(limits[i])
 
-                nbins = 40
                 bins = (
                     np.linspace(limits[j][0], limits[j][1], nbins),
                     np.linspace(limits[i][0], limits[i][1], nbins),
@@ -44,10 +67,22 @@ def make_simple_corner(flat_samples, color="C0", fig=None, axarr=None, npar=3, f
                 tmp = flat_samples
 
                 _counts = np.histogram2d(tmp[:, j], tmp[:, i], bins=bins)[0]
-                counts = ndimage.gaussian_filter(_counts, sigma=1.0, order=0)
-                mx = counts.max()
-                axarr[i, j].contour(xx, yy, counts,levels=[mx*0.05, mx*0.2, mx*0.5, mx*0.8],
-                                    linewidths=0.9, colors=color, **kwargs)
+                counts = ndimage.gaussian_filter(_counts, sigma=smooth_sigma, order=0)
+
+                if levels =="conf":
+                    vals = counts / counts.sum()
+                    # print(vals.sum())
+                    c68, p68 = conf2d(0.68, vals)
+                    # print(c68, p68)
+                    c95, p95 = conf2d(0.95, vals)
+                    # print(c95, p95)
+                    #
+                    axarr[i, j].contour(xx, yy, vals,levels=[c95, c68],
+                                        linewidths=0.9, colors=color, **kwargs)
+                else:
+                    mx = counts.max()
+                    axarr[i, j].contour(xx, yy, counts,levels=[mx*0.05, mx*0.2, mx*0.5, mx*0.8],
+                                        linewidths=0.9, colors=color, **kwargs)
 
 
     for i in np.arange(npar):
@@ -161,11 +196,13 @@ def conf2d(pval, vals, res=500, etol=1e-2, **kwargs):
     # assert (np.sum(vals*area) - 1.) < etol, 'Incorrect normalization!!!'
     #
     mx = np.max(vals)
+    # print(mx)
     tryvals = np.linspace(mx, 0.0, res)
     pvals = np.array([np.sum(vals[np.where(vals > level)])
                       for level in tryvals])
-
+    # print(pvals)
     tind = np.argmin((pvals - pval)**2.)
+    # print(tind)
     tcut = tryvals[tind]
 
     return tcut, pvals[tind]
