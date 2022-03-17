@@ -46,6 +46,36 @@ class log_lzscaling_prob(object):
         return model
 
 
+class log_qscaling_prob(object):
+    def __init__(self, data):
+        """logmass, c linear edges, tau, f gaussian prior (and zero cut)"""
+        self.data = data
+        self.BADVAL = BADVAL
+
+        self.qarr = np.array([-2, -1, 0, 1, 2])
+
+    def __call__(self, theta):
+        m, b = theta # slope, intercept
+        lp = 0
+
+        y = self.data["logms"]
+        cov = self.data["cov"]
+
+        model = self.calc_model(theta, xarr=self.qarr)
+        dvec = y - model
+        lp += -0.5 * np.dot(np.dot(dvec.T, np.linalg.inv(cov)), dvec)
+
+        if not np.isfinite(lp):
+            lp = self.BADVAL
+        return lp
+
+    def calc_model(self, theta, xarr=None):
+        m, b = theta
+        model = b + m * xarr
+        return model
+
+
+
 def get_confidence(flat_samples, calculator, seed=5, nsample=1000, **kwargs):
 
     rng = np.random.RandomState(seed)
