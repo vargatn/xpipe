@@ -21,6 +21,16 @@ from .mcmc import log_cluster_prob, do_mcmc
 CLUST_RADIAL_EDGES = np.logspace(np.log10(0.1), np.log10(100), 16)
 CLUST_RADIAL_DENSE = np.logspace(np.log10(0.02), 2, 100)
 
+
+def get_mfactor_stds(ms, std, flist_jk):
+    vals = []
+    for i in np.arange(len(ms)):
+        val = np.random.normal(scale=ms[i]*std, size=(1, len(flist_jk))) + 1
+        vals.append(val)
+
+    return np.array(vals)
+
+
 def get_scales(prof, rmin=0.1, rmax=100, diag_cov=None):
     """
 
