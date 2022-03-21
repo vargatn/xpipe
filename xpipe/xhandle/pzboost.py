@@ -1091,7 +1091,6 @@ class SOMBoost(object):
 
     def restrict_pair_datas(self, restricted_bins=(3,)):
         """The bins must be a subset"""
-
         _pair_datas = []
         for ibin, sbin in enumerate(self.sbins):
             for j in restricted_bins:
@@ -1179,11 +1178,13 @@ class SOMBoost(object):
             self.wws.append(_wws)
             self.jk_vals.append(_jkvals)
 
-    def prep_boost(self, pair_outpath=None, lens_weights=None, lens_key="MEM_MATCH_ID", weight_key="WEIGHT", pair_datas=None, **kwargs):
+    def prep_boost(self, pair_outpath=None, lens_weights=None, lens_key="MEM_MATCH_ID", weight_key="WEIGHT", pair_datas=None, restricted_bins=None, **kwargs):
         self.lens_key = lens_key
         self.weight_key = weight_key
 
         self.get_pair_datas(pair_outpath=pair_outpath, pair_datas=pair_datas)
+        if restricted_bins is not None:
+            self.restrict_pair_datas(restricted_bins=restricted_bins)
 
         self.get_histograms(lens_weights=lens_weights, **kwargs)
 

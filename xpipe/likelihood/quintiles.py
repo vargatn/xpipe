@@ -12,10 +12,8 @@ from xpipe.xhandle import shearops, pzboost
 
 from .mcmc import log_cluster_prob, do_mcmc
 
-# TODO add shear bin selection
 # TODO add hartlap correction
 # TODO add photo-z bias scatter
-
 
 CLUST_RADIAL_EDGES = np.logspace(np.log10(0.1), np.log10(100), 16)
 CLUST_RADIAL_DENSE = np.logspace(np.log10(0.02), 2, 100)
@@ -86,12 +84,13 @@ def get_scales(prof, rmin=0.1, rmax=100, diag_cov=None):
     return data
 
 
+
 class QuintileExplorer(object):
     def __init__(self, src, flist, flist_jk, file_tag="autosplit_v1", pairs_to_load=None,
                  z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID",
                  ismeta=False, bins_to_use=np.linspace(0, 14, 15), npdf=15, init_pos=(14.3,  4.5, 0.15,  0.83),
                  nstep=1000, nwalkers=16, init_fac=1e-2, discard=200, R_lambda=0.88, scinv=0.0003, scales=(0.1, 100),
-                 Rs_sbins=None, ms_sbins=None, ms_stds=None, restricted_bins=None, **kwargs):
+                 Rs_sbins=None, ms_sbins=None, ms_stds=None, sbins=(2, 3), **kwargs):
         # TODO add variable bin selection
         self.src = src
         self.pair_path = pairs_to_load
@@ -114,31 +113,29 @@ class QuintileExplorer(object):
         self.R_lambda = R_lambda
         self.scinv = scinv
         self.scales = scales
+
         self.Rs_sbins = Rs_sbins
         self.ms_sbins = ms_sbins
         self.ms_stds = ms_stds
 
-        self.restricted_bins = restricted_bins
+        self.sbins = sbins
 
         self.lprior = None
 
         self._quintiles = ((0, 20), (20, 40), (40, 60), (60, 80), (80, 100))
 
     def load_target(self):
-        # TODO add variable bin selection
-        self.raw_ACP = shearops.AutoCalibrateProfile(self.flist, self.flist_jk, self.src, xlims=(0.1, 100), Rs_sbins=self.Rs_sbins)
+        self.raw_ACP = shearops.AutoCalibrateProfile(self.flist, self.flist_jk, self.src, sbins=self.sbins, xlims=(0.1, 100), Rs_sbins=self.Rs_sbins)
         self.raw_ACP.get_profiles(ismeta=self.ismeta, Rs_sbins=self.Rs_sbins, mfactor_sbins=self.ms_sbins, mfactor_stds=self.ms_stds)
         self.target = self.raw_ACP.target
         self.smb = pzboost.SOMBoost(self.src, [self.flist_jk,], pairs_to_load=self.pair_path)
-        self.smb.restrict_pair_datas(restricted_bins=self.restricted_bins)
 
     def _calc_profile(self, weights=None, _include_boost=True, **kwargs):
-        # TODO add variable bin selection
         ACP = self.raw_ACP.copy()
         ACP.get_profiles(reload=False, ismeta=self.ismeta, weights=weights, Rs_sbins=self.Rs_sbins, mfactor_sbins=self.ms_sbins, mfactor_stds=self.ms_stds)
 
         if _include_boost:
-            self.smb.prep_boost(bins_to_use=np.linspace(0, 14, 15))
+            self.smb.prep_boost(bins_to_use=np.linspace(0, 14, 15), restricted_bins=self.sbins)
             self.smb.get_boost_jk(npdf=15, **kwargs)
             ACP.add_boost_jk(self.smb, mfactor_sbins=self.ms_sbins)
 

@@ -52,7 +52,8 @@ TAG = "lean-fit_effs_v11-lowR"
 features_to_calculate = ["MAGSUM", "BCG_MAGABS_R", "LGAP_SOFT_2", "RGAP_SOFT_2"]
 
 SCALES = (0.1, 3)
-SBINS = ((2, 3), (3,))
+SBINS = ((2, 3), (2, 3), (3,))
+MS_VALS = (MS, MS, np.array((MS[1],)))
 
 ####################################################
 
@@ -81,11 +82,11 @@ if __name__ == "__main__":
                 file_tag = root_path + "runs/autosplit_" + TAG + "_z" + str(zbin) + "-l" + str(lbin)
                 print(flist[i])
 
-                ms_stds = quintiles.get_mfactor_stds(MS, MS_ERR, flist_jk[i])
+                ms_stds = quintiles.get_mfactor_stds(MS_VALS[zbin], MS_ERR, flist_jk[i])
                 # print(ms_stds)
-                QE = quintiles.QuintileExplorer(src, flist[i], flist_jk[i],
+                QE = quintiles.QuintileExplorer(src, flist[i], flist_jk[i], sbins=SBINS[zbin],
                                                 pairs_to_load=fname_pairs, file_tag=file_tag, nstep=800,
-                                                scales=SCALES, Rs_sbins=RSEL, ms_sbins=MS, ms_stds=ms_stds)
+                                                scales=SCALES, Rs_sbins=RSEL, ms_sbins=MS_VALS[zbin], ms_stds=ms_stds)
                 QE.load_target()
                 QE.set_features(features)
 
