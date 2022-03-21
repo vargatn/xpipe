@@ -14,7 +14,6 @@ from .mcmc import log_cluster_prob, do_mcmc
 
 # TODO add shear bin selection
 # TODO add hartlap correction
-# TODO add shear bias scatter
 # TODO add photo-z bias scatter
 
 
@@ -23,6 +22,22 @@ CLUST_RADIAL_DENSE = np.logspace(np.log10(0.02), 2, 100)
 
 
 def get_mfactor_stds(ms, std, flist_jk):
+    """
+    Extracts shear bias scatter for JK patches
+    Parameters
+    ----------
+    ms: np.array
+        shear bias for bins 1/(1+m)
+    std: float
+        shear bias std
+    flist_jk: list
+        JK file list
+
+    Returns
+    -------
+
+
+    """
     vals = []
     for i in np.arange(len(ms)):
         val = np.random.normal(scale=ms[i]*std, size=(1, len(flist_jk))) + 1
@@ -77,7 +92,7 @@ class QuintileExplorer(object):
                  z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID",
                  ismeta=False, bins_to_use=np.linspace(0, 14, 15), npdf=15, init_pos=(14.3,  4.5, 0.15,  0.83),
                  nstep=1000, nwalkers=16, init_fac=1e-2, discard=200, R_lambda=0.88, scinv=0.0003, scales=(0.1, 100),
-                 Rs_sbins=None, ms_sbins=None, ms_stds=None, **kwargs):
+                 Rs_sbins=None, ms_sbins=None, ms_stds=None, source_bins_to_use=(2, 3), **kwargs):
         self.src = src
         self.pair_path = pairs_to_load
         self.z_key = z_key
@@ -102,6 +117,8 @@ class QuintileExplorer(object):
         self.Rs_sbins = Rs_sbins
         self.ms_sbins = ms_sbins
         self.ms_stds = ms_stds
+
+        self.source_bins_to_use = source_bins_to_use
 
         self.lprior = None
 
