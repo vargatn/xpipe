@@ -1089,6 +1089,19 @@ class SOMBoost(object):
         elif pair_datas is not None:
             self.pair_datas = pair_datas
 
+    def restrict_pair_datas(self, restricted_bins=(3,)):
+        """The bins must be a subset"""
+
+        _pair_datas = []
+        for ibin, sbin in enumerate(self.sbins):
+            for j in restricted_bins:
+                if j == sbin:
+                    _pair_datas.append(self.pair_datas[0][ibin])
+
+        self.pair_datas = [_pair_datas,]
+        self.sbins = restricted_bins
+
+
     def _calc_pair_datas(self, flist_jk, oname=None):
         pair_datas = []
         for j, clust_name in enumerate(flist_jk):

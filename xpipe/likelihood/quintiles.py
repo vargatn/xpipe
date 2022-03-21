@@ -86,13 +86,13 @@ def get_scales(prof, rmin=0.1, rmax=100, diag_cov=None):
     return data
 
 
-# Cluster likelihood is mcmc.log_cluster_prob()
 class QuintileExplorer(object):
     def __init__(self, src, flist, flist_jk, file_tag="autosplit_v1", pairs_to_load=None,
                  z_key="Z_LAMBDA", l_key="LAMBDA_CHISQ", id_key="MEM_MATCH_ID",
                  ismeta=False, bins_to_use=np.linspace(0, 14, 15), npdf=15, init_pos=(14.3,  4.5, 0.15,  0.83),
                  nstep=1000, nwalkers=16, init_fac=1e-2, discard=200, R_lambda=0.88, scinv=0.0003, scales=(0.1, 100),
-                 Rs_sbins=None, ms_sbins=None, ms_stds=None, source_bins_to_use=(2, 3), **kwargs):
+                 Rs_sbins=None, ms_sbins=None, ms_stds=None, restricted_bins=None, **kwargs):
+        # TODO add variable bin selection
         self.src = src
         self.pair_path = pairs_to_load
         self.z_key = z_key
@@ -118,7 +118,7 @@ class QuintileExplorer(object):
         self.ms_sbins = ms_sbins
         self.ms_stds = ms_stds
 
-        self.source_bins_to_use = source_bins_to_use
+        self.restricted_bins = restricted_bins
 
         self.lprior = None
 
@@ -130,6 +130,7 @@ class QuintileExplorer(object):
         self.raw_ACP.get_profiles(ismeta=self.ismeta, Rs_sbins=self.Rs_sbins, mfactor_sbins=self.ms_sbins, mfactor_stds=self.ms_stds)
         self.target = self.raw_ACP.target
         self.smb = pzboost.SOMBoost(self.src, [self.flist_jk,], pairs_to_load=self.pair_path)
+        self.smb.restrict_pair_datas(restricted_bins=self.restricted_bins)
 
     def _calc_profile(self, weights=None, _include_boost=True, **kwargs):
         # TODO add variable bin selection
