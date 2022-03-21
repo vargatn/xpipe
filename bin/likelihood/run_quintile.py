@@ -4,7 +4,7 @@
 
 
 """
-
+# TODO add extension feature
 import pandas as pd
 import numpy as np
 
@@ -36,6 +36,7 @@ parser.add_argument("--refs", action="store_true", default=False)
 parser.add_argument("--effs", action="store_true", default=False)
 parser.add_argument("--exts", action="store_true", default=False)
 parser.add_argument("--feats", action="store_true", default=False)
+parser.add_argument("--opts", action="store_true", default=False)
 parser.add_argument("--no_overwrite", action="store_false", default=True)
 
 RSEL = [0.004334224019486334, 0.008003474068894987, 0.01080724408713881, 0.011162349600167654]
@@ -48,7 +49,7 @@ main_file_path = "/e/ocean1/users/vargatn/DESY3/Y3_mastercat_03_31_20.h5"
 root_path = "/e/ocean1/users/vargatn/QUINTILES/"
 
 TAG = "lean-fit_effs_v11-lowR"
-
+OPT_FILE_TAG = "opt-score-v1"
 features_to_calculate = ["MAGSUM", "BCG_MAGABS_R", "LGAP_SOFT_2", "RGAP_SOFT_2"]
 
 SCALES = (0.1, 3)
@@ -116,6 +117,12 @@ if __name__ == "__main__":
                     QE.calc_feat_profiles(do_fit=do_fit, _include_boost=_include_boost, overwrite=args.no_overwrite)
                 if args.runall or args.effs:
                     QE.calc_eff_profiles(do_fit=do_fit, _include_boost=_include_boost, overwrite=args.no_overwrite)
+                
+                if args.runall or args.opts:
+                    fname = file_tag + "_" + OPT_FILE_TAG + ".p"
+                    feat = pickle.load(open(fname, "rb"))
+                    QE.calc_custom_profiles(feat, do_fit=do_fit, _include_boost=_include_boost, tag=OPT_FILE_TAG,
+                                            overwrite=args.no_overwrite)
 
             i += 1
 
