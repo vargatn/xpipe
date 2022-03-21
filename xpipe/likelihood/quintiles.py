@@ -125,12 +125,14 @@ class QuintileExplorer(object):
         self._quintiles = ((0, 20), (20, 40), (40, 60), (60, 80), (80, 100))
 
     def load_target(self):
+        # TODO add variable bin selection
         self.raw_ACP = shearops.AutoCalibrateProfile(self.flist, self.flist_jk, self.src, xlims=(0.1, 100), Rs_sbins=self.Rs_sbins)
         self.raw_ACP.get_profiles(ismeta=self.ismeta, Rs_sbins=self.Rs_sbins, mfactor_sbins=self.ms_sbins, mfactor_stds=self.ms_stds)
         self.target = self.raw_ACP.target
         self.smb = pzboost.SOMBoost(self.src, [self.flist_jk,], pairs_to_load=self.pair_path)
 
     def _calc_profile(self, weights=None, _include_boost=True, **kwargs):
+        # TODO add variable bin selection
         ACP = self.raw_ACP.copy()
         ACP.get_profiles(reload=False, ismeta=self.ismeta, weights=weights, Rs_sbins=self.Rs_sbins, mfactor_sbins=self.ms_sbins, mfactor_stds=self.ms_stds)
 
