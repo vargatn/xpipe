@@ -914,7 +914,8 @@ def olivers_mock_function(a, b, c):
 class AutoCalibrateProfile(object):
     """WEIGHTS must be from the base input dataset for Random points!!!"""
     def __init__(self, fname, fname_jk, pzcat, weights=None, id_key="MEM_MATCH_ID", weight_key="WEIGHT",
-                 z_key="Z_LAMBDA", sbins=(2, 3), xlims=(0.2, 30), Rs_sbins=None):
+                 z_key="Z_LAMBDA", sbins=(2, 3), xlims=(0.2, 30), Rs_sbins=None, seed=None,
+                 mfactor_sbins=None, mfactor_stds=None):
         """
 
         Parameters
@@ -958,6 +959,12 @@ class AutoCalibrateProfile(object):
         self.target = None
         self.scinvs = []
         self.Rs_sbins = Rs_sbins
+        self.mfactor_sbins = mfactor_sbins
+        self.mfactor_stds = mfactor_stds
+
+        self.rng = np.random.RandomState()
+        if seed is not None:
+            self.rng.seed(seed)
 
     def _load_profiles(self, ismeta=True, shear=True, **kwargs):
 
@@ -1007,7 +1014,7 @@ class AutoCalibrateProfile(object):
             self.scinvs.append(self.pzcat.get_bin_scinv(self.target[self.z_key], sbin=sbin, weights=self.target[self.weight_key].values))
         self.scinvs = np.array(self.scinvs)
 
-    def _combine_sbins(self, mfactor_sbins=None, weight_scrit_exponent=1):
+    def _combine_sbins(self, mfactor_sbins=None, mfactor_stds=None, weight_scrit_exponent=1):
         _profiles = []
         for i, scinv in enumerate(self.scinvs):
             _profiles.append(copy.deepcopy(self._profiles[i]))
@@ -1034,7 +1041,7 @@ class AutoCalibrateProfile(object):
 
 
 
-    def get_profiles(self, reload=True, scinvs=None, mfactor_sbins=None, Rs_sbins=None,
+    def get_profiles(self, reload=True, scinvs=None, mfactor_sbins=None, mfactor_stds=None, Rs_sbins=None,
                      weights=None, weight_key=None, id_key=None, z_key=None, **kwargs):
         """
         Loads and Calculates DeltaSigma profile from a combination of tomographic source bins
@@ -1061,6 +1068,8 @@ class AutoCalibrateProfile(object):
 
         if Rs_sbins is not None:
             self.Rs_sbins = Rs_sbins
+        if mfactor_stds is not None:
+            self.mfactor_stds = mfactor_stds
         if weights is not None:
             self.weights = weights
         if id_key is not None:

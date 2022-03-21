@@ -12,6 +12,7 @@ from xpipe.xhandle import shearops, pzboost
 
 from .mcmc import log_cluster_prob, do_mcmc
 
+# TODO add shear bin selection
 # TODO add hartlap correction
 # TODO add shear bias scatter
 # TODO add photo-z bias scatter
