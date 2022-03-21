@@ -40,6 +40,7 @@ parser.add_argument("--no_overwrite", action="store_false", default=True)
 
 RSEL = [0.004334224019486334, 0.008003474068894987, 0.01080724408713881, 0.011162349600167654]
 MS = 1 / (1 + np.array([-0.024,-0.037]))
+MS_ERR = 0.008
 
 ####################################################
 main_file_path = "/e/ocean1/users/vargatn/DESY3/Y3_mastercat_03_31_20.h5"
@@ -79,9 +80,12 @@ if __name__ == "__main__":
                 fname_pairs = "/e/ocean1/users/vargatn/DES/pairs/" + flist[i].replace(".dat", "_pairs.p")
                 file_tag = root_path + "runs/autosplit_" + TAG + "_z" + str(zbin) + "-l" + str(lbin)
                 print(flist[i])
+
+                ms_stds = quintiles.get_mfactor_stds(MS, MS_ERR, flist_jk[i])
+                # print(ms_stds)
                 QE = quintiles.QuintileExplorer(src, flist[i], flist_jk[i],
                                                 pairs_to_load=fname_pairs, file_tag=file_tag, nstep=800,
-                                                scales=SCALES, Rs_sbins=RSEL, ms_sbins=MS)
+                                                scales=SCALES, Rs_sbins=RSEL, ms_sbins=MS, ms_stds=ms_stds)
                 QE.load_target()
                 QE.set_features(features)
 

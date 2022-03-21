@@ -1015,6 +1015,7 @@ class AutoCalibrateProfile(object):
         self.scinvs = np.array(self.scinvs)
 
     def _combine_sbins(self, mfactor_sbins=None, mfactor_stds=None, weight_scrit_exponent=1):
+        # print(mfactor_stds)
         _profiles = []
         for i, scinv in enumerate(self.scinvs):
             _profiles.append(copy.deepcopy(self._profiles[i]))
