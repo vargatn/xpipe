@@ -1025,15 +1025,20 @@ class AutoCalibrateProfile(object):
                 _profiles[i].prof_maker()
             _profiles[i].multiply(scinv**weight_scrit_exponent)
 
+        self.profile = _profiles[0]
+
         if mfactor_sbins is None:
             mfactor_sbins = np.ones(len(self.scinvs))
+        if mfactor_stds is None:
+            mfactor_stds = np.ones(shape=self.profile.dst_sub.shape)
 
-        self.profile = _profiles[0]
         self.profile.multiply(mfactor_sbins[0])
+        self.profile.multiply(mfactor_stds[0])
 
         for i in np.arange(len(_profiles) - 1):
             tmp = _profiles[i + 1]
             tmp.multiply(mfactor_sbins[i + 1])
+            tmp.multiply(mfactor_stds[i + 1])
             self.profile.composite(tmp, operation="+")
 
         factor = 1. / np.sum(self.scinvs**(weight_scrit_exponent + 1))
@@ -1087,7 +1092,7 @@ class AutoCalibrateProfile(object):
             if reload:
                 self._load_targets(**kwargs)
             self._get_scinvs_bin(**kwargs)
-        self._combine_sbins(mfactor_sbins)
+        self._combine_sbins(mfactor_sbins=mfactor_sbins, mfactor_stds=mfactor_stds)
         self._scale_cut()
 
     def composite(self, other, operation):
