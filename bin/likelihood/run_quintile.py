@@ -4,7 +4,10 @@
 
 
 """
-# TODO add extension feature
+
+
+
+
 import pandas as pd
 import numpy as np
 
@@ -113,11 +116,13 @@ if __name__ == "__main__":
                         QE.calc_custom_expand_profiles(feat1, feat2,
                                                        do_fit=do_fit, _include_boost=_include_boost,
                                                        tag=str(feat_name) + "-expand", overwrite=args.no_overwrite)
+
                 if args.runall or args.feats:
                     QE.calc_feat_profiles(do_fit=do_fit, _include_boost=_include_boost, overwrite=args.no_overwrite)
+
                 if args.runall or args.effs:
                     QE.calc_eff_profiles(do_fit=do_fit, _include_boost=_include_boost, overwrite=args.no_overwrite)
-                
+
                 if args.runall or args.opts:
                     fname = file_tag + "_" + OPT_FILE_TAG + ".p"
                     feat = pickle.load(open(fname, "rb"))
