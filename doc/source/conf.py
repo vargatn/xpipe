@@ -68,7 +68,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'xpipe'
-copyright = u'2017, Tamas Norbert Varga'
+copyright = u'2022, Tamas Norbert Varga'
 author = u'Tamas Norbert Varga'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -137,6 +137,7 @@ html_theme = "press"
 #         'donate.html',
 #     ]
 # }
+
 
 
 # -- Options for HTMLHelp output ------------------------------------------

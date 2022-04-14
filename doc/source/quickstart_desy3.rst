@@ -1,5 +1,5 @@
 --------------------------------
-Quickstart for DES Y1 style data
+Quickstart for DES Y3 style data
 --------------------------------
 
 lorem ipsum

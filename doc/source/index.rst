@@ -19,9 +19,10 @@ shear and mass profiles in wide area lensing surveys such as DES. Features inclu
 
 .. toctree::
    :caption: User Documentation
-   :maxdepth: 1
+   :maxdepth: 2
 
    Install and getting started <installation>
+   Quickstart <quickstart>
    Pipeline guide <pipeline_guide>
    Config files explained <config>
    API reference <api>
