@@ -1,5 +1,6 @@
 PyYAML
 astropy
 fitsio
+sphinx_press_theme
 https://github.com/esheldon/kmeans_radec/archive/master.zip
 https://github.com/vargatn/xpipe/archive/master.zip
