@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.get\_metanames
-=====================================
+﻿xpipe.xhandle.xwrap.get\_metanames
+==================================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

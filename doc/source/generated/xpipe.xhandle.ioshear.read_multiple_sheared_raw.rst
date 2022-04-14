@@ -1,5 +1,5 @@
-xpipe\.xhandle\.ioshear\.read\_multiple\_sheared\_raw
-=====================================================
+﻿xpipe.xhandle.ioshear.read\_multiple\_sheared\_raw
+==================================================
 
 .. currentmodule:: xpipe.xhandle.ioshear
 

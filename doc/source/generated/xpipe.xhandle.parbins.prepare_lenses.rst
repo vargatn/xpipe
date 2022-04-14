@@ -1,5 +1,5 @@
-xpipe\.xhandle\.parbins\.prepare\_lenses
-========================================
+﻿xpipe.xhandle.parbins.prepare\_lenses
+=====================================
 
 .. currentmodule:: xpipe.xhandle.parbins
 

@@ -1,5 +1,5 @@
-xpipe\.tools\.catalogs\.to\_pandas
-==================================
+﻿xpipe.tools.catalogs.to\_pandas
+===============================
 
 .. currentmodule:: xpipe.tools.catalogs
 

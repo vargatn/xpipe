@@ -1,5 +1,5 @@
-xpipe\.xhandle\.parbins\.get\_file\_lists
-=========================================
+﻿xpipe.xhandle.parbins.get\_file\_lists
+======================================
 
 .. currentmodule:: xpipe.xhandle.parbins
 

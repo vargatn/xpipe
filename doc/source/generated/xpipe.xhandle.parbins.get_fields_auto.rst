@@ -1,5 +1,5 @@
-xpipe\.xhandle\.parbins\.get\_fields\_auto
-==========================================
+﻿xpipe.xhandle.parbins.get\_fields\_auto
+=======================================
 
 .. currentmodule:: xpipe.xhandle.parbins
 

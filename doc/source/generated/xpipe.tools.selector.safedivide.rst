@@ -1,5 +1,5 @@
-xpipe\.tools\.selector\.safedivide
-==================================
+﻿xpipe.tools.selector.safedivide
+===============================
 
 .. currentmodule:: xpipe.tools.selector
 

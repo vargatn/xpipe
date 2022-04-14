@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.get\_main\_source\_settings
-==================================================
+﻿xpipe.xhandle.xwrap.get\_main\_source\_settings
+===============================================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

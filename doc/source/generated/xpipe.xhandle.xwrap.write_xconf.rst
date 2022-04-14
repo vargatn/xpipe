@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.write\_xconf
-===================================
+﻿xpipe.xhandle.xwrap.write\_xconf
+================================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

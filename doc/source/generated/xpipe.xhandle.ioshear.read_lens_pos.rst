@@ -1,5 +1,5 @@
-xpipe\.xhandle\.ioshear\.read\_lens\_pos
-========================================
+﻿xpipe.xhandle.ioshear.read\_lens\_pos
+=====================================
 
 .. currentmodule:: xpipe.xhandle.ioshear
 

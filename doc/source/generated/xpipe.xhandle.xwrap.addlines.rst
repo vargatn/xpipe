@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.addlines
-===============================
+﻿xpipe.xhandle.xwrap.addlines
+============================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

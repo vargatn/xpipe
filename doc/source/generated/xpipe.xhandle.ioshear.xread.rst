@@ -1,5 +1,5 @@
-xpipe\.xhandle\.ioshear\.xread
-==============================
+﻿xpipe.xhandle.ioshear.xread
+===========================
 
 .. currentmodule:: xpipe.xhandle.ioshear
 

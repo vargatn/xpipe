@@ -1,8 +1,8 @@
+﻿
 
 
-
-xpipe\.xhandle\.pzboost\.PDFContainer
-=====================================
+xpipe.xhandle.pzboost.PDFContainer
+==================================
 
 .. currentmodule:: xpipe.xhandle.pzboost
 

@@ -12,7 +12,7 @@ There are two modes: *pipeline* and *API*, for instructions, see the below secti
 
 **Requirements and Dependencies**
 
-The code is written in :code:`python 2.7`.
+The code is written in :code:`python 2.7` (but should also run without a problem on :code:`python 3.5+` )
 
 Additinal required packages:
 

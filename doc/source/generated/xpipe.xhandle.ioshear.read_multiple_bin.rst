@@ -1,5 +1,5 @@
-xpipe\.xhandle\.ioshear\.read\_multiple\_bin
-============================================
+﻿xpipe.xhandle.ioshear.read\_multiple\_bin
+=========================================
 
 .. currentmodule:: xpipe.xhandle.ioshear
 

@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.call\_chunks
-===================================
+﻿xpipe.xhandle.xwrap.call\_chunks
+================================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

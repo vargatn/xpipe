@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.single\_rotate
-=====================================
+﻿xpipe.xhandle.xwrap.single\_rotate
+==================================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

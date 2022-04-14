@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.get\_head
-================================
+﻿xpipe.xhandle.xwrap.get\_head
+=============================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

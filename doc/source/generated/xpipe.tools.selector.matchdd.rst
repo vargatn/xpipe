@@ -1,5 +1,5 @@
-xpipe\.tools\.selector\.matchdd
-===============================
+﻿xpipe.tools.selector.matchdd
+============================
 
 .. currentmodule:: xpipe.tools.selector
 

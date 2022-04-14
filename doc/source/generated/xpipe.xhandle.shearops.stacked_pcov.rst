@@ -1,5 +1,5 @@
-xpipe\.xhandle\.shearops\.stacked\_pcov
-=======================================
+﻿xpipe.xhandle.shearops.stacked\_pcov
+====================================
 
 .. currentmodule:: xpipe.xhandle.shearops
 

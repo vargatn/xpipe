@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.get\_rot\_seeds
-======================================
+﻿xpipe.xhandle.xwrap.get\_rot\_seeds
+===================================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

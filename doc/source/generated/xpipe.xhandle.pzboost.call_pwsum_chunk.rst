@@ -1,5 +1,5 @@
-xpipe\.xhandle\.pzboost\.call\_pwsum\_chunk
-===========================================
+﻿xpipe.xhandle.pzboost.call\_pwsum\_chunk
+========================================
 
 .. currentmodule:: xpipe.xhandle.pzboost
 

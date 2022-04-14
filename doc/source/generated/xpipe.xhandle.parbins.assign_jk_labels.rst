@@ -1,5 +1,5 @@
-xpipe\.xhandle\.parbins\.assign\_jk\_labels
-===========================================
+﻿xpipe.xhandle.parbins.assign\_jk\_labels
+========================================
 
 .. currentmodule:: xpipe.xhandle.parbins
 

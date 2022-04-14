@@ -1,8 +1,8 @@
+﻿
 
 
-
-xpipe\.xhandle\.pzboost\.BoostMixerRandRef
-==========================================
+xpipe.xhandle.pzboost.BoostMixerRandRef
+=======================================
 
 .. currentmodule:: xpipe.xhandle.pzboost
 

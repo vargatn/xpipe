@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.get\_redges
-==================================
+﻿xpipe.xhandle.xwrap.get\_redges
+===============================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

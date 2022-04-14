@@ -1,5 +1,5 @@
-xpipe\.xhandle\.pzboost\.gauss
-==============================
+﻿xpipe.xhandle.pzboost.gauss
+===========================
 
 .. currentmodule:: xpipe.xhandle.pzboost
 

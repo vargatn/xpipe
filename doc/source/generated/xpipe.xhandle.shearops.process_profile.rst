@@ -1,5 +1,5 @@
-xpipe\.xhandle\.shearops\.process\_profile
-==========================================
+﻿xpipe.xhandle.shearops.process\_profile
+=======================================
 
 .. currentmodule:: xpipe.xhandle.shearops
 

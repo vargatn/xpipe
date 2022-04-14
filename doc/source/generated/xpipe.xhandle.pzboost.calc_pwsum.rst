@@ -1,5 +1,5 @@
-xpipe\.xhandle\.pzboost\.calc\_pwsum
-====================================
+﻿xpipe.xhandle.pzboost.calc\_pwsum
+=================================
 
 .. currentmodule:: xpipe.xhandle.pzboost
 

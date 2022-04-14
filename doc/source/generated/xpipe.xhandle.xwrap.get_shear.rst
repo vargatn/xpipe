@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.get\_shear
-=================================
+﻿xpipe.xhandle.xwrap.get\_shear
+==============================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

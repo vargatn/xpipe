@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.get\_main\_source\_settings\_nopairs
-===========================================================
+﻿xpipe.xhandle.xwrap.get\_main\_source\_settings\_nopairs
+========================================================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

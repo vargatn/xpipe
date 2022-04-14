@@ -1,8 +1,8 @@
+﻿
 
 
-
-xpipe\.xhandle\.xwrap\.CatRotator
-=================================
+xpipe.xhandle.xwrap.CatRotator
+==============================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

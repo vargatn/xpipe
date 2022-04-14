@@ -1,5 +1,5 @@
-xpipe\.xhandle\.pzboost\.create\_infodicts
-==========================================
+﻿xpipe.xhandle.pzboost.create\_infodicts
+=======================================
 
 .. currentmodule:: xpipe.xhandle.pzboost
 

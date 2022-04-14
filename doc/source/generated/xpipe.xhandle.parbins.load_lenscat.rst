@@ -1,5 +1,5 @@
-xpipe\.xhandle\.parbins\.load\_lenscat
-======================================
+﻿xpipe.xhandle.parbins.load\_lenscat
+===================================
 
 .. currentmodule:: xpipe.xhandle.parbins
 

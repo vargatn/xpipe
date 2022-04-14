@@ -1,5 +1,5 @@
-xpipe\.xhandle\.shearops\.redges
-================================
+﻿xpipe.xhandle.shearops.redges
+=============================
 
 .. currentmodule:: xpipe.xhandle.shearops
 

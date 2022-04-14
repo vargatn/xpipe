@@ -1,5 +1,5 @@
-xpipe\.xhandle\.parbins\.assign\_kmeans\_labels
-===============================================
+﻿xpipe.xhandle.parbins.assign\_kmeans\_labels
+============================================
 
 .. currentmodule:: xpipe.xhandle.parbins
 

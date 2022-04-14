@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.get\_pairlog
-===================================
+﻿xpipe.xhandle.xwrap.get\_pairlog
+================================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

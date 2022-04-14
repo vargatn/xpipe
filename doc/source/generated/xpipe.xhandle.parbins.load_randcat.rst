@@ -1,5 +1,5 @@
-xpipe\.xhandle\.parbins\.load\_randcat
-======================================
+﻿xpipe.xhandle.parbins.load\_randcat
+===================================
 
 .. currentmodule:: xpipe.xhandle.parbins
 

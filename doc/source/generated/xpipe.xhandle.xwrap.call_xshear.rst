@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.call\_xshear
-===================================
+﻿xpipe.xhandle.xwrap.call\_xshear
+================================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

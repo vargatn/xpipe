@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.create\_infodict
-=======================================
+﻿xpipe.xhandle.xwrap.create\_infodict
+====================================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

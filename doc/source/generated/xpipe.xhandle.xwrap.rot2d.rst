@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.rot2d
-============================
+﻿xpipe.xhandle.xwrap.rot2d
+=========================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

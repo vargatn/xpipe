@@ -1,5 +1,5 @@
-xpipe\.xhandle\.xwrap\.chunkwise\_rotate
-========================================
+﻿xpipe.xhandle.xwrap.chunkwise\_rotate
+=====================================
 
 .. currentmodule:: xpipe.xhandle.xwrap
 

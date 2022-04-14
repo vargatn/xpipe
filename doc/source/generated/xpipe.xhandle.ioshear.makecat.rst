@@ -1,5 +1,5 @@
-xpipe\.xhandle\.ioshear\.makecat
-================================
+﻿xpipe.xhandle.ioshear.makecat
+=============================
 
 .. currentmodule:: xpipe.xhandle.ioshear
 

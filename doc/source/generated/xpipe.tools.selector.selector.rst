@@ -1,5 +1,5 @@
-xpipe\.tools\.selector\.selector
-================================
+﻿xpipe.tools.selector.selector
+=============================
 
 .. currentmodule:: xpipe.tools.selector
 

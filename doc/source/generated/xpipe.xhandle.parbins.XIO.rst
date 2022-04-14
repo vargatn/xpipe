@@ -1,8 +1,8 @@
+﻿
 
 
-
-xpipe\.xhandle\.parbins\.XIO
-============================
+xpipe.xhandle.parbins.XIO
+=========================
 
 .. currentmodule:: xpipe.xhandle.parbins
 

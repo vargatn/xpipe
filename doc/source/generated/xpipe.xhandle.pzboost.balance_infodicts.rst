@@ -1,5 +1,5 @@
-xpipe\.xhandle\.pzboost\.balance\_infodicts
-===========================================
+﻿xpipe.xhandle.pzboost.balance\_infodicts
+========================================
 
 .. currentmodule:: xpipe.xhandle.pzboost
 

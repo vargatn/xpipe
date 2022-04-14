@@ -1,5 +1,5 @@
-xpipe\.xhandle\.pzboost\.check\_pwsum\_files
-============================================
+﻿xpipe.xhandle.pzboost.check\_pwsum\_files
+=========================================
 
 .. currentmodule:: xpipe.xhandle.pzboost
 

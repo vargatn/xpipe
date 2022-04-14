@@ -1,5 +1,5 @@
-xpipe\.xhandle\.pzboost\.get\_hist\_zarr
-========================================
+﻿xpipe.xhandle.pzboost.get\_hist\_zarr
+=====================================
 
 .. currentmodule:: xpipe.xhandle.pzboost
 

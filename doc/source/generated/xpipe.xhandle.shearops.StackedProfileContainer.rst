@@ -1,8 +1,8 @@
+﻿
 
 
-
-xpipe\.xhandle\.shearops\.StackedProfileContainer
-=================================================
+xpipe.xhandle.shearops.StackedProfileContainer
+==============================================
 
 .. currentmodule:: xpipe.xhandle.shearops
 
