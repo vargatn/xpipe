@@ -917,6 +917,7 @@ class AutoCalibrateProfile(object):
                  z_key="Z_LAMBDA", sbins=(2, 3), xlims=(0.2, 30), Rs_sbins=None, seed=None,
                  mfactor_sbins=None, mfactor_stds=None):
         """
+        Automaticall Reads and calibrates weak lensing profiles according to DES Y3 standards
 
         Parameters
         ----------
@@ -940,6 +941,12 @@ class AutoCalibrateProfile(object):
             radius min and max in the units of xshear
         Rs_sbins: list of lists
             selection responses for the source bins
+        seed: int
+            np.random seed to use when needed
+        mfactor_sbins: list
+            multiplicative correction to apply for each source bin
+        mfactor_stds: int
+            std of multiplicative correction to apply for each source bin
         """
         self.fname = fname
         self.fname_jk = fname_jk
@@ -966,8 +973,17 @@ class AutoCalibrateProfile(object):
         if seed is not None:
             self.rng.seed(seed)
 
-    def _load_profiles(self, ismeta=True, shear=True, **kwargs):
+    def load_profiles(self, ismeta=True, shear=True, **kwargs):
+        """
+        loads the lensing profiles from file (the xshear output)
 
+        Parameters
+        ----------
+        ismeta: bool
+            try to lead sheared metacal files from disk
+        shear: bool
+            shear or deltasigma profile as result
+        """
         self._profiles = []
         for i, sbin in enumerate(self.sbins):
             print("loading source bin", sbin)
@@ -983,8 +999,8 @@ class AutoCalibrateProfile(object):
             # print(clust.dst)
             self._profiles.append(clust)
 
-    def _load_targets(self, **kwargs):
-
+    def load_targets(self, **kwargs):
+        """loads the lens catalog from file"""
         iname = self.infos[0]["infile"].split("_patch")[0] + ".fits"
         _target = fio.read(iname)
         target = to_pandas(_target)
@@ -999,7 +1015,8 @@ class AutoCalibrateProfile(object):
             ww = self.weights
         self.target[self.weight_key] = ww
 
-    def _get_scinvs(self, **kwargs):
+    def get_scinvs(self, **kwargs):
+        """Calculates the expected Sigma Crit Inverse from the redshift integral over Pz_src assuming a the mean z_lens"""
         zmean = np.average(self.target[self.z_key], weights=self.weights[self.weight_key])
 
         self.scinvs = []
@@ -1007,14 +1024,25 @@ class AutoCalibrateProfile(object):
             self.scinvs.append(self.pzcat.get_single_scinv(zmean, sbin=sbin))
         self.scinvs = np.array(self.scinvs)
 
-    def _get_scinvs_bin(self, **kwargs):
-
+    def get_scinvs_bin(self, **kwargs):
+        """Calculates the expected Sigma Crit Inverse from the double redshift integral over Pz_lens and Pz_src"""
         self.scinvs = []
         for sbin in self.sbins:
             self.scinvs.append(self.pzcat.get_bin_scinv(self.target[self.z_key], sbin=sbin, weights=self.target[self.weight_key].values))
         self.scinvs = np.array(self.scinvs)
 
-    def _combine_sbins(self, mfactor_sbins=None, mfactor_stds=None, weight_scrit_exponent=1):
+    def combine_sbins(self, mfactor_sbins=None, mfactor_stds=None, weight_scrit_exponent=1):
+        """
+        Combine source bins
+
+        Parameters
+        ----------
+        mfactor_sbins: list
+            multiplicative correction to apply for each source bin
+        mfactor_stds: int
+            std of multiplicative correction to apply for each source bin
+        """
+
         # print(mfactor_stds)
         _profiles = []
         for i, scinv in enumerate(self.scinvs):
@@ -1086,15 +1114,15 @@ class AutoCalibrateProfile(object):
             self.z_key = z_key
 
         if reload:
-            self._load_profiles(Rs_sbins=Rs_sbins, **kwargs)
+            self.load_profiles(Rs_sbins=Rs_sbins, **kwargs)
 
         self.scinvs = scinvs
         if self.scinvs is None:
             if reload:
-                self._load_targets(**kwargs)
-            self._get_scinvs_bin(**kwargs)
-        self._combine_sbins(mfactor_sbins=mfactor_sbins, mfactor_stds=mfactor_stds)
-        self._scale_cut()
+                self.load_targets(**kwargs)
+            self.get_scinvs_bin(**kwargs)
+        self.combine_sbins(mfactor_sbins=mfactor_sbins, mfactor_stds=mfactor_stds)
+        self.scale_cut()
 
     def composite(self, other, operation):
         """
@@ -1118,10 +1146,11 @@ class AutoCalibrateProfile(object):
             res.append(prof)
         self._profiles = res
 
-        self._combine_sbins()
-        self._scale_cut()
+        self.combine_sbins()
+        self.scale_cut()
 
-    def _scale_cut(self):
+    def scale_cut(self):
+        """Applies radial scale cuts when needed"""
         self.rr = self.profile.rr
         self.dst = self.profile.dst
         self.dst_err = self.profile.dst_err
@@ -1134,7 +1163,14 @@ class AutoCalibrateProfile(object):
         self.cov = self.profile.dst_cov[ii, :][:, ii]
 
     def add_boost_jk(self, sboost, mfactor_sbins=None):
+        """
+        Add boost factors by correcting each Jackknife patch
 
+        Parameters
+        ----------
+        sboost: SOMBoost
+            Fitted boost factors
+        """
         _profiles = []
         for i, scinv in enumerate(self.scinvs):
             _profiles.append(copy.deepcopy(self._profiles[i]))
@@ -1160,12 +1196,18 @@ class AutoCalibrateProfile(object):
         factor = 1. / np.sum(self.scinvs**(2))
         self.profile.multiply(factor)
         print(self.profile.dst)
-        self._scale_cut()
+        self.scale_cut()
 
 
     def add_boost(self, sboost):
-        """Boost uncertainty is added to the diagonal in quadrature of the covariance"""
+        """
+        Boost uncertainty is added to the diagonal in quadrature of the covariance
 
+        Parameters
+        ----------
+        sboost: SOMBoost
+            Fitted boost factors
+        """
         try:
             cov = sboost.covs[0]
         except:
@@ -1189,16 +1231,21 @@ class AutoCalibrateProfile(object):
             pad = np.zeros(self.profile.dst_sub.shape[0] - len(self.fcl))
             self.fcl = np.concatenate((self.fcl, pad))
         self.profile.multiply((1 / (1 - self.fcl))[:, np.newaxis])
-        self._scale_cut()
+        self.scale_cut()
         self.cov = self.cov + np.diag(self.cov) * self.fcl_err
 
     def to_profile(self):
+        """
+        Extracts a light-weight version of the data container
+
+        The only attributes are 'rr', 'dst', 'dst_err' and 'cov'
+        """
         prof = ProfileContainer(self.rr, self.dst, self.dst_err, self.cov)
         return prof
 
 
     def copy(self):
-
+        """Returns a deep copy of the object"""
         res = AutoCalibrateProfile(self.fname, self.fname_jk, self.pzcat, self.weights,
                                    id_key=self.id_key, weight_key=self.weight_key,
                                    sbins=self.sbins, xlims=self.xlims, Rs_sbins=self.Rs_sbins)

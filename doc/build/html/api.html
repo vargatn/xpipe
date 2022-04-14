@@ -21,7 +21,7 @@
     
   <link rel="index" title="Index" href="genindex.html" />
   <link rel="search" title="Search" href="search.html" />
-  <link rel="next" title="xpipe.xhandle.parbins.XIO" href="generated/xpipe.xhandle.parbins.XIO.html" />
+  <link rel="next" title="xpipe.tools.y3_sompz.sigma_crit_inv" href="generated/xpipe.tools.y3_sompz.sigma_crit_inv.html" />
   <link rel="prev" title="Config files explained" href="config.html" /> 
   </head>
 
@@ -117,6 +117,8 @@
             
               <ul>
                 
+                  <li class="toctree-l2"><a href="#des-y3-wrappers" class="reference internal">DES Y3 wrappers</a></li>
+                
                   <li class="toctree-l2"><a href="#input-file-manipulation" class="reference internal">Input file manipulation</a></li>
                 
                   <li class="toctree-l2"><a href="#xshear-wrapper" class="reference internal">XSHEAR wrapper</a></li>
@@ -154,8 +156,8 @@
        title="previous chapter">← Config files explained</a>
   </li>
   <li class="next">
-    <a href="generated/xpipe.xhandle.parbins.XIO.html"
-       title="next chapter">xpipe.xhandle.parbins.XIO →</a>
+    <a href="generated/xpipe.tools.y3_sompz.sigma_crit_inv.html"
+       title="next chapter">xpipe.tools.y3_sompz.sigma_crit_inv →</a>
   </li>
 </ul>
   
@@ -165,6 +167,48 @@
             
   <div class="section" id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="des-y3-wrappers">
+<h2>DES Y3 wrappers<a class="headerlink" href="#des-y3-wrappers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="sompz">
+<h3>SOMPZ<a class="headerlink" href="#sompz" title="Permalink to this headline">¶</a></h3>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/xpipe.tools.y3_sompz.sigma_crit_inv.html#xpipe.tools.y3_sompz.sigma_crit_inv" title="xpipe.tools.y3_sompz.sigma_crit_inv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpipe.tools.y3_sompz.sigma_crit_inv</span></code></a>(zclust, z)</p></td>
+<td><p>Calculates sigma crit inverse</p></td>
+</tr>
+</tbody>
+</table>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/xpipe.tools.y3_sompz.sompz_reader.html#xpipe.tools.y3_sompz.sompz_reader" title="xpipe.tools.y3_sompz.sompz_reader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpipe.tools.y3_sompz.sompz_reader</span></code></a>(main_file_path)</p></td>
+<td><p>Reader class for DES Y3 - style SOMPZ data</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="combine-shear-profiles-and-apply-calibrations">
+<h3>Combine shear profiles and apply calibrations<a class="headerlink" href="#combine-shear-profiles-and-apply-calibrations" title="Permalink to this headline">¶</a></h3>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/xpipe.xhandle.shearops.AutoCalibrateProfile.html#xpipe.xhandle.shearops.AutoCalibrateProfile" title="xpipe.xhandle.shearops.AutoCalibrateProfile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpipe.xhandle.shearops.AutoCalibrateProfile</span></code></a>(...)</p></td>
+<td><p>WEIGHTS must be from the base input dataset for Random points!!!</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section" id="input-file-manipulation">
 <h2>Input file manipulation<a class="headerlink" href="#input-file-manipulation" title="Permalink to this headline">¶</a></h2>
 <p>The bulk of the action is performed by the main writer class:</p>
@@ -663,6 +707,8 @@
 </tr>
 </tbody>
 </table>
+<p># TODO
+Visualization</p>
 </div>
 <div class="section" id="example-function">
 <h3>example function<a class="headerlink" href="#example-function" title="Permalink to this headline">¶</a></h3>
@@ -690,8 +736,8 @@
        title="previous chapter">← Config files explained</a>
   </li>
   <li class="next">
-    <a href="generated/xpipe.xhandle.parbins.XIO.html"
-       title="next chapter">xpipe.xhandle.parbins.XIO →</a>
+    <a href="generated/xpipe.tools.y3_sompz.sigma_crit_inv.html"
+       title="next chapter">xpipe.tools.y3_sompz.sigma_crit_inv →</a>
   </li>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2022, Tamas Norbert Varga.

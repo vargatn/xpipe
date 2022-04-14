@@ -5,6 +5,32 @@ API Reference
 =============
 
 
+DES Y3 wrappers
+---------------
+
+SOMPZ
+"""""
+
+.. autosummary::
+    :toctree: generated
+
+    xpipe.tools.y3_sompz.sigma_crit_inv
+
+.. autosummary::
+    :toctree: generated
+    :template: custom.rst
+
+    xpipe.tools.y3_sompz.sompz_reader
+
+Combine shear profiles and apply calibrations
+"""""""""""""""""""""""""""""""""""""""""""""
+.. autosummary::
+    :toctree: generated
+    :template: custom.rst
+
+    xpipe.xhandle.shearops.AutoCalibrateProfile
+
+
 Input file manipulation
 -----------------------
 
@@ -313,6 +339,9 @@ tools.selector
     xpipe.tools.selector.partition
     xpipe.tools.selector.safedivide
 
+
+# TODO
+Visualization
 
 example function
 """"""""""""""""
