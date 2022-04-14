@@ -16,23 +16,38 @@ def make_simple_corner(flat_samples, color="C0", fig=None, axarr=None, npar=3, f
 
     Parameters
     ----------
-    flat_samples
-    color
-    fig
-    axarr
-    npar
-    figsize
-    wspace
-    hspace
-    axis_labels
-    limits
-    nbins
+    flat_samples; np.array
+        MCMC chain samples
+    color: str
+        color for contour lines
+    fig: plt.figure
+        figure to overdraw to
+    axarr: plt.axes
+        array of plt.axis to overdraw to
+    npar: int
+        number of parameters in flat_samples
+    figsize: tuple
+        figure size in inch
+    wspace: float
+        wspace for subplots_adjust
+    hspace: float
+        hspace for subplots_adjust
+    axis_labels: list of str
+        axis labels (including latex special characters)
+    limits: list of lists
+        plotting limits for each parametr
+    nbins: int
+        number of bins for histogram
     levels: str
         "max" or "conf"
     kwargs
 
     Returns
     -------
+    fig: plt.figure
+        figure
+    axarr: plt.axis
+        list of axes
 
     """
     if fig is None:

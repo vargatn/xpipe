@@ -106,6 +106,7 @@ def flat_copy(recarr):
 
 
 def match_endian(arr):
+    """Tries to auto convert the Endian ordering of an array to match to native ordering"""
     valid_endians = ["<", ">"]
     endians = {
         "little": "<",
